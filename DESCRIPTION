@@ -1,0 +1,30 @@
+Package: googleAnalyticsR
+Type: Package
+Version: 0.1.0
+Title: Google Analytics API into R
+Description: R library for interacting with the Google Analytics 
+  Reporting API v3 and v4.
+Authors@R: c(person("Mark", "Edmondson",email = "m@sunholo.com",
+                  role = c("aut", "cre")),
+             person(given = "Artem", family = "Klevtsov",
+                    email = "a.a.klevtsov@gmail.com", role = "ctb"),
+           person("Johann", "deBoer", email="johanndeboer@gmail.com", role = "ctb"))
+URL: https://github.com/MarkEdmondson1234/googleAnalyticsR
+BugReports:
+        https://github.com/MarkEdmondson1234/googleAnalyticsR/issues
+Depends: R (>= 3.2.0)
+Imports: googleAuthR (>= 0.3.0), tidyjson (>= 0.2.1), magrittr,
+        jsonlite, testthat (>= 1.0.2)
+Suggests: knitr, rmarkdown
+License: MIT + file LICENSE
+LazyData: TRUE
+VignetteBuilder: knitr
+RoxygenNote: 5.0.1
+NeedsCompilation: no
+Packaged: 2016-05-11 20:43:26 UTC; mark
+Author: Mark Edmondson [aut, cre],
+  Artem Klevtsov [ctb],
+  Johann deBoer [ctb]
+Maintainer: Mark Edmondson <m@sunholo.com>
+Repository: CRAN
+Date/Publication: 2016-05-12 14:47:28
