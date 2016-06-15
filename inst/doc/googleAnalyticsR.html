@@ -7,11 +7,12 @@
 <meta charset="utf-8">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
+
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <meta name="author" content="Mark Edmondson" />
 
-<meta name="date" content="2016-05-25" />
+<meta name="date" content="2016-06-14" />
 
 <title>googleAnalyticsR</title>
 
@@ -57,6 +58,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </style>
 
 
+
 <link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
 
 </head>
@@ -65,14 +67,11 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 
-<div class="fluid-row" id="header">
 
-
-<h1 class="title">googleAnalyticsR</h1>
+<h1 class="title toc-ignore">googleAnalyticsR</h1>
 <h4 class="author"><em>Mark Edmondson</em></h4>
-<h4 class="date"><em>2016-05-25</em></h4>
+<h4 class="date"><em>2016-06-14</em></h4>
 
-</div>
 
 
 <p><a href="http://code.markedmondson.me/googleAnalyticsR">googleAnalyticsR guide online</a></p>
@@ -502,6 +501,155 @@ mcf_gadata &lt;-<span class="st"> </span><span class="kw">google_analytics</span
                          <span class="dt">shiny_access_token =</span> <span class="kw">access_token</span>())
 
 })</code></pre></div>
+</div>
+<div id="bigquery" class="section level2">
+<h2>BigQuery</h2>
+<p>Limited support for more user friendly calls to BigQuery Google Analytics 360 exports is implemented from version <code>0.2.0</code>.</p>
+<p>This is intended for users who may be familar with Google Analytics but not with SQL necessary to extract equivalent data from a BigQuery export of Google Analytics 360 data.</p>
+<p><code>google_analytics_bq</code> parses your metrics and dimensions into BigQuery queries.</p>
+<div id="to-do" class="section level3">
+<h3>To do</h3>
+<p>This is under active development, and features will expand in the future. Eventually the BigQuery reports can do a lot more than the normal Google Analytics API as it allows for statistics, grouping, timestamps and unique visitor and visit Ids.</p>
+</div>
+<div id="setup" class="section level3">
+<h3>Setup</h3>
+<p>To use, you need to also install the <a href="http://code.markedmondson.me/bigQueryR/"><code>bigQueryR</code></a> library.</p>
+<p>Stable version is on CRAN:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;bigQueryR&quot;</span>)</code></pre></div>
+<p>Development version on devtools:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">devtools::<span class="kw">install_github</span>(<span class="st">&quot;MarkEdmondson1234/bigQueryR&quot;</span>)</code></pre></div>
+<p>Once installed, authenticate to BigQuery:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(bigQueryR)
+
+## go through Google oAuth2 flow
+## needs email that has access to the BigQuery dataset
+<span class="kw">bqr_auth</span>()
+
+## get lists of your project and datasets
+<span class="kw">bqr_list_projects</span>()
+<span class="kw">bqr_list_datasets</span>(<span class="st">&quot;project-id&quot;</span>)</code></pre></div>
+<p>If you want to authenticate with Google Analytics and BigQuery in the same session (or others) then its best to authenticate with <code>googleAuthR::gar_auth()</code> with the appropriate scopes set. The below lets you authenticate with Google Analytics, Google Cloud Storage and BigQuery:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">options</span>(<span class="dt">googleAuthR.scopes.selected =</span> <span class="kw">c</span>(<span class="st">&quot;https://www.googleapis.com/auth/analytics&quot;</span>,
+                                        <span class="st">&quot;https://www.googleapis.com/auth/cloud-platform&quot;</span>,
+                                        <span class="st">&quot;https://www.googleapis.com/auth/bigquery&quot;</span>))
+googleAuthR::<span class="kw">gar_auth</span>()</code></pre></div>
+<p>You may also want to use a JSON file to authenticate with BigQuery. Make sure to add the service email to the users of the Google project, and then download the JSON file and authenitcate via:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">googleAuthR::<span class="kw">gar_auth_service</span>(<span class="st">&quot;gwt-download-XXXX.json&quot;</span>)</code></pre></div>
+<p>See <a href="https://github.com/MarkEdmondson1234/googleAuthR"><code>googleAuthR</code> help</a> for more details.</p>
+</div>
+<div id="exporting-data" class="section level3">
+<h3>Exporting data</h3>
+<p>For BigQuery Google Analytics 360 exports, the dataset is the same as the GA View ID you are exporting.</p>
+<p>You can then export BigQuery data via:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">bq &lt;-<span class="st"> </span><span class="kw">google_analytics_bq</span>(<span class="st">&quot;project-id&quot;</span>, <span class="st">&quot;dataset-id-ga-viewid&quot;</span>, 
+                           <span class="dt">start =</span> <span class="st">&quot;2016-01-01&quot;</span>, <span class="dt">end =</span> <span class="st">&quot;2016-02-01&quot;</span>, 
+                           <span class="dt">metrics =</span> <span class="st">&quot;users&quot;</span>, 
+                           <span class="dt">dimensions =</span> <span class="kw">c</span>(<span class="st">&quot;source&quot;</span>,<span class="st">&quot;medium&quot;</span>))
+<span class="kw">head</span>(bq)
+             source   medium  users
+<span class="dv">1</span>   mavas|blahbs.ru  display  <span class="dv">47837</span>
+<span class="dv">2</span>          examp.ae referral   <span class="dv">6090</span>
+<span class="dv">3</span>   lm.facebook.com referral    <span class="dv">335</span>
+<span class="dv">4</span>       ghtie_yahoo  display <span class="dv">133900</span>
+<span class="dv">5</span>      fjsfs_inmobi  display  <span class="dv">19887</span>
+<span class="dv">6</span> tripadvisor.co.dk referral    <span class="dv">307</span>                         </code></pre></div>
+<p>At the moment the metrics/dimensions are limited as they need to added manually to a lookup table.<br />
+Segments/filters are not supported. The data is unsampled though.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">bq2 &lt;-<span class="st"> </span><span class="kw">google_analytics_bq</span>(<span class="st">&quot;project-id&quot;</span>, <span class="st">&quot;dataset-id-ga-viewid&quot;</span>, 
+                           <span class="dt">start =</span> <span class="st">&quot;2016-01-01&quot;</span>, <span class="dt">end =</span> <span class="st">&quot;2016-02-01&quot;</span>, 
+                           <span class="dt">metrics =</span> <span class="st">&quot;users&quot;</span>, 
+                           <span class="dt">dimensions =</span> <span class="kw">c</span>(<span class="st">&quot;source&quot;</span>,<span class="st">&quot;medium&quot;</span>,<span class="st">&quot;landingPagePath&quot;</span>))
+                           
+&gt;<span class="st"> </span>Error in <span class="kw">google_analytics_bq</span>(<span class="st">&quot;project-id&quot;</span>, <span class="st">&quot;dataset-id-ga-viewid&quot;</span>, <span class="dt">start =</span> <span class="st">&quot;2016-01-01&quot;</span>,  :<span class="st"> </span>
+<span class="st">  </span>dimension not yet supported. Must be one of referralPath, campaign, source, medium, keyword, adContent, adwordsCampaignID, adwordsAdGroupID, transactionId, date, visitorId, visitId, visitStartTime, visitNumber                           </code></pre></div>
+<p>You can also query the BigQuery table directly using the query parameter.</p>
+<p>This is just as you would in the BigQuery interface, and allows queries you can also do there.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">q &lt;-<span class="st"> &quot;SELECT</span>
+<span class="st">  date,</span>
+<span class="st">  SUM (totals.visits) visits,</span>
+<span class="st">  SUM (totals.pageviews) pageviews,</span>
+<span class="st">  SUM (totals.transactions) transactions,</span>
+<span class="st">  SUM (totals.transactionRevenue)/1000000 revenue</span>
+<span class="st">FROM [87010628.ga_sessions_20160327],[87010628.ga_sessions_20160328],[87010628.ga_sessions_20160329]</span>
+<span class="st">GROUP BY date</span>
+<span class="st">ORDER BY date ASC &quot;</span>
+
+bq3 &lt;-<span class="st"> </span><span class="kw">google_analytics_bq</span>(<span class="st">&quot;project-id&quot;</span>, <span class="st">&quot;dataset-id-ga-viewid&quot;</span>, 
+                           <span class="dt">query =</span> q)</code></pre></div>
+<p>You can also just output the query for use within the interface, if you pass in the parameter <code>return_query_only</code></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">just_query &lt;-<span class="st"> </span><span class="kw">google_analytics_bq</span>(<span class="st">&quot;project-id&quot;</span>, <span class="st">&quot;dataset-id-ga-viewid&quot;</span>, 
+                                  <span class="dt">start =</span> <span class="st">&quot;2016-01-01&quot;</span>, <span class="dt">end =</span> <span class="st">&quot;2016-02-01&quot;</span>, 
+                                  <span class="dt">metrics =</span> <span class="st">&quot;users&quot;</span>, 
+                                  <span class="dt">dimensions =</span> <span class="kw">c</span>(<span class="st">&quot;source&quot;</span>,<span class="st">&quot;medium&quot;</span>),
+                                  <span class="dt">return_query_only =</span> <span class="ot">TRUE</span>)
+just_query
+<span class="co"># [1] &quot;SELECT trafficSource.source as source, trafficSource.medium as medium, COUNT(fullVisitorId) as users </span>
+<span class="co"># FROM (TABLE_DATE_RANGE([dataset-id-ga-viewid.ga_sessions_], TIMESTAMP('2016-01-01'),</span>
+<span class="co"># TIMESTAMP('2016-02-01'))) GROUP BY source, medium  LIMIT 100&quot;</span></code></pre></div>
+<p>You could then paste this query into the BigQuery interface, or modify it and send it back in via <code>google_analytics_q</code>.</p>
+</div>
+<div id="implemented-metrics-and-dimensions" class="section level3">
+<h3>Implemented metrics and dimensions</h3>
+<p>The metrics and dimensions implemented so far are in the two lookups below.</p>
+<p>They include the BigQuery exclusive <code>hitTimestamp</code>, <code>fullVisitorId</code>, <code>visitId</code> etc.</p>
+<p>Read the full <a href="https://support.google.com/analytics/answer/3437719?hl=en">Google Analytics 360 BigQuery data schema</a> for an idea on what can be queried.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">lookup_bq_query_m &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dt">visits =</span> <span class="st">&quot;SUM(totals.visits) as sessions&quot;</span>,
+                       <span class="dt">sessions =</span> <span class="st">&quot;SUM(totals.visits) as sessions&quot;</span>,
+                       <span class="dt">pageviews =</span> <span class="st">&quot;SUM(totals.pageviews) as pageviews&quot;</span>,
+                       <span class="dt">timeOnSite =</span> <span class="st">&quot;SUM(totals.timeOnSite) as timeOnSite&quot;</span>,
+                       <span class="dt">bounces =</span> <span class="st">&quot;SUM(totals.bounces) as bounces&quot;</span>,
+                       <span class="dt">transactions =</span> <span class="st">&quot;SUM(totals.transactions) as transactions&quot;</span>,
+                       <span class="dt">transactionRevenue =</span> <span class="st">&quot;SUM(totals.transactionRevenue)/1000000 as transactionRevenue&quot;</span>,
+                       <span class="dt">newVisits =</span> <span class="st">&quot;SUM(totals.newVisits) as newVisits&quot;</span>,
+                       <span class="dt">screenviews =</span> <span class="st">&quot;SUM(totals.screenviews) as screenviews&quot;</span>,
+                       <span class="dt">uniqueScreenviews =</span> <span class="st">&quot;SUM(totals.uniqueScreenviews) as uniqueScreenviews&quot;</span>,
+                       <span class="dt">timeOnScreen =</span> <span class="st">&quot;SUM(totals.timeOnScreen) as timeOnScreen&quot;</span>,
+                       <span class="dt">users =</span> <span class="st">&quot;COUNT(fullVisitorId) as users&quot;</span>,
+                       <span class="dt">exits =</span> <span class="st">&quot;COUNT(hits.isExit) as exits&quot;</span>,
+                       <span class="dt">entrances =</span> <span class="st">&quot;COUNT(hits.isEntrance) as entrances&quot;</span>,
+                       <span class="dt">eventValue =</span> <span class="st">&quot;SUM(hits.eventinfo.eventValue) as eventValue&quot;</span>,
+                       <span class="dt">metricXX =</span> {a function to output hit level custom metrics})
+
+lookup_bq_query_d &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dt">referralPath =</span> <span class="st">&quot;trafficSource.referralPath as referralPath&quot;</span>,
+                       <span class="dt">hitTimestamp =</span> <span class="st">&quot;(visitStartTime + (hits.time/1000)) as hitTimestamp&quot;</span>,
+                       <span class="dt">campaign =</span> <span class="st">&quot;trafficSource.campaign as campaign&quot;</span>,
+                       <span class="dt">source =</span> <span class="st">&quot;trafficSource.source as source&quot;</span>,
+                       <span class="dt">medium =</span> <span class="st">&quot;trafficSource.medium as medium&quot;</span>,
+                       <span class="dt">keyword =</span> <span class="st">&quot;trafficSource.keyword as keyword&quot;</span>,
+                       <span class="dt">adContent =</span> <span class="st">&quot;trafficSource.adContent as adContent&quot;</span>,
+                       <span class="dt">adwordsCampaignID =</span> <span class="st">&quot;trafficSource.adwordsClickInfo.campaignId as adwordsCampaignId&quot;</span>,
+                       <span class="dt">adwordsAdGroupID =</span> <span class="st">&quot;trafficSource.adwordsClickInfo.adGroupId as adwordsAdGroupId&quot;</span>,
+                       <span class="co"># adwords...etc...</span>
+                       <span class="dt">transactionId =</span> <span class="st">&quot;hits.transaction.transactionId as transactionId&quot;</span>,
+                       <span class="dt">date =</span> <span class="st">&quot;date&quot;</span>,
+                       <span class="dt">fullVisitorId =</span> <span class="st">&quot;fullVisitorId&quot;</span>,
+                       <span class="dt">userId =</span> <span class="st">&quot;userId&quot;</span>,
+                       <span class="dt">visitorId =</span> <span class="st">&quot;visitorId&quot;</span>,
+                       <span class="dt">visitId =</span> <span class="st">&quot;visitId&quot;</span>,
+                       <span class="dt">visitStartTime =</span> <span class="st">&quot;visitStartTime&quot;</span>,
+                       <span class="dt">visitNumber =</span> <span class="st">&quot;visitNumber&quot;</span>,
+                       <span class="dt">browser =</span> <span class="st">&quot;device.browser as browser&quot;</span>,
+                       <span class="dt">browserVersion =</span> <span class="st">&quot;device.browserVersion as browserVersion&quot;</span>,
+                       <span class="dt">operatingSystem =</span> <span class="st">&quot;device.operatingSystem as operatingSystem&quot;</span>,
+                       <span class="dt">operatingSystemVersion =</span> <span class="st">&quot;device.operatingSystemVersion as operatingSystemVersion&quot;</span>,
+                       <span class="dt">mobileDeviceBranding =</span> <span class="st">&quot;device.mobileDeviceBranding as mobileDeviceBranding&quot;</span>,
+                       <span class="dt">flashVersion =</span> <span class="st">&quot;device.flashVersion as flashVersion&quot;</span>,
+                       <span class="dt">language =</span> <span class="st">&quot;device.language as language&quot;</span>,
+                       <span class="dt">screenColors =</span> <span class="st">&quot;device.screenColors as screenColors&quot;</span>,
+                       <span class="dt">screenResolution =</span> <span class="st">&quot;device.screenResolution as screenResolution&quot;</span>,
+                       <span class="dt">deviceCategory =</span> <span class="st">&quot;device.deviceCategory as deviceCategory&quot;</span>,
+                       <span class="dt">continent =</span> <span class="st">&quot;geoNetwork.continent as continent&quot;</span>,
+                       <span class="dt">subContinent =</span> <span class="st">&quot;geoNetwork.subContinent as subContinent&quot;</span>,
+                       <span class="dt">country =</span> <span class="st">&quot;geoNetwork.country as country&quot;</span>,
+                       <span class="dt">region =</span> <span class="st">&quot;geoNetwork.region as region&quot;</span>,
+                       <span class="dt">metro =</span> <span class="st">&quot;geoNetwork.region as metro&quot;</span>,
+                       <span class="dt">pagePath =</span> <span class="st">&quot;hits.page.pagePath as pagePath&quot;</span>,
+                       <span class="dt">eventCategory =</span> <span class="st">&quot;hits.eventInfo.eventCategory as eventCategory&quot;</span>,
+                       <span class="dt">eventAction =</span> <span class="st">&quot;hits.eventInfo.eventAction as eventAction&quot;</span>,
+                       <span class="dt">eventLabel =</span> <span class="st">&quot;hits.eventInfo.eventLabel as eventLabel&quot;</span>,
+                       <span class="dt">dimensionXX =</span> {a function to output hit level custom dimensions})</code></pre></div>
+<p>This will increase as I get time to work on it, but feel free to submit a pull request with more.</p>
+</div>
 </div>
 
 

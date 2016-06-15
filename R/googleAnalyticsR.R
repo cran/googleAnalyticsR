@@ -1,13 +1,23 @@
 #' Library for getting Google Analytics data into R
 #' 
-#' https://developers.google.com/analytics/devguides/reporting/core/v4/rest/v4/reports/batchGet
+#' Follow the online documentation here: \url{http://code.markedmondson.me/googleAnalyticsR/}
+#' 
+#' \itemize{
+#'   \item First Google Analytics Reporting v4 API library for R
+#'   \item v4 features include: dynamic calculated metrics, pivots, 
+#'     histograms, date comparisons, batching
+#'   \item Multi-user login in Shiny App
+#'   \item Integration with BigQuery Google Analytics Premium/360 exports
+#'   \item Single authentication flow with other 'googleAuthR' apps
+#'   \item Automatic batching
+#'   \item sampling avoidance with daily walk
+#'   \item multi-account fetching
+#'   \item multi-channel funnnels
+#'   \item Support for batch. For big data calls this could 
+#'     be 10x quicker than normal GA fetching
+#'   \item Meta data included in attributes of returned dataframe
+#'  }
 #' 
 #' @docType package
 #' @name googleAnalyticsR
 NULL
-
-options("googleAuthR.scopes.selected" = getOption("googleAnalyticsR.scope") )
-options("googleAuthR.client_id" = getOption("googleAnalyticsR.client_id"))
-options("googleAuthR.client_secret" = getOption("googleAnalyticsR.client_secret"))
-options("googleAuthR.webapp.client_id" = getOption("googleAnalyticsR.webapp.client_id"))
-options("googleAuthR.webapp.client_secret" = getOption("googleAnalyticsR.webapp.client_secret"))
