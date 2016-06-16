@@ -1,6 +1,6 @@
 Package: googleAnalyticsR
 Type: Package
-Version: 0.2.0
+Version: 0.2.1
 Title: Google Analytics API into R
 Description: R library for interacting with the Google Analytics 
   Reporting API v3 and v4.
@@ -22,10 +22,10 @@ LazyData: TRUE
 VignetteBuilder: knitr
 RoxygenNote: 5.0.1
 NeedsCompilation: no
-Packaged: 2016-06-14 19:34:22 UTC; mark
+Packaged: 2016-06-16 09:53:30 UTC; mark
 Author: Mark Edmondson [aut, cre],
   Artem Klevtsov [ctb],
   Johann deBoer [ctb]
 Maintainer: Mark Edmondson <m@sunholo.com>
 Repository: CRAN
-Date/Publication: 2016-06-15 00:24:51
+Date/Publication: 2016-06-16 12:37:27
