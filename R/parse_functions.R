@@ -28,17 +28,12 @@ google_analytics_4_parse <- function(x){
   data <- x$data$rows
   hasDateComparison <- if(length(data[[1]]$metrics) == 2) TRUE else FALSE
   
-  if(!is.null(data$isDataGolden)){
-    if(!data$isDataGolden)
+  if(!is.null(x$data$isDataGolden) && !x$data$isDataGolden){
       warning("Data is not Golden - may change on subsequent API calls.")
   }
   
-  if(!is.null(data$filteredForPrivacyReasons)){
+  if(!is.null(x$data$filteredForPrivacyReasons)){
     warning("Some data has been filtered for privacy reasons.")
-  }
-  
-  if(!is.null(data$samplesReadCounts)){
-    warning("Data is sampled.")
   }
   
   dim_names <- unlist(columnHeader$dimensions)
@@ -51,8 +46,13 @@ google_analytics_4_parse <- function(x){
     return(NULL)
   }
   
-  dims <- matrix(unlist(lapply(data, function(x) x$dimensions)),
-                 ncol = length(dim_names), byrow = TRUE)
+  if(!is.null(dim_names)){
+    dims <- matrix(unlist(lapply(data, function(x) x$dimensions)),
+                   ncol = length(dim_names), byrow = TRUE)
+  } else {
+    dims <- NULL
+  }
+
   mets <- matrix(unlist(lapply(data, function(x) x$metrics[[1]]$values)),
                  ncol = length(met_names), byrow = TRUE)
   
@@ -65,7 +65,7 @@ google_analytics_4_parse <- function(x){
   }
   
   ## construct the dataframe
-  out <- data.frame(dims, mets,
+  out <- data.frame(cbind(dims, mets),
                     stringsAsFactors = FALSE, row.names = 1:nrow(mets))
   
   out_names <- c(dim_names, met_names)
@@ -100,24 +100,43 @@ google_analytics_4_parse <- function(x){
   attr(out, "samplingSpaceSizes") <- x$data$samplingSpaceSizes
   attr(out, "nextPageToken") <- x$nextPageToken
   
-  samplePercent <-  100
-  if(!is.null(x$data$samplesReadCounts)){
-      samplePercent <- round(100 * (as.numeric(x$data$samplesReadCounts) / as.numeric(x$data$samplingSpaceSizes)), 2)
-      message("Data is sampled, based on ", samplePercent, "% of visits." )
-  }
-  
   testthat::expect_s3_class(out, "data.frame")
   
   out
   
 }
 
+sampling_message <- function(samplesReadCounts, samplingSpaceSizes, hasDateComparison = FALSE){
+  samplePercent <-  100
+  if(!is.null(samplesReadCounts)){
+    samplePercent <- get_samplePercent(samplesReadCounts[[1]], samplingSpaceSizes[[1]])
+    message("Data is sampled, based on ", samplePercent, "% of sessions." )
+    
+    if(hasDateComparison){
+      samplePercent <- get_samplePercent(samplesReadCounts[[2]], samplingSpaceSizes[[2]])
+      message("Data Comparison is sampled, based on ", samplePercent, "% of sessions." )
+    }
+  }
+}
+
+get_samplePercent <- function(sampleReadCounts, samplingSpaceSizes){
+  sampleReadCounts   <- as.numeric(sampleReadCounts)
+  samplingSpaceSizes <- as.numeric(samplingSpaceSizes)
+
+  if(sampleReadCounts == 0 || 
+     samplingSpaceSizes == 0 || 
+     identical(sampleReadCounts, numeric(0)) || 
+     identical(samplingSpaceSizes, numeric(0))) return(numeric(0))
+
+  round(100 * (sampleReadCounts / samplingSpaceSizes), 1)
+}
 
 #' New parse GA account summary
 #' 
 #' @param x The account summary items
 #' @import tidyjson
 #' @importFrom jsonlite toJSON
+#' @importFrom dplyr select filter
 #' @keywords internal
 parse_ga_account_summary <- function(x){
   
@@ -126,10 +145,12 @@ parse_ga_account_summary <- function(x){
   tidy_json <- json_accounts %>% as.tbl_json()
   
   tidy_json <- tidy_json %>% 
+    json_lengths() %>% filter(length != 0) %>% select(-length) %>%
     gather_array() %>% 
     spread_values(accountId = jstring("id"), 
                   accountName = jstring("name")) %>%
     enter_object("webProperties") %>%
+    json_lengths() %>% filter(length != 0) %>% select(-length) %>%
     gather_array() %>%
     spread_values(webPropertyId = jstring("id"), 
                   webPropertyName = jstring("name"),
@@ -137,6 +158,7 @@ parse_ga_account_summary <- function(x){
                   level = jstring("level"),
                   websiteUrl = jstring("websiteUrl")) %>%
     enter_object("profiles") %>%
+    json_lengths() %>% filter(length != 0) %>% select(-length) %>%
     gather_array() %>%
     spread_values(viewId = jstring("id"), 
                   viewName = jstring("name"),
@@ -148,7 +170,6 @@ parse_ga_account_summary <- function(x){
   
   out
 }
-
 
 
 parse_google_analytics <- function(x){

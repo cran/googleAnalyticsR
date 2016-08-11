@@ -1,3 +1,58 @@
+#' Create named list of allowed GA metrics/dimensions
+#' 
+#' @param type Type of parameter to create
+#' @param subType to restrict to only those in this type
+#' @param callAPI This will update the meta table (Requires online authorization)
+#' 
+#' This is useful to expand goalXCompletions to all the possiblilties,
+#'   as well as restricting to those that variables that work with your API call.
+#' 
+#' Use internal meta table, but you have option to update to the latest version.
+#'   
+#' @return A named list of parameters for use in API calls
+#' @export
+allowed_metric_dim <- function(type = c("METRIC", "DIMENSION"),
+                               subType = c("all","segment","cohort"),
+                               callAPI = FALSE){
+  type <- match.arg(type)
+  subType <- match.arg(subType)
+  
+  if(callAPI){
+    meta <- google_analytics_meta()
+  } else {
+    meta <- googleAnalyticsR::meta
+  }
+
+  ## where to restrict what dims/metrics are chosen from, todo
+  filtered_md <- switch(subType,
+                        all = meta,
+                        segment = meta[grepl("true",meta$allowedInSegments),],
+                        cohort = meta[grepl("Lifetime Value and Cohort", meta$group),])
+  
+  ## only public (not deprecated) varaibles
+  filtered_md <- filtered_md[filtered_md$type == type & 
+                               filtered_md$status == "PUBLIC",]
+  
+  ## replace XX with 1 to 20
+  meta_ex <- filtered_md[grepl("XX",filtered_md$name),]
+  
+  f <- function(y) vapply(1:20, function(x) gsub("XX", x, meta_ex$name[y]), character(1))
+  meta_expanded <- unlist(lapply(seq_along(meta_ex$name), f))
+  
+  ## repeat with names
+  f2 <- function(y) vapply(1:20, function(x) gsub("XX", x, meta_ex$uiName[y]), character(1))
+  meta_expanded_names <- unlist(lapply(seq_along(meta_ex$uiName), f2))
+  
+  
+  ## take out XX from filtered_md
+  out <- c(filtered_md$name[!filtered_md$name %in% meta_ex$name],
+           meta_expanded)
+  names(out) <- c(filtered_md$uiName[!filtered_md$uiName %in% meta_ex$uiName],
+                  meta_expanded_names)
+  
+  out
+}
+
 #' Allow unit lists
 #' 
 #' If you need a list but only get one element, make it a list.
@@ -190,4 +245,29 @@ error.message <- function(test_me){
   if(is.error(test_me)) attr(test_me, "condition")$message
 }
 
+#' Idempotency
+#'
+#' A random code to ensure no repeats
+#'
+#' @return A random 15 digit hash
+#' @keywords internal
+idempotency <- function(){
+  paste(sample(c(LETTERS, letters, 0:9), 15, TRUE),collapse="")
+}
 
+
+#' Customer message log level
+#' 
+#' @param ... The message(s)
+#' @param level The severity
+#' 
+#' @details 0 = everything, 1 = debug, 2=normal, 3=important
+myMessage <- function(..., level = 2){
+  
+  compare_level <- getOption("googleAuthR.verbose")
+  
+  if(level >= compare_level){
+    message(...)
+  }
+  
+}

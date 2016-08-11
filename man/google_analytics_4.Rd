@@ -9,7 +9,8 @@ google_analytics_4(viewId, date_range = NULL, metrics = NULL,
   filtersExpression = NULL, order = NULL, segments = NULL,
   pivots = NULL, cohorts = NULL, max = 1000,
   samplingLevel = c("DEFAULT", "SMALL", "LARGE"), metricFormat = NULL,
-  histogramBuckets = NULL)
+  histogramBuckets = NULL, anti_sample = FALSE,
+  anti_sample_batches = "auto")
 }
 \arguments{
 \item{viewId}{viewId of data to get.}
@@ -17,7 +18,7 @@ google_analytics_4(viewId, date_range = NULL, metrics = NULL,
 \item{date_range}{character or date vector of format \code{c(start, end)} or 
 for two date ranges: \code{c(start1,end1,start2,end2)}}
 
-\item{metrics}{Metric to fetch. Required. Supports calculated metrics.}
+\item{metrics}{Metric to fetch. Supports calculated metrics.}
 
 \item{dimensions}{Dimensions to fetch.}
 
@@ -35,7 +36,7 @@ for two date ranges: \code{c(start1,end1,start2,end2)}}
 
 \item{cohorts}{Cohorts created by \link{make_cohort_group}}
 
-\item{max}{Maximum number of rows to fetch. Defaults at 1000.}
+\item{max}{Maximum number of rows to fetch. Defaults at 1000. Use -1 to fetch all results.}
 
 \item{samplingLevel}{Sample level}
 
@@ -43,6 +44,10 @@ for two date ranges: \code{c(start1,end1,start2,end2)}}
 
 \item{histogramBuckets}{For numeric dimensions such as hour, a list of buckets of data.
 See details in \link{make_ga_4_req}}
+
+\item{anti_sample}{If TRUE will split up the call to avoid sampling.}
+
+\item{anti_sample_batches}{"auto" default, or set to number of days per batch. 1 = daily.}
 }
 \value{
 A Google Analytics data.frame
@@ -51,7 +56,21 @@ A Google Analytics data.frame
 A convenience function that wraps \link{make_ga_4_req} and \link{fetch_google_analytics_4}
  for the common case of one GA data request.
  
-Will perform batching if over the 10000 row per API call limit.
+Will perform automatic batching if over the 10000 row per API call limit.
+}
+\section{Anti-sampling}{
+
+
+\code{anti_sample} being TRUE ignores \code{max} as the API call is split over days 
+  to mitigate the sampling session limit, in which case a row limit won't work.  Take the top rows
+  of the result yourself instead e.g. \code{head(ga_data_unsampled, 50300)}
+
+If you are lucky enough to need sub-day sampling, it will attempt to fetch per hour, but you are
+  restricted to not using \code{dim_filter} argument if this is the case.  
+  Try using \code{filtersExpression} instead.
+  
+\code{anti_sample} being TRUE will also set \code{samplingLevel='LARGE'} to minimise 
+  the number of calls.
 }
 \examples{
 

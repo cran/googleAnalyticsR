@@ -4,16 +4,21 @@
 \alias{fetch_google_analytics_4}
 \title{Fetch multiple GAv4 requests}
 \usage{
-fetch_google_analytics_4(request_list)
+fetch_google_analytics_4(request_list, merge = FALSE)
 }
 \arguments{
 \item{request_list}{A list of requests created by \link{make_ga_4_req}}
+
+\item{merge}{If TRUE then will rbind that list of data.frames}
 }
 \value{
 A dataframe if one request, or a list of data.frames if multiple.
 }
 \description{
 Fetch the GAv4 requests as created by \link{make_ga_4_req}
+}
+\details{
+For same viewId, daterange, segments, samplingLevel and cohortGroup, v4 batches can be made
 }
 \examples{
 

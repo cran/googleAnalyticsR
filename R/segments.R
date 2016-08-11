@@ -1,3 +1,20 @@
+#' Get segments user has access to
+#'
+#' @return Segment list
+#' @importFrom googleAuthR gar_api_generator
+#' @family managementAPI functions
+#' @export
+ga_segment_list <- function(){
+  
+  url <- "https://www.googleapis.com/analytics/v3/management/segments"
+  segs <- gar_api_generator(url,
+                            "GET",
+                            data_parse_function = function(x) x)
+  
+  segs()
+  
+}
+
 #' Make a segment object for use
 #'
 #' A Segment is a subset of the Analytics data. 
@@ -37,7 +54,7 @@
 #' ## make a segment element
 #' se <- segment_element("sessions", 
 #'                       operator = "GREATER_THAN", 
-#'                       type = "metric", 
+#'                       type = ""metric"", 
 #'                       comparisonValue = 1, 
 #'                       scope = "USER")
 #'                       
@@ -297,7 +314,7 @@ segment_element <- function(name,
                                          "GREATER_THAN",
                                          "EQUAL",
                                          "BETWEEN"),
-                            type = c("metric", "dimension"),
+                            type = c("METRIC", "DIMENSION"),
                             not = FALSE,
                             expressions=NULL,
                             caseSensitive=NULL,
@@ -321,7 +338,7 @@ segment_element <- function(name,
   
   name <- sapply(name, checkPrefix, prefix = "ga")
   
-  if(type == "metric"){
+  if(type == "METRIC"){
     
     if(!operator %in% c("LESS_THAN","GREATER_THAN","EQUAL","BETWEEN")){
       stop('You have the wrong operator, 

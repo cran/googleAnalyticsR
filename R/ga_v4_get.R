@@ -7,7 +7,7 @@
 #' @param viewId viewId of data to get.
 #' @param date_range character or date vector of format \code{c(start, end)} or 
 #'   for two date ranges: \code{c(start1,end1,start2,end2)}
-#' @param metrics Metric to fetch. Required. Supports calculated metrics.
+#' @param metrics Metric to fetch. Supports calculated metrics.
 #' @param dimensions Dimensions to fetch.
 #' @param dim_filters A \link{filter_clause_ga4} wrapping \link{dim_filter}
 #' @param met_filters A \link{filter_clause_ga4} wrapping \link{met_filter}
@@ -117,7 +117,6 @@ make_ga_4_req <- function(viewId,
                           metricFormat=NULL,
                           histogramBuckets=NULL) {
 
-  # message("Fetching: ", viewId, " pageToken: ", pageToken, " pageSize: ", pageSize)
   samplingLevel <- match.arg(samplingLevel)
   
   if(all(is.null(date_range), is.null(cohorts))){
@@ -194,10 +193,25 @@ make_ga_4_req <- function(viewId,
 #' A convenience function that wraps \link{make_ga_4_req} and \link{fetch_google_analytics_4}
 #'  for the common case of one GA data request.
 #'  
-#' Will perform batching if over the 10000 row per API call limit.
+#' Will perform automatic batching if over the 10000 row per API call limit.
+#' 
+#' @section Anti-sampling:
+#' 
+#' \code{anti_sample} being TRUE ignores \code{max} as the API call is split over days 
+#'   to mitigate the sampling session limit, in which case a row limit won't work.  Take the top rows
+#'   of the result yourself instead e.g. \code{head(ga_data_unsampled, 50300)}
+#' 
+#' If you are lucky enough to need sub-day sampling, it will attempt to fetch per hour, but you are
+#'   restricted to not using \code{dim_filter} argument if this is the case.  
+#'   Try using \code{filtersExpression} instead.
+#'   
+#' \code{anti_sample} being TRUE will also set \code{samplingLevel='LARGE'} to minimise 
+#'   the number of calls.
 #' 
 #' @inheritParams make_ga_4_req
-#' @param max Maximum number of rows to fetch. Defaults at 1000.
+#' @param max Maximum number of rows to fetch. Defaults at 1000. Use -1 to fetch all results.
+#' @param anti_sample If TRUE will split up the call to avoid sampling.
+#' @param anti_sample_batches "auto" default, or set to number of days per batch. 1 = daily.
 #' 
 #' @return A Google Analytics data.frame
 #' 
@@ -240,124 +254,130 @@ google_analytics_4 <- function(viewId,
                                max=1000,
                                samplingLevel=c("DEFAULT", "SMALL","LARGE"),
                                metricFormat=NULL,
-                               histogramBuckets=NULL){
+                               histogramBuckets=NULL,
+                               anti_sample = FALSE,
+                               anti_sample_batches = "auto"){
 
-  max <- as.integer(max)
-  ## for same Id and daterange, v4 batches can be made
-  if(max > 10000){
-    ## how many v4 batch requests can be made at one time
-    batchLimit <- 5
-    meta_batch_start_index <- seq(from=0, to=max, by=10000*batchLimit)
-    batches <- length(meta_batch_start_index)
-    
-    message("V4 Batching data into [", batches, "] calls.")
-
-    # message(paste(meta_batch_start_index, collapse = " "))
-    ## loop for each over 50000
-    
-    do_it <- TRUE
-    requests <- lapply(meta_batch_start_index, function(meta){
-      
-      ## to fix (#19) - silly bug were index of 10000 turned into 1e5 passed in as 1(!)
-      meta <- as.integer(meta)
-      
-      # message("Outer batch loop: ", meta)
-      batch_start_index <- seq(from=meta, to=min(meta+((batchLimit-1)*10000),max), 10000)
-
-      # message(paste(batch_start_index, collapse = " "))
-      
-      ## loop for each 10000 fetch
-      requests_in <- lapply(batch_start_index, function(x){
-        
-        if(do_it){
-          # message("Inner batch loop: ", x)
-          ## to fix (#19) - silly bug were index of 10000 turned into 1e5 passed in as 1(!)
-          x <- as.integer(x)
-          out <- make_ga_4_req(viewId=viewId,
-                               date_range=date_range,
-                               metrics=metrics,
-                               dimensions=dimensions,
-                               dim_filters=dim_filters,
-                               met_filters=met_filters,
-                               filtersExpression = filtersExpression,
-                               order=order,
-                               segments=segments,
-                               pivots=pivots,
-                               cohorts=cohorts,
-                               pageToken = x,
-                               pageSize = 10000,
-                               samplingLevel=samplingLevel,
-                               metricFormat=metricFormat,
-                               histogramBuckets=histogramBuckets)
-          
-        } else {
-          out <- NULL
-        }
-
-        out
-        
-      })
-      
-      if(all(vapply(requests_in, is.null, logical(1)))){
-        inner_reqs <- NULL
-      } else {
-        ## a list of gav4 results
-        inner_reqs <- fetch_google_analytics_4(requests_in)
-      }
-
-      ## is all empty stop
-      if(all(vapply(inner_reqs, is.null, logical(1)))){
-        do_it <<- FALSE
-        out <- NULL
-      } else if(inherits(inner_reqs, "list")){
-        ## make it one dataframe
-        out <- Reduce(rbind, inner_reqs)
-      } else if(inherits(inner_reqs, "data.frame")){
-        out <- inner_reqs
-      } else if(is.null(inner_reqs)){
-        out <- NULL
-      } else {
-        stop("Output class not recognised: ", class(inner_reqs))
-      }
-      
-      out
-      
-    })
-
-    ## a list of dataframes, to one
-    out <- Reduce(rbind, requests)
-    
-  } else {
-    ## normal under 10000
-    req <- make_ga_4_req(viewId=viewId,
-                         date_range=date_range,
-                         metrics=metrics,
-                         dimensions=dimensions,
-                         dim_filters=dim_filters,
-                         met_filters=met_filters,
-                         filtersExpression = filtersExpression,
-                         order=order,
-                         segments=segments,
-                         pivots=pivots,
-                         cohorts=cohorts,
-                         pageToken = 0,
-                         pageSize = max,
-                         samplingLevel=samplingLevel,
-                         metricFormat=metricFormat,
-                         histogramBuckets=histogramBuckets)
-    out <- fetch_google_analytics_4(req)
+  
+  max         <- as.integer(max)
+  allResults  <- FALSE
+  if(max < 0){
+    ## size of 1 v4 batch 0 indexed
+    max <- as.integer(49999)
+    allResults <- TRUE
+  }
+  reqRowLimit <- as.integer(10000)
+  
+  if(anti_sample){
+    myMessage("anti_sample set to TRUE. Mitigating sampling via multiple API calls.", level = 3)
+    return(anti_sample(viewId            = viewId,
+                       date_range        = date_range,
+                       metrics           = metrics,
+                       dimensions        = dimensions,
+                       dim_filters       = dim_filters,
+                       met_filters       = met_filters,
+                       filtersExpression = filtersExpression,
+                       order             = order,
+                       segments          = segments,
+                       pivots            = pivots,
+                       cohorts           = cohorts,
+                       metricFormat      = metricFormat,
+                       histogramBuckets  = histogramBuckets,
+                       anti_sample_batches = anti_sample_batches))
   }
   
-  out
+  if(max > reqRowLimit){
+    myMessage("Multi-call to API", level = 2)
+  }
+  
+  meta_batch_start_index <- seq(from=0, to=max, by=reqRowLimit)
+  
+  ## make a list of the requests
+  requests <- lapply(meta_batch_start_index, function(start_index){
+    
+    start_index <- as.integer(start_index)
+    if(allResults){
+      remaining <- as.integer(10000)
+    } else {
+      remaining   <- min(as.integer(max - start_index), reqRowLimit)
+    }
 
+    make_ga_4_req(viewId            = viewId,
+                  date_range        = date_range,
+                  metrics           = metrics,
+                  dimensions        = dimensions,
+                  dim_filters       = dim_filters,
+                  met_filters       = met_filters,
+                  filtersExpression = filtersExpression,
+                  order             = order,
+                  segments          = segments,
+                  pivots            = pivots,
+                  cohorts           = cohorts,
+                  pageToken         = start_index,
+                  pageSize          = remaining,
+                  samplingLevel     = samplingLevel,
+                  metricFormat      = metricFormat,
+                  histogramBuckets  = histogramBuckets)
+    
+    })
+
+  out <- fetch_google_analytics_4(requests, merge = TRUE)
+  
+  if(allResults){
+    all_rows <- as.integer(attr(out, "rowCount"))
+    if(nrow(out) < all_rows){
+      ## create the remaining requests
+      meta_batch_start_index2 <- seq(from=50000, to=all_rows, by=reqRowLimit)
+      ## make a list of the requests
+      requests2 <- lapply(meta_batch_start_index2, function(start_index){
+        
+        start_index <- as.integer(start_index)
+        remaining <- as.integer(10000)
+        
+        make_ga_4_req(viewId            = viewId,
+                      date_range        = date_range,
+                      metrics           = metrics,
+                      dimensions        = dimensions,
+                      dim_filters       = dim_filters,
+                      met_filters       = met_filters,
+                      filtersExpression = filtersExpression,
+                      order             = order,
+                      segments          = segments,
+                      pivots            = pivots,
+                      cohorts           = cohorts,
+                      pageToken         = start_index,
+                      pageSize          = remaining,
+                      samplingLevel     = samplingLevel,
+                      metricFormat      = metricFormat,
+                      histogramBuckets  = histogramBuckets)
+        
+      })
+      the_rest <- fetch_google_analytics_4(requests2, merge = TRUE)
+      out <- rbind(out, the_rest)
+      myMessage("All data downloaded, total of [",all_rows,"]", level = 3)
+      
+    } else {
+      myMessage("One batch enough to get all results", level = 1)
+    }
+    
+  }
+  
+  sampling_message(attr(out, "samplesReadCounts"), 
+                   attr(out, "samplingSpaceSizes"), 
+                   hasDateComparison = any(grepl("\\.d1|\\.d2", names(out))))
+  
+  out
 
 }
 
 #' Fetch multiple GAv4 requests
 #' 
 #' Fetch the GAv4 requests as created by \link{make_ga_4_req}
+#' 
+#' For same viewId, daterange, segments, samplingLevel and cohortGroup, v4 batches can be made
 #'
 #' @param request_list A list of requests created by \link{make_ga_4_req}
+#' @param merge If TRUE then will rbind that list of data.frames
 #'
 #' @return A dataframe if one request, or a list of data.frames if multiple.
 #'
@@ -395,29 +415,122 @@ google_analytics_4 <- function(viewId,
 #' 
 #' @family GAv4 fetch functions
 #' @export
-fetch_google_analytics_4 <- function(request_list){
+fetch_google_analytics_4 <- function(request_list, merge = FALSE){
 
-  request_list <- unitToList(request_list)
-  
   testthat::expect_type(request_list, "list")
-
-  body <- list(
-    reportRequests = request_list
-  )
-
+  ## amount of batches per v4 api call
+  ga_batch_limit <- 5
+  ## amount of batches at once
+  gar_batch_size <- 10
+  
+  if(length(unique((lapply(request_list, function(x) x$viewId)))) != 1){
+    stop("request_list must all have the same viewId")
+  }
+  
+  if(length(unique((lapply(request_list, function(x) x$dateRanges)))) != 1){
+    stop("request_list must all have the same dateRanges")
+  }
+  
+  if(length(unique((lapply(request_list, function(x) x$segments)))) != 1){
+    stop("request_list must all have the same segments")
+  }
+  
+  if(length(unique((lapply(request_list, function(x) x$samplingLevel)))) != 1){
+    stop("request_list must all have the same samplingLevel")
+  }
+  
+  if(length(unique((lapply(request_list, function(x) x$cohortGroup)))) != 1){
+    stop("request_list must all have the same cohortGroup")
+  }
+  
+  myMessage("Calling APIv4....", level = 2)
+  ## make the function
   f <- gar_api_generator("https://analyticsreporting.googleapis.com/v4/reports:batchGet",
                          "POST",
                          data_parse_function = google_analytics_4_parse_batch,
                          # data_parse_function = function(x) x,
                          simplifyVector = FALSE)
+  
+  ## if under 5, one call
+  if(!is.null(request_list$viewId) || length(request_list) <= ga_batch_limit){
+    myMessage("Single v4 batch", level = 2)
+    request_list <- unitToList(request_list)
+    
+    body <- list(
+      reportRequests = request_list
+    )
 
-  message("Fetching Google Analytics v4 API data")
+    out <- f(the_body = body)
+    
+  } else {
 
-  out <- f(the_body = body)
+    myMessage("Multiple v4 batch", level = 2)
+    ## get list of lists of ga_batch_limit
+    request_list_index <- seq(1, length(request_list), ga_batch_limit)
+    batch_list <- lapply(request_list_index, 
+                         function(x) request_list[x:(x+(ga_batch_limit-1))])
+    
+    ## make the body for each v4 api call
+    body_list <- lapply(batch_list, function(x) list(reportRequests = x))
+    body_list <- rmNullObs(body_list)
+    
+    ## Only if supported in Google batching
+    GOOGLE_BATCHING <- FALSE
+    if(GOOGLE_BATCHING){
+      ## make the list of 10 for each gar_batch call
+      batch_list_index <- seq(1, length(body_list), gar_batch_size)
+      batch_body_list <- lapply(batch_list_index,
+                                function(x) body_list[x:(x+(gar_batch_size-1))])
+      batch_body_list <- rmNullObs(batch_body_list)
+
+      ## make the call list
+      call_list <- lapply(batch_body_list, function(bl){
+        lapply(bl, function(rr){
+          f(the_body = rr, batch = TRUE)
+        })
+      })
+
+      ## make the batch calls
+      response_list <- lapply(call_list, googleAuthR::gar_batch)
+      
+    } else {
+      
+      ## loop over the requests normally
+      myMessage("Looping over maximum [", length(body_list), "] batches.", level = 1)
+      response_list <- lapply(body_list, function(b){
+        
+        myMessage("Fetching data batch...", level = 1)
+
+        f(the_body = b)
+        
+      })
+
+      out <- unlist(response_list, recursive = FALSE)
+    }
+    
+  }
+  
+
   
   ## if only one entry in the list, return the dataframe
-  if(length(out) == 1) out <- out[[1]]
+  if(length(out) == 1){
+    out <- out[[1]]
+  } else {
+    ## returned a list of data.frames
+    if(merge){
+
+      df_names <- rmNullObs(lapply(out, function(x) names(x)))
+      if(length(unique(df_names)) != 1){
+        stop("List of dataframes have non-identical column names. Got ", 
+             paste(lapply(out, function(x) names(x)), collapse = " "))
+      }
+      
+      out <- Reduce(rbind, out)
+      
+    }
+  }
+
+  message("Downloaded [",NROW(out),"] rows from a total of [",attr(out, "rowCount"), "].")
 
   out
 }
-
