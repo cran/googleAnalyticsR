@@ -2,23 +2,24 @@
 % Please edit documentation in R/accounts.R
 \name{google_analytics_account_list}
 \alias{google_analytics_account_list}
-\title{Get account summary list data including web property and View Id}
+\alias{ga_account_list}
+\title{Get account summary including the ViewId}
 \usage{
 google_analytics_account_list()
+
+ga_account_list()
 }
 \value{
 a dataframe of all account, webproperty and view data
 }
 \description{
-Get account summary list data including web property and View Id
+Get account summary including the ViewId
 }
 \seealso{
 https://developers.google.com/analytics/devguides/config/mgmt/v3/mgmtReference/management/accountSummaries/list
 
 Other managementAPI functions: \code{\link{ga_accounts}},
   \code{\link{ga_adwords_list}}, \code{\link{ga_adwords}},
-  \code{\link{ga_custom_datasource}},
-  \code{\link{ga_custom_upload_list}},
   \code{\link{ga_custom_vars_list}},
   \code{\link{ga_custom_vars}},
   \code{\link{ga_experiment_list}},
@@ -27,10 +28,13 @@ Other managementAPI functions: \code{\link{ga_accounts}},
   \code{\link{ga_filter_view_list}},
   \code{\link{ga_filter_view}}, \code{\link{ga_filter}},
   \code{\link{ga_goal_list}}, \code{\link{ga_goal}},
+  \code{\link{ga_remarketing_estimate}},
+  \code{\link{ga_remarketing_get}},
+  \code{\link{ga_remarketing_list}},
   \code{\link{ga_segment_list}},
   \code{\link{ga_unsampled_list}},
-  \code{\link{ga_unsampled}}, \code{\link{ga_view_list}},
-  \code{\link{ga_view}}, \code{\link{ga_webproperty_list}},
+  \code{\link{ga_unsampled}}, \code{\link{ga_users_list}},
+  \code{\link{ga_view_list}}, \code{\link{ga_view}},
+  \code{\link{ga_webproperty_list}},
   \code{\link{ga_webproperty}}
 }
-

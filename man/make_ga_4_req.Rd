@@ -2,7 +2,7 @@
 % Please edit documentation in R/ga_v4_get.R
 \name{make_ga_4_req}
 \alias{make_ga_4_req}
-\title{Google Analytics v4 API fetch}
+\title{Make a Google Analytics v4 API fetch}
 \usage{
 make_ga_4_req(viewId, date_range = NULL, metrics = NULL,
   dimensions = NULL, dim_filters = NULL, met_filters = NULL,
@@ -97,6 +97,7 @@ This function constructs the Google Analytics API v4 call to be called
   \item bucket #6: values >= 7, dimension value "7+"
  }
 }
+
 \examples{
 
 \dontrun{
@@ -130,7 +131,7 @@ fetch_google_analytics_4(list(ga_req1, ga_req2))
 
 }
 \seealso{
-Other GAv4 fetch functions: \code{\link{fetch_google_analytics_4}},
+Other GAv4 fetch functions: \code{\link{fetch_google_analytics_4_slow}},
+  \code{\link{fetch_google_analytics_4}},
   \code{\link{google_analytics_4}}
 }
-

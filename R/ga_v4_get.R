@@ -1,4 +1,4 @@
-#' Google Analytics v4 API fetch
+#' Make a Google Analytics v4 API fetch
 #' 
 #' @description
 #'   This function constructs the Google Analytics API v4 call to be called
@@ -127,12 +127,19 @@ make_ga_4_req <- function(viewId,
     testthat::expect_true(cohort_metric_check(metrics))
     testthat::expect_true(cohort_dimension_check(dimensions))
     if(!is.null(date_range)){
-      stop("Don't supply date_range when using cohorts")
+      warning("Don't supply date_range when using cohorts, setting date_range to NULL")
+      date_range <- NULL
     }
   }
   
   if(is.null(metrics)){
     stop("Must supply a metric")
+  }
+  
+  if(!is.null(segments)){
+    if(!any("segment" %in% dimensions)){
+      dimensions <- c(dimensions, "segment")
+    }
   }
 
   id <- sapply(viewId, checkPrefix, prefix = "ga")
@@ -188,7 +195,7 @@ make_ga_4_req <- function(viewId,
 
 
 
-#' GAv4 single request
+#' Get Google Analytics v4 data (single request)
 #'
 #' A convenience function that wraps \link{make_ga_4_req} and \link{fetch_google_analytics_4}
 #'  for the common case of one GA data request.
@@ -212,6 +219,7 @@ make_ga_4_req <- function(viewId,
 #' @param max Maximum number of rows to fetch. Defaults at 1000. Use -1 to fetch all results.
 #' @param anti_sample If TRUE will split up the call to avoid sampling.
 #' @param anti_sample_batches "auto" default, or set to number of days per batch. 1 = daily.
+#' @param slow_fetch For large results this slows down the API requests to avoid 500 errors
 #' 
 #' @return A Google Analytics data.frame
 #' 
@@ -220,21 +228,25 @@ make_ga_4_req <- function(viewId,
 #' \dontrun{
 #' library(googleAnalyticsR)
 #' 
-#' ## authenticate, 
-#' ## or use the RStudio Addin "Google API Auth" with analytics scopes set
+#' ## authenticate, or use the RStudio Addin "Google API Auth" with analytics scopes set
+#' 
 #' ga_auth()
 #' 
 #' ## get your accounts
+#' 
 #' account_list <- google_analytics_account_list()
 #' 
-#' ## pick a profile with data to query
+#' ## account_list will have a column called "viewId"
+#' account_list$viewId
 #' 
-#' ga_id <- account_list[23,'viewId']
+#' ## View account_list and pick the viewId you want to extract data from
+#' ga_id <- 123456
 #' 
-#' ga_data <- google_analytics_4(ga_id, 
-#'                               date_range = c("2015-07-30","2015-10-01"),
-#'                               dimensions=c('source','medium'), 
-#'                               metrics = c('sessions','bounces'))
+#' ## simple query to test connection
+#' google_analytics_4(ga_id, 
+#'                    date_range = c("2017-01-01", "2017-03-01"), 
+#'                    metrics = "sessions", 
+#'                    dimensions = "date")
 #' 
 #' }
 #' 
@@ -256,7 +268,8 @@ google_analytics_4 <- function(viewId,
                                metricFormat=NULL,
                                histogramBuckets=NULL,
                                anti_sample = FALSE,
-                               anti_sample_batches = "auto"){
+                               anti_sample_batches = "auto",
+                               slow_fetch = FALSE){
 
   
   max         <- as.integer(max)
@@ -267,6 +280,10 @@ google_analytics_4 <- function(viewId,
     allResults <- TRUE
   }
   reqRowLimit <- as.integer(10000)
+  
+  if(!is.null(cohorts)){
+    anti_sample <- FALSE
+  }
   
   if(anti_sample){
     myMessage("anti_sample set to TRUE. Mitigating sampling via multiple API calls.", level = 3)
@@ -283,7 +300,8 @@ google_analytics_4 <- function(viewId,
                        cohorts           = cohorts,
                        metricFormat      = metricFormat,
                        histogramBuckets  = histogramBuckets,
-                       anti_sample_batches = anti_sample_batches))
+                       anti_sample_batches = anti_sample_batches,
+                       slow_fetch = slow_fetch))
   }
   
   if(max > reqRowLimit){
@@ -296,6 +314,7 @@ google_analytics_4 <- function(viewId,
   requests <- lapply(meta_batch_start_index, function(start_index){
     
     start_index <- as.integer(start_index)
+    
     if(allResults){
       remaining <- as.integer(10000)
     } else {
@@ -320,9 +339,17 @@ google_analytics_4 <- function(viewId,
                   histogramBuckets  = histogramBuckets)
     
     })
-
-  out <- fetch_google_analytics_4(requests, merge = TRUE)
   
+  ## if non-batching, fetch one at a time
+  if(slow_fetch){
+    out <- fetch_google_analytics_4_slow(requests, max_rows = max, allRows = allResults)
+    allResults <- FALSE
+  } else {
+    ## only gets up to 50000 first time as we don't know true total row count yet
+    out <- fetch_google_analytics_4(requests, merge = TRUE)
+  }
+
+  ## if batching, get the rest of the results now we now precise rowCount
   if(allResults){
     all_rows <- as.integer(attr(out, "rowCount"))
     if(nrow(out) < all_rows){
@@ -367,6 +394,66 @@ google_analytics_4 <- function(viewId,
                    hasDateComparison = any(grepl("\\.d1|\\.d2", names(out))))
   
   out
+
+}
+
+#' Fetch GAv4 requests one at a time
+#' 
+#' Due to large compilcated queries causing the v4 API to timeout, 
+#'   this option is added to fetch via the more traditional one report per request
+#' 
+#' @param request_list A list of requests created by \link{make_ga_4_req}
+#' @param max_rows Number of rows requested (if not fetched)
+#' @param allRows Whether to fetch all available rows
+#' 
+#' @return A dataframe of all the requests
+#' @importFrom googleAuthR gar_api_generator
+#' @family GAv4 fetch functions
+fetch_google_analytics_4_slow <- function(request_list, max_rows, allRows = FALSE){
+  
+  ## make the fetch function
+  myMessage("Calling APIv4 slowly....", level = 2)
+  ## make the function
+  f <- gar_api_generator("https://analyticsreporting.googleapis.com/v4/reports:batchGet",
+                         "POST",
+                         data_parse_function = google_analytics_4_parse_batch,
+                         # data_parse_function = function(x) x,
+                         simplifyVector = FALSE)
+  
+  
+  do_it <- TRUE
+  
+  ## just need the first one, which we modify
+  the_req <- request_list[[1]]
+  ## best guess at the moment
+  actualRows <- max_rows
+  
+  response_list <- list()
+  
+  while(do_it){
+    
+    body <- list(
+      reportRequests = the_req
+    )
+    
+    myMessage("Slow fetch: [", 
+              the_req$pageToken, "] from estimated actual Rows [", actualRows, "]", 
+              level = 3)
+    out <- f(the_body = body)
+    
+    actualRows <- attr(out[[1]], "rowCount")
+    npt <- attr(out[[1]], "nextPageToken")
+    
+    if(is.null(npt)){
+      do_it <- FALSE
+    }
+    
+    the_req$pageToken <- npt
+    response_list <- c(response_list, out)
+
+  }
+
+  Reduce(rbind, response_list)
 
 }
 
@@ -499,7 +586,7 @@ fetch_google_analytics_4 <- function(request_list, merge = FALSE){
       myMessage("Looping over maximum [", length(body_list), "] batches.", level = 1)
       response_list <- lapply(body_list, function(b){
         
-        myMessage("Fetching data batch...", level = 1)
+        myMessage("Fetching data batch...", level = 3)
 
         f(the_body = b)
         
@@ -519,18 +606,25 @@ fetch_google_analytics_4 <- function(request_list, merge = FALSE){
     ## returned a list of data.frames
     if(merge){
 
-      df_names <- rmNullObs(lapply(out, function(x) names(x)))
-      if(length(unique(df_names)) != 1){
-        stop("List of dataframes have non-identical column names. Got ", 
-             paste(lapply(out, function(x) names(x)), collapse = " "))
+      ## if an empty list, return NULL
+      if(all(vapply(out, is.null, logical(1)))){
+        out <- NULL
+      } else {
+        ## check all dataframes have same columns
+        df_names <- rmNullObs(lapply(out, function(x) names(x)))
+        if(length(unique(df_names)) != 1){
+          stop("List of dataframes have non-identical column names. Got ", 
+               paste(lapply(out, function(x) names(x)), collapse = " "))
+        }
+        
+        out <- Reduce(rbind, out)
       }
-      
-      out <- Reduce(rbind, out)
+
       
     }
   }
 
-  message("Downloaded [",NROW(out),"] rows from a total of [",attr(out, "rowCount"), "].")
+  myMessage("Downloaded [",NROW(out),"] rows from a total of [",attr(out, "rowCount"), "].", level = 3)
 
   out
 }

@@ -25,8 +25,6 @@ Get Custom Dimensions or Metrics
 \seealso{
 Other managementAPI functions: \code{\link{ga_accounts}},
   \code{\link{ga_adwords_list}}, \code{\link{ga_adwords}},
-  \code{\link{ga_custom_datasource}},
-  \code{\link{ga_custom_upload_list}},
   \code{\link{ga_custom_vars_list}},
   \code{\link{ga_experiment_list}},
   \code{\link{ga_experiment}},
@@ -34,11 +32,14 @@ Other managementAPI functions: \code{\link{ga_accounts}},
   \code{\link{ga_filter_view_list}},
   \code{\link{ga_filter_view}}, \code{\link{ga_filter}},
   \code{\link{ga_goal_list}}, \code{\link{ga_goal}},
+  \code{\link{ga_remarketing_estimate}},
+  \code{\link{ga_remarketing_get}},
+  \code{\link{ga_remarketing_list}},
   \code{\link{ga_segment_list}},
   \code{\link{ga_unsampled_list}},
-  \code{\link{ga_unsampled}}, \code{\link{ga_view_list}},
-  \code{\link{ga_view}}, \code{\link{ga_webproperty_list}},
+  \code{\link{ga_unsampled}}, \code{\link{ga_users_list}},
+  \code{\link{ga_view_list}}, \code{\link{ga_view}},
+  \code{\link{ga_webproperty_list}},
   \code{\link{ga_webproperty}},
   \code{\link{google_analytics_account_list}}
 }
-

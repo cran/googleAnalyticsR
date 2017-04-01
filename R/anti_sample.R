@@ -3,6 +3,7 @@
 #' Calculates multiple API calls to avoid sampling
 #' 
 #' @inheritParams make_ga_4_req
+#' @inheritParams google_analytics_4
 #' @keywords internal
 anti_sample <- function(anti_sample_batches,
                         viewId,
@@ -17,9 +18,16 @@ anti_sample <- function(anti_sample_batches,
                         pivots,
                         cohorts,
                         metricFormat,
-                        histogramBuckets){
+                        histogramBuckets,
+                        slow_fetch){
   
   if(length(date_range) > 2) stop("Anti-sampling not available for comparison date ranges.")
+  
+  ## stop bug where batch sizes break
+  if(!is.null(date_range)){
+    date_range <- as.Date(date_range)
+  }
+
   
   myMessage("Finding how much sampling in data request...", level = 3)
   test_call <- google_analytics_4(viewId            = viewId,
@@ -36,7 +44,8 @@ anti_sample <- function(anti_sample_batches,
                                   max               = 10,
                                   metricFormat      = metricFormat,
                                   samplingLevel     = "LARGE",
-                                  histogramBuckets  = histogramBuckets)
+                                  histogramBuckets  = histogramBuckets,
+                                  slow_fetch        = FALSE)
   
 
   ## reduce read counts by 10% to get more calls as returned figure is flakey
@@ -48,7 +57,7 @@ anti_sample <- function(anti_sample_batches,
   rowCount <- round(as.integer(attr(test_call, "rowCount")[[1]]) * 1.2)
   
   if(identical(samplingPer, numeric(0))){
-    message("No sampling found, returning call")
+    myMessage("No sampling found, returning call", level = 3)
     unsampled <- google_analytics_4(viewId            = viewId,
                                     date_range        = date_range,
                                     metrics           = metrics,
@@ -63,7 +72,9 @@ anti_sample <- function(anti_sample_batches,
                                     max               = -1,
                                     metricFormat      = metricFormat,
                                     samplingLevel     = "LARGE",
-                                    histogramBuckets  = histogramBuckets)
+                                    histogramBuckets  = histogramBuckets,
+                                    anti_sample       = FALSE,
+                                    slow_fetch        = slow_fetch)
     return(unsampled)
   }
   
@@ -73,7 +84,8 @@ anti_sample <- function(anti_sample_batches,
     explore_sessions <- google_analytics_4(viewId = viewId,
                                            date_range = date_range,
                                            metrics = "sessions",
-                                           dimensions = "date")
+                                           dimensions = "date",
+                                           max = -1) ## download all days! #66
     explore_sessions$cumulative <- cumsum(explore_sessions$sessions)
     explore_sessions$sample_bucket <- as.factor((explore_sessions$cumulative %/% read_counts) + 1)
     
@@ -117,7 +129,8 @@ anti_sample <- function(anti_sample_batches,
                                 max               = rowCount,
                                 metricFormat      = metricFormat,
                                 samplingLevel     = "LARGE",
-                                histogramBuckets  = histogramBuckets)
+                                histogramBuckets  = histogramBuckets,
+                                slow_fetch        = slow_fetch)
       
     } else {
       ## if any new_date_ranges range_date is 1 then possibily will still sample.
@@ -136,7 +149,8 @@ anti_sample <- function(anti_sample_batches,
                                 max               = attr(test_call, "rowCount"),
                                 metricFormat      = metricFormat,
                                 histogramBuckets  = histogramBuckets,
-                                read_counts = read_counts)
+                                read_counts       = read_counts,
+                                slow_fetch        = slow_fetch)
     }
     
     read_counts2 <- as.integer(attr(out,"samplesReadCounts")[[1]])
@@ -153,12 +167,16 @@ anti_sample <- function(anti_sample_batches,
   
   out <- Reduce(rbind, unsampled_list)
   
+  ## get rid of duplicate rows per sample call
+  out <- aggregateGAData(out, agg_names = gsub("ga:","",dimensions))
+  
   ## fill these in later
   attr(out, "totals") <- NULL
   attr(out, "minimums") <- NULL
   attr(out, "maximums") <- NULL
   attr(out, "rowCount") <- as.character(nrow(out))
   attr(out, "nextPageToken") <- NULL
+  attr(out, "antiSampleWorked") <- did_it_work
   myMessage("Finished unsampled data request, total rows [", nrow(out),"]", level = 3)
   if(did_it_work) myMessage("Successfully avoided sampling", level = 3)
   out
@@ -180,7 +198,8 @@ hourly_anti_sample <- function(viewId,
                                cohorts,
                                metricFormat,
                                histogramBuckets,
-                               read_counts){
+                               read_counts,
+                               slow_fetch){
   
   ## get session distribution per hour
   ## sampling
@@ -239,7 +258,8 @@ hourly_anti_sample <- function(viewId,
                               max               = max,
                               metricFormat      = metricFormat,
                               samplingLevel     = "LARGE",
-                              histogramBuckets  = histogramBuckets)
+                              histogramBuckets  = histogramBuckets,
+                              slow_fetch = slow_fetch)
 
     read_counts3 <- as.integer(attr(out,"samplesReadCounts")[[1]])
     space_size3  <- as.integer(attr(out, "samplingSpaceSizes")[[1]])

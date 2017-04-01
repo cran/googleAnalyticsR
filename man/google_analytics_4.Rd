@@ -2,7 +2,7 @@
 % Please edit documentation in R/ga_v4_get.R
 \name{google_analytics_4}
 \alias{google_analytics_4}
-\title{GAv4 single request}
+\title{Get Google Analytics v4 data (single request)}
 \usage{
 google_analytics_4(viewId, date_range = NULL, metrics = NULL,
   dimensions = NULL, dim_filters = NULL, met_filters = NULL,
@@ -10,7 +10,7 @@ google_analytics_4(viewId, date_range = NULL, metrics = NULL,
   pivots = NULL, cohorts = NULL, max = 1000,
   samplingLevel = c("DEFAULT", "SMALL", "LARGE"), metricFormat = NULL,
   histogramBuckets = NULL, anti_sample = FALSE,
-  anti_sample_batches = "auto")
+  anti_sample_batches = "auto", slow_fetch = FALSE)
 }
 \arguments{
 \item{viewId}{viewId of data to get.}
@@ -48,6 +48,8 @@ See details in \link{make_ga_4_req}}
 \item{anti_sample}{If TRUE will split up the call to avoid sampling.}
 
 \item{anti_sample_batches}{"auto" default, or set to number of days per batch. 1 = daily.}
+
+\item{slow_fetch}{For large results this slows down the API requests to avoid 500 errors}
 }
 \value{
 A Google Analytics data.frame
@@ -72,32 +74,37 @@ If you are lucky enough to need sub-day sampling, it will attempt to fetch per h
 \code{anti_sample} being TRUE will also set \code{samplingLevel='LARGE'} to minimise 
   the number of calls.
 }
+
 \examples{
 
 \dontrun{
 library(googleAnalyticsR)
 
-## authenticate, 
-## or use the RStudio Addin "Google API Auth" with analytics scopes set
+## authenticate, or use the RStudio Addin "Google API Auth" with analytics scopes set
+
 ga_auth()
 
 ## get your accounts
+
 account_list <- google_analytics_account_list()
 
-## pick a profile with data to query
+## account_list will have a column called "viewId"
+account_list$viewId
 
-ga_id <- account_list[23,'viewId']
+## View account_list and pick the viewId you want to extract data from
+ga_id <- 123456
 
-ga_data <- google_analytics_4(ga_id, 
-                              date_range = c("2015-07-30","2015-10-01"),
-                              dimensions=c('source','medium'), 
-                              metrics = c('sessions','bounces'))
+## simple query to test connection
+google_analytics_4(ga_id, 
+                   date_range = c("2017-01-01", "2017-03-01"), 
+                   metrics = "sessions", 
+                   dimensions = "date")
 
 }
 
 }
 \seealso{
-Other GAv4 fetch functions: \code{\link{fetch_google_analytics_4}},
+Other GAv4 fetch functions: \code{\link{fetch_google_analytics_4_slow}},
+  \code{\link{fetch_google_analytics_4}},
   \code{\link{make_ga_4_req}}
 }
-

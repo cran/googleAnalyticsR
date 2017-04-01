@@ -1,8 +1,43 @@
-# 0.3.0 CRAN
+# googleAnalyticsR 0.4.0
+
+## Added
+
+* Deprecate `google_analytics_account_list` for `ga_account_list` to be in line with other functions
+* Add custom data uploads via `ga_custom_upload_file()`
+* Cleaned up documentation a bit
+* Added auto-authentication if you specify environment var `GA_AUTH_FILE`
+* Add Remarketing Audience functions - `ga_remarketing_get` and `ga_remarketing_list`
+* Add `aggregateGAData` which will aggregate over GA dimensions
+
+* Add `antiSampleWorked` TRUE/FALSE attribute to tables when anti-sampling attempted
+* Add a `slow_fetch` flag to `google_analytics_4` that will avoid batching for big complicated fetches
+* Add `ga_users_list` for listing users on account, webProperty or View level
+* Documentation updates
+* Set default Google Project API permissions to:
+    - `"https://www.googleapis.com/auth/analytics"`
+    - `"https://www.googleapis.com/auth/analytics.readonly"`
+    - `"https://www.googleapis.com/auth/analytics.manage.users.readonly"`
+    - `"https://www.googleapis.com/auth/analytics.edit"`
+    - `"https://www.googleapis.com/auth/analytics.manage.users"`
+
+## Fixed 
+
+* Use `aggregateGAData` to solve issue with anti_sampling repeating rows (#49)
+* Fix bug with anti-sample when periods included 0-row data (#42)
+* Fix `google_analytics_account_list()` parsing bug if only one view available (#52, #41)
+* Fix segments not being able to be used in Cohort reports (#63)
+* Fix bug with anti-sample when querying over 1000 days (#66 - thanks @olivia-icivics)
+
+# googleAnalyticsR  0.3.0
+
+## Added
 
 * Add BigQuery asynch fetch to Google Analytics 360 exports, for over 1,000,000 rows.
 * A GA v4 example Shiny app added that runs on `https://mark.shinyapps.io/googleAnalyticsRv4Demo/`
-* Fix bug for calculated metrics if expression not starting with `ga:` (#28)
+* New argument `anti_sample` for `google_analytics_4()` which will split up the calls into efficient batches to avoid sampling. Includes experimental sub-day hourly batching.
+* Set argument `max = -1` in `google_analytics_4()` to fetch all results. 
+* Add fix for `google_analytics_account_summary` parsing when no views in web properties.
+* New argument `anti_sample_batches` lets you choose batch sizes (daily is equal to `anti_sample_batches=1`)
 * Add several management API functions:
     - `ga_accounts`
     - `ga_adwords`
@@ -27,29 +62,41 @@
     - `ga_view_list`
     - `ga_webproperty`
     - `ga_webproperty_list`
+
+## Fixed
+
+* Fix bug for calculated metrics if expression not starting with `ga:` (#28)
 * Fix a parse bug if only metrics and no dimensions were used in `google_analytics_4()`
 * Refactoring v4 batching
-* New argument `anti_sample` for `google_analytics_4()` which will split up the calls into efficient batches to avoid sampling. Includes experimental sub-day hourly batching.
-* Set argument `max = -1` in `google_analytics_4()` to fetch all results. 
-* Add fix for `google_analytics_account_summary` parsing when no views in web properties.
-* New argument `anti_sample_batches` lets you choose batch sizes (daily is equal to `anti_sample_batches=1`)
 
-# 0.2.1 
+
+# googleAnalyticsR 0.2.1 
+
+## Fixed
 
 * Fix v4 bug where batches over 10000 had extra rows added (#19)
 
-# 0.2.0
+# googleAnalyticsR 0.2.0
+
+## Added
 
 * segment helper as RStudio Addin or `gadget_GASegment()`
-* Fix order_type() for v4 (#18)
 * Local tests added
 * Multi-account batching for v3 (#17)
 * Add BigQuery fetching for GoogleAnalytics 360 accounts via `google_analytics_bq()`
 
-# 0.1.1
+## Fixed
+
+* Fix order_type() for v4 (#18)
+
+# googleAnalyticsR  0.1.1
+
+## Fixed
 
 * Patch to fix ignoring first row of v4 API results (#16)
 
-# 0.1.0
+# googleAnalyticsR 0.1.0
+
+## Added
 
 * v4 API calls implemented
