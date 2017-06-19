@@ -100,7 +100,7 @@ google_analytics_4_parse <- function(x){
   attr(out, "samplingSpaceSizes") <- x$data$samplingSpaceSizes
   attr(out, "nextPageToken") <- x$nextPageToken
   
-  testthat::expect_s3_class(out, "data.frame")
+  assertthat::assert_that(is.data.frame(out))
   
   out
   
@@ -134,41 +134,28 @@ get_samplePercent <- function(sampleReadCounts, samplingSpaceSizes){
 #' New parse GA account summary
 #' 
 #' @param x The account summary items
-#' @import tidyjson
-#' @importFrom jsonlite toJSON
-#' @importFrom dplyr select filter
 #' @keywords internal
 parse_ga_account_summary <- function(x){
   
-  json_accounts <- jsonlite::toJSON(x$items)
-  class(json_accounts) <- c(class(json_accounts), "character")
-  tidy_json <- json_accounts %>% as.tbl_json()
+  ## hack to get rid of global variables warning
+  id <- name <- webProperties <- kind <- profiles <- NULL
+  x$items %>%
+    dplyr::mutate_if(is.list, purrr::simplify_all) %>%    # flatten each list element internally 
+    dplyr::transmute(accountId = id,
+                     accountName = name,
+                     ## fix bug if webProperties is NULL
+                     webProperties = purrr::map_if(webProperties, is.null, ~ data.frame())) %>% 
+    tidyr::unnest() %>% ##unnest webprops
+    dplyr::mutate(webPropertyId = id,
+                  webPropertyName = name,
+                  ## fix bug if profiles is NULL
+                  profiles = purrr::map_if(profiles, is.null, ~ data.frame())) %>% 
+    dplyr::select(-kind, -id, -name) %>% 
+    tidyr::unnest() %>% ## unnest profiles
+    dplyr::mutate(viewId = id,
+                  viewName = name) %>% 
+    dplyr::select(-kind, -id, -name)
   
-  tidy_json <- tidy_json %>% 
-    json_lengths() %>% filter(length != 0) %>% select(-length) %>%
-    gather_array() %>% 
-    spread_values(accountId = jstring("id"), 
-                  accountName = jstring("name")) %>%
-    enter_object("webProperties") %>%
-    json_lengths() %>% filter(length != 0) %>% select(-length) %>%
-    gather_array() %>%
-    spread_values(webPropertyId = jstring("id"), 
-                  webPropertyName = jstring("name"),
-                  internalWebPropertyId = jstring("internalWebPropertyId"),
-                  level = jstring("level"),
-                  websiteUrl = jstring("websiteUrl")) %>%
-    enter_object("profiles") %>%
-    json_lengths() %>% filter(length != 0) %>% select(-length) %>%
-    gather_array() %>%
-    spread_values(viewId = jstring("id"), 
-                  viewName = jstring("name"),
-                  type = jstring("type"),
-                  starred = jstring("starred"))
-  
-  ## remove tidyjson artifacts, drop for issue #41 and #52
-  out <- tidy_json[,setdiff(names(tidy_json), c("document.id","array.index")), drop = FALSE]
-  
-  out
 }
 
 

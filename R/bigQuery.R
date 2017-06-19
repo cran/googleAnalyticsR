@@ -14,7 +14,7 @@
 #' Goals are not specified in BQ exports, so you need to look at how you define them and replicate per view
 #' e.g. unique pageviews or unique events.
 #' 
-#' Custom dimensions can be specified as sesion or hit level, so ignoring the setting in GA interface. 
+#' Custom dimensions can be specified as session or hit level, so ignoring the setting in GA interface. 
 #' 
 #' You can get a sample Google Analytics dataset in bigquery by following the instructions
 #'   here: \url{https://support.google.com/analytics/answer/3416091?hl=en}
@@ -39,7 +39,6 @@
 #' @seealso \url{https://support.google.com/analytics/answer/4419694?hl=en}
 #'          \url{https://support.google.com/analytics/answer/3437719?hl=en}
 #' 
-#' @import bigQueryR
 #' @export
 google_analytics_bq <- function(projectId,
                                 datasetId,
@@ -155,13 +154,23 @@ google_analytics_bq <- function(projectId,
 }
 
 #' Asynch fetch
-#' @import bigQueryR
 #' @keywords internal
 google_analytics_bq_asynch <- function(projectId,
                                        datasetId,
                                        query,
                                        bucket,
                                        download_file){
+  
+  if (!requireNamespace("bigQueryR", quietly = TRUE)) {
+    stop("bigQueryR needed for this function to work. Please install it via install.packages('bigQueryR')",
+         call. = FALSE)
+  }
+  
+  if (!requireNamespace("googleCloudStorageR", quietly = TRUE)) {
+    stop("googleCloudStorageR needed for this function to work. Please install it via install.packages('googleCloudStorageR')",
+         call. = FALSE)
+  }
+  
   time0 <- Sys.time()
   required_scopes <- c("https://www.googleapis.com/auth/devstorage.full_control", 
                        "https://www.googleapis.com/auth/cloud-platform")
@@ -273,7 +282,7 @@ lookup_bq_query_d <- c(referralPath = "trafficSource.referralPath as referralPat
 
 customDimensionMaker <- function(customDimensionIndex=paste0("dimension",1:200)){
   
-  testthat::expect_type(customDimensionIndex, "character")
+  assertthat::assert_that(is.character(customDimensionIndex))
   indexes <- grep("^dimension(.+)", customDimensionIndex)
   
   if(length(indexes) < 1) stop("Custom dimension specified but no custom dimensions found")
@@ -289,7 +298,7 @@ customDimensionMaker <- function(customDimensionIndex=paste0("dimension",1:200))
           
 customMetricMaker <- function(customMetricIndex=paste0("metric",1:200)){
   
-  testthat::expect_type(customMetricIndex, "character")
+  assertthat::assert_that(is.character(customMetricIndex))
   indexes <- grep("^metric(.+)", customMetricIndex)
   
   if(length(indexes) < 1) stop("No custom metrics found")

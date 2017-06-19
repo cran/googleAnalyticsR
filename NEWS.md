@@ -1,3 +1,13 @@
+# googleAnalyticsR 0.4.1
+
+* Fix `attempt to set an attribute on NULL` error for anti-sample
+* Fixed `anti_sample="auto"` math to actually limit the number of sessions for the auto-batches
+* Add warning if using default project, and if API quota is tripped (#79)
+* refactor defensive checks from `testthat` to `assertthat`
+* Fixed error when no data present in requested `date_range` for a view, and `max = -1`
+* Fix logic of `anti_sample_batches` to allow accurate day batches. (#74)
+* Fix parsing of `ga_account_summary` broken by upgrade from `dplyr 0.5.0` > `dplyr 0.7.0`
+
 # googleAnalyticsR 0.4.0
 
 ## Added
@@ -8,11 +18,9 @@
 * Added auto-authentication if you specify environment var `GA_AUTH_FILE`
 * Add Remarketing Audience functions - `ga_remarketing_get` and `ga_remarketing_list`
 * Add `aggregateGAData` which will aggregate over GA dimensions
-
 * Add `antiSampleWorked` TRUE/FALSE attribute to tables when anti-sampling attempted
 * Add a `slow_fetch` flag to `google_analytics_4` that will avoid batching for big complicated fetches
 * Add `ga_users_list` for listing users on account, webProperty or View level
-* Documentation updates
 * Set default Google Project API permissions to:
     - `"https://www.googleapis.com/auth/analytics"`
     - `"https://www.googleapis.com/auth/analytics.readonly"`

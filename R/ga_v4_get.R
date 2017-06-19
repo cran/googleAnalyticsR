@@ -124,8 +124,8 @@ make_ga_4_req <- function(viewId,
   }
   
   if(!is.null(cohorts)){
-    testthat::expect_true(cohort_metric_check(metrics))
-    testthat::expect_true(cohort_dimension_check(dimensions))
+    assertthat::assert_that(cohort_metric_check(metrics),
+                            cohort_dimension_check(dimensions))
     if(!is.null(date_range)){
       warning("Don't supply date_range when using cohorts, setting date_range to NULL")
       date_range <- NULL
@@ -270,7 +270,6 @@ google_analytics_4 <- function(viewId,
                                anti_sample = FALSE,
                                anti_sample_batches = "auto",
                                slow_fetch = FALSE){
-
   
   max         <- as.integer(max)
   allResults  <- FALSE
@@ -353,6 +352,7 @@ google_analytics_4 <- function(viewId,
   if(allResults){
     all_rows <- as.integer(attr(out, "rowCount"))
     if(nrow(out) < all_rows){
+    # if(!is.null(out) && nrow(out) < all_rows){
       ## create the remaining requests
       meta_batch_start_index2 <- seq(from=50000, to=all_rows, by=reqRowLimit)
       ## make a list of the requests
@@ -399,7 +399,7 @@ google_analytics_4 <- function(viewId,
 
 #' Fetch GAv4 requests one at a time
 #' 
-#' Due to large compilcated queries causing the v4 API to timeout, 
+#' Due to large complicated queries causing the v4 API to timeout, 
 #'   this option is added to fetch via the more traditional one report per request
 #' 
 #' @param request_list A list of requests created by \link{make_ga_4_req}
@@ -439,7 +439,10 @@ fetch_google_analytics_4_slow <- function(request_list, max_rows, allRows = FALS
     myMessage("Slow fetch: [", 
               the_req$pageToken, "] from estimated actual Rows [", actualRows, "]", 
               level = 3)
-    out <- f(the_body = body)
+
+    out <- try(f(the_body = body))
+    
+    error_check(out)
     
     actualRows <- attr(out[[1]], "rowCount")
     npt <- attr(out[[1]], "nextPageToken")
@@ -504,11 +507,9 @@ fetch_google_analytics_4_slow <- function(request_list, max_rows, allRows = FALS
 #' @export
 fetch_google_analytics_4 <- function(request_list, merge = FALSE){
 
-  testthat::expect_type(request_list, "list")
+  assertthat::assert_that(is.list(request_list))
   ## amount of batches per v4 api call
   ga_batch_limit <- 5
-  ## amount of batches at once
-  gar_batch_size <- 10
   
   if(length(unique((lapply(request_list, function(x) x$viewId)))) != 1){
     stop("request_list must all have the same viewId")
@@ -547,7 +548,9 @@ fetch_google_analytics_4 <- function(request_list, merge = FALSE){
       reportRequests = request_list
     )
 
-    out <- f(the_body = body)
+    out <- try(f(the_body = body))
+    
+    out <- error_check(out)
     
   } else {
 
@@ -560,40 +563,21 @@ fetch_google_analytics_4 <- function(request_list, merge = FALSE){
     ## make the body for each v4 api call
     body_list <- lapply(batch_list, function(x) list(reportRequests = x))
     body_list <- rmNullObs(body_list)
+      
+    ## loop over the requests normally
+    myMessage("Looping over maximum [", length(body_list), "] batches.", level = 1)
+    response_list <- lapply(body_list, function(b){
+      
+      myMessage("Fetching data batch...", level = 3)
+      
+      out <- try(f(the_body = b))
+      
+      error_check(out)
+      
+    })
     
-    ## Only if supported in Google batching
-    GOOGLE_BATCHING <- FALSE
-    if(GOOGLE_BATCHING){
-      ## make the list of 10 for each gar_batch call
-      batch_list_index <- seq(1, length(body_list), gar_batch_size)
-      batch_body_list <- lapply(batch_list_index,
-                                function(x) body_list[x:(x+(gar_batch_size-1))])
-      batch_body_list <- rmNullObs(batch_body_list)
-
-      ## make the call list
-      call_list <- lapply(batch_body_list, function(bl){
-        lapply(bl, function(rr){
-          f(the_body = rr, batch = TRUE)
-        })
-      })
-
-      ## make the batch calls
-      response_list <- lapply(call_list, googleAuthR::gar_batch)
-      
-    } else {
-      
-      ## loop over the requests normally
-      myMessage("Looping over maximum [", length(body_list), "] batches.", level = 1)
-      response_list <- lapply(body_list, function(b){
-        
-        myMessage("Fetching data batch...", level = 3)
-
-        f(the_body = b)
-        
-      })
-
-      out <- unlist(response_list, recursive = FALSE)
-    }
+    out <- unlist(response_list, recursive = FALSE)
+    
     
   }
   

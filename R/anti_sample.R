@@ -87,13 +87,13 @@ anti_sample <- function(anti_sample_batches,
                                            dimensions = "date",
                                            max = -1) ## download all days! #66
     explore_sessions$cumulative <- cumsum(explore_sessions$sessions)
-    explore_sessions$sample_bucket <- as.factor((explore_sessions$cumulative %/% read_counts) + 1)
+    explore_sessions$sample_bucket <- chunkify(explore_sessions$sessions, limit = 250e3)
     
   } else {
     stopifnot(anti_sample_batches >= 1)
     asb <- as.integer(anti_sample_batches)
     date_col <- seq(date_range[1], date_range[2], by = 1)
-    sample_bucket <- as.factor((1:length(date_col) %/% asb) + 1)
+    sample_bucket <- as.factor((seq_along(date_col) - 1) %/% asb) # 0 indexed lengths (#74)
     explore_sessions <- data.frame(date = date_col, sample_bucket = sample_bucket)
   }
   
@@ -171,15 +171,49 @@ anti_sample <- function(anti_sample_batches,
   out <- aggregateGAData(out, agg_names = gsub("ga:","",dimensions))
   
   ## fill these in later
-  attr(out, "totals") <- NULL
-  attr(out, "minimums") <- NULL
-  attr(out, "maximums") <- NULL
-  attr(out, "rowCount") <- as.character(nrow(out))
-  attr(out, "nextPageToken") <- NULL
-  attr(out, "antiSampleWorked") <- did_it_work
-  myMessage("Finished unsampled data request, total rows [", nrow(out),"]", level = 3)
-  if(did_it_work) myMessage("Successfully avoided sampling", level = 3)
+  if(!is.null(out)){
+    attr(out, "totals") <- NULL
+    attr(out, "minimums") <- NULL
+    attr(out, "maximums") <- NULL
+    attr(out, "rowCount") <- as.character(nrow(out))
+    attr(out, "nextPageToken") <- NULL
+    attr(out, "antiSampleWorked") <- did_it_work
+    myMessage("Finished unsampled data request, total rows [", nrow(out),"]", level = 3)
+    if(did_it_work) myMessage("Successfully avoided sampling", level = 3)
+  }
+
   out
+}
+
+
+#' Break down a request into unsampled chunks
+#' 
+#' @param sessions_vec A vector, ordered by date, with the number of sessions
+#' @param limit This is the upper bound for the number of sessions in one chunk
+#'   
+#' @return A vector with the batch number of each date. This allows for usage in
+#'   a mutate.
+#' @keywords internal
+chunkify <- function(sessions_vec, limit = 250e3) {
+  #Accumulators
+  batch_size    <- 0
+  batch_number  <- 1
+  batch_numbers <- rep(1, length(sessions_vec))
+  
+  for (i in 1:length(sessions_vec)) {
+    sessions <- sessions_vec[i]
+    batch_size <- batch_size + sessions
+    
+    #If today puts up above the limit, it starts a new batch!
+    if (batch_size >= limit) {
+      batch_number <- batch_number + 1
+      batch_size   <- sessions
+    }
+    
+    batch_numbers[i] <- batch_number
+  }
+  
+  batch_numbers
 }
 
 #' hourly get request with anti-sampling
@@ -274,7 +308,13 @@ hourly_anti_sample <- function(viewId,
   })
   ## output rbind
   hour_out <- Reduce(rbind, unsampled_list)
-  attr(hour_out, "samplesReadCounts")  <- all_samplesReadCounts
-  attr(hour_out, "samplingSpaceSizes") <- all_samplingSpaceSizes
+  
+  if(!is.null(hour_out)){
+    attr(hour_out, "samplesReadCounts")  <- all_samplesReadCounts
+    attr(hour_out, "samplingSpaceSizes") <- all_samplingSpaceSizes
+  } else {
+    myMessage("No data found for hourly sample", level = 3)
+  }
+
   hour_out
 }
