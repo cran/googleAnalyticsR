@@ -70,14 +70,6 @@ google_analytics_bq <- function(projectId,
   ## if Sys.Date() == end then construct for ga_sessions_intradata_ too.
   if(is.null(query)){
     
-    if(any(is.na(lookup_bq_query_m[metrics]))){
-      stop("metric not yet supported. Must be one of ", paste(names(lookup_bq_query_m), collapse = ", "))
-    }
-    
-    if(any(is.na(lookup_bq_query_d[dimensions]))){
-      stop("dimension not yet supported. Must be one of ", paste(names(lookup_bq_query_d), collapse = ", "))
-    }
-    
     if(as.Date(end) == Sys.Date()){
       from_q <- sprintf("FROM (TABLE_DATE_RANGE([%s.ga_sessions_], TIMESTAMP('%s'), DATE_ADD(CURRENT_TIMESTAMP(), -1, 'DAY'))), (TABLE_DATE_RANGE([%s.ga_sessions_intraday_], DATE_ADD(CURRENT_TIMESTAMP(), -1, 'DAY'), CURRENT_TIMESTAMP()))", 
                         datasetId, start, datasetId)
@@ -287,8 +279,8 @@ customDimensionMaker <- function(customDimensionIndex=paste0("dimension",1:200))
   
   if(length(indexes) < 1) stop("Custom dimension specified but no custom dimensions found")
   
-  dimensionXX = "MAX(CASE WHEN hits.customDimensions.index = XX THEN hits.customDimensions.value END)) as dimensionXX"
-
+  dimensionXX = "MAX(IF (hits.customDimensions.index = XX, hits.customDimensions.value, NULL)) WITHIN RECORD AS dimensionXX"
+                     
   out <- vapply(indexes, function(i) gsub("XX", i, dimensionXX), character(1))
   names(out) <- customDimensionIndex
   
@@ -303,8 +295,8 @@ customMetricMaker <- function(customMetricIndex=paste0("metric",1:200)){
   
   if(length(indexes) < 1) stop("No custom metrics found")
   
-  metricXX = "MAX(CASE WHEN hits.customMetrics.index = XX THEN hits.customMetrics.value END)) as metricXX"
-  
+  metricXX <- "MAX(IF (hits.customMetrics.index = XX, hits.customMetrics.value, NULL)) WITHIN RECORD AS metricXX"
+
   out <- vapply(indexes, function(i) gsub("XX", i, metricXX), character(1))
   names(out) <- customMetricIndex
   

@@ -12,7 +12,7 @@
 
 <meta name="author" content="Mark Edmondson" />
 
-<meta name="date" content="2017-06-19" />
+<meta name="date" content="2017-10-20" />
 
 <title>googleAnalyticsR</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">googleAnalyticsR</h1>
 <h4 class="author"><em>Mark Edmondson</em></h4>
-<h4 class="date"><em>2017-06-19</em></h4>
+<h4 class="date"><em>2017-10-20</em></h4>
 
 
 
@@ -106,7 +106,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <span class="kw">install.packages</span>(<span class="st">&quot;googleAnalyticsR&quot;</span>)</code></pre></div>
 <div id="development-version-off-github" class="section level3">
 <h3>Development version off github</h3>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">devtools::<span class="kw">install_github</span>(<span class="st">&quot;MarkEdmondson1234/googleAnalyticsR&quot;</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">devtools<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&quot;MarkEdmondson1234/googleAnalyticsR&quot;</span>)</code></pre></div>
 </div>
 </div>
 <div id="to-use---v4-api-calls" class="section level2">
@@ -391,7 +391,7 @@ pivtest1 &lt;-<span class="st"> </span><span class="kw">google_analytics_4</span
 
 ## get account info, including View Ids
 account_list &lt;-<span class="st"> </span><span class="kw">google_analytics_account_list</span>()
-ga_id &lt;-<span class="st"> </span>account_list$viewId[<span class="dv">1</span>]
+ga_id &lt;-<span class="st"> </span>account_list<span class="op">$</span>viewId[<span class="dv">1</span>]
 
 ## get a list of what metrics and dimensions you can use
 meta &lt;-<span class="st"> </span><span class="kw">google_analytics_meta</span>()
@@ -413,7 +413,7 @@ multi_gadata &lt;-<span class="st"> </span><span class="kw">google_analytics</sp
 
 ## if more than 10000 rows in results, auto batching
 ## example is setting lots of dimensions to try and create big sampled data
-batch_gadata &lt;-<span class="st"> </span><span class="kw">google_analytics</span>(<span class="dt">id =</span> account_list$viewId[<span class="dv">1</span>], 
+batch_gadata &lt;-<span class="st"> </span><span class="kw">google_analytics</span>(<span class="dt">id =</span> account_list<span class="op">$</span>viewId[<span class="dv">1</span>], 
                                  <span class="dt">start=</span><span class="st">&quot;2014-08-01&quot;</span>, <span class="dt">end=</span><span class="st">&quot;2015-08-02&quot;</span>, 
                                  <span class="dt">metrics =</span> <span class="kw">c</span>(<span class="st">&quot;sessions&quot;</span>, <span class="st">&quot;bounceRate&quot;</span>), 
                                  <span class="dt">dimensions =</span> <span class="kw">c</span>(<span class="st">&quot;source&quot;</span>, <span class="st">&quot;medium&quot;</span>, <span class="st">&quot;landingPagePath&quot;</span>,<span class="st">&quot;hour&quot;</span>,<span class="st">&quot;minute&quot;</span>),
@@ -421,34 +421,34 @@ batch_gadata &lt;-<span class="st"> </span><span class="kw">google_analytics</sp
 
 ## mitigate sampling by setting samplingLevel=&quot;WALK&quot;
 ## this will send lots and lots of calls to the Google API limits, beware
-walk_gadata &lt;-<span class="st"> </span><span class="kw">google_analytics</span>(<span class="dt">id =</span> account_list$viewId[<span class="dv">1</span>], 
+walk_gadata &lt;-<span class="st"> </span><span class="kw">google_analytics</span>(<span class="dt">id =</span> account_list<span class="op">$</span>viewId[<span class="dv">1</span>], 
                                 <span class="dt">start=</span><span class="st">&quot;2014-08-01&quot;</span>, <span class="dt">end=</span><span class="st">&quot;2015-08-02&quot;</span>, 
                                 <span class="dt">metrics =</span> <span class="kw">c</span>(<span class="st">&quot;sessions&quot;</span>, <span class="st">&quot;bounceRate&quot;</span>), 
                                 <span class="dt">dimensions =</span> <span class="kw">c</span>(<span class="st">&quot;source&quot;</span>, <span class="st">&quot;medium&quot;</span>, <span class="st">&quot;landingPagePath&quot;</span>), 
                                 <span class="dt">max=</span><span class="dv">99999999</span>, <span class="dt">samplingLevel=</span><span class="st">&quot;WALK&quot;</span>)
 
 ## multi-channel funnels set type=&quot;mcf&quot;
-mcf_gadata &lt;-<span class="st"> </span><span class="kw">google_analytics</span>(<span class="dt">id =</span> account_list$viewId[<span class="dv">1</span>], 
+mcf_gadata &lt;-<span class="st"> </span><span class="kw">google_analytics</span>(<span class="dt">id =</span> account_list<span class="op">$</span>viewId[<span class="dv">1</span>], 
                                <span class="dt">start=</span><span class="st">&quot;2015-08-01&quot;</span>, <span class="dt">end=</span><span class="st">&quot;2015-08-02&quot;</span>, 
                                <span class="dt">metrics =</span> <span class="kw">c</span>(<span class="st">&quot;totalConversions&quot;</span>), 
                                <span class="dt">dimensions =</span> <span class="kw">c</span>(<span class="st">&quot;sourcePath&quot;</span>), 
                                <span class="dt">type=</span><span class="st">&quot;mcf&quot;</span>)
 
 ## google_analytics dataframes include these meta data attributes:
--<span class="st"> </span><span class="kw">attr</span>(*, <span class="st">&quot;containsSampledData&quot;</span>)=<span class="st"> </span>logi <span class="ot">FALSE</span>
- -<span class="st"> </span><span class="kw">attr</span>(*, <span class="st">&quot;samplePercent&quot;</span>)=<span class="st"> </span>num <span class="dv">100</span>
- -<span class="st"> </span><span class="kw">attr</span>(*, <span class="st">&quot;samplingLevel&quot;</span>)=<span class="st"> </span>chr <span class="st">&quot;DEFAULT&quot;</span>
- -<span class="st"> </span><span class="kw">attr</span>(*, <span class="st">&quot;profileInfo&quot;</span>)=List of <span class="dv">6</span>
-  ..$<span class="st"> </span>profileId            :<span class="st"> </span>chr <span class="st">&quot;535656&quot;</span>
-  ..$<span class="st"> </span>accountId            :<span class="st"> </span>chr <span class="st">&quot;2748374&quot;</span>
-  ..$<span class="st"> </span>webPropertyId        :<span class="st"> </span>chr <span class="st">&quot;UA-278374-1&quot;</span>
-  ..$<span class="st"> </span>internalWebPropertyId:<span class="st"> </span>chr <span class="st">&quot;5279208&quot;</span>
-  ..$<span class="st"> </span>profileName          :<span class="st"> </span>chr <span class="st">&quot;XXXXX&quot;</span>
-  ..$<span class="st"> </span>tableId              :<span class="st"> </span>chr <span class="st">&quot;mcf:539656&quot;</span>
- -<span class="st"> </span><span class="kw">attr</span>(*, <span class="st">&quot;dateRange&quot;</span>)=List of <span class="dv">2</span>
-  ..$<span class="st"> </span>startDate:<span class="st"> </span>chr <span class="st">&quot;2015-08-01&quot;</span>
-  ..$<span class="st"> </span>endDate  :<span class="st"> </span>chr <span class="st">&quot;2015-08-02&quot;</span>
- -<span class="st"> </span><span class="kw">attr</span>(*, <span class="st">&quot;totalResults&quot;</span>)=<span class="st"> </span>int <span class="dv">4</span>
+<span class="op">-</span><span class="st"> </span><span class="kw">attr</span>(<span class="op">*</span>, <span class="st">&quot;containsSampledData&quot;</span>)=<span class="st"> </span>logi <span class="ot">FALSE</span>
+ <span class="op">-</span><span class="st"> </span><span class="kw">attr</span>(<span class="op">*</span>, <span class="st">&quot;samplePercent&quot;</span>)=<span class="st"> </span>num <span class="dv">100</span>
+ <span class="op">-</span><span class="st"> </span><span class="kw">attr</span>(<span class="op">*</span>, <span class="st">&quot;samplingLevel&quot;</span>)=<span class="st"> </span>chr <span class="st">&quot;DEFAULT&quot;</span>
+ <span class="op">-</span><span class="st"> </span><span class="kw">attr</span>(<span class="op">*</span>, <span class="st">&quot;profileInfo&quot;</span>)=List of <span class="dv">6</span>
+  ..<span class="op">$</span><span class="st"> </span>profileId            <span class="op">:</span><span class="st"> </span>chr <span class="st">&quot;535656&quot;</span>
+  ..<span class="op">$</span><span class="st"> </span>accountId            <span class="op">:</span><span class="st"> </span>chr <span class="st">&quot;2748374&quot;</span>
+  ..<span class="op">$</span><span class="st"> </span>webPropertyId        <span class="op">:</span><span class="st"> </span>chr <span class="st">&quot;UA-278374-1&quot;</span>
+  ..<span class="op">$</span><span class="st"> </span>internalWebPropertyId<span class="op">:</span><span class="st"> </span>chr <span class="st">&quot;5279208&quot;</span>
+  ..<span class="op">$</span><span class="st"> </span>profileName          <span class="op">:</span><span class="st"> </span>chr <span class="st">&quot;XXXXX&quot;</span>
+  ..<span class="op">$</span><span class="st"> </span>tableId              <span class="op">:</span><span class="st"> </span>chr <span class="st">&quot;mcf:539656&quot;</span>
+ <span class="op">-</span><span class="st"> </span><span class="kw">attr</span>(<span class="op">*</span>, <span class="st">&quot;dateRange&quot;</span>)=List of <span class="dv">2</span>
+  ..<span class="op">$</span><span class="st"> </span>startDate<span class="op">:</span><span class="st"> </span>chr <span class="st">&quot;2015-08-01&quot;</span>
+  ..<span class="op">$</span><span class="st"> </span>endDate  <span class="op">:</span><span class="st"> </span>chr <span class="st">&quot;2015-08-02&quot;</span>
+ <span class="op">-</span><span class="st"> </span><span class="kw">attr</span>(<span class="op">*</span>, <span class="st">&quot;totalResults&quot;</span>)=<span class="st"> </span>int <span class="dv">4</span>
 
 ## reach meta-data via attr()
 <span class="kw">attr</span>(gadata, <span class="st">&quot;profileInfo&quot;</span>)
@@ -482,13 +482,13 @@ mcf_gadata &lt;-<span class="st"> </span><span class="kw">google_analytics</span
 <span class="kw">library</span>(googleAnalyticsR)
 <span class="kw">library</span>(shiny)
 
-<span class="kw">shinyServer</span>(function(input, output, session){
+<span class="kw">shinyServer</span>(<span class="cf">function</span>(input, output, session){
   
   ## Get auth code from return URL
   access_token  &lt;-<span class="st"> </span><span class="kw">reactiveAccessToken</span>(session)
   
   ## Make a loginButton to display using loginOutput
-  output$loginButton &lt;-<span class="st"> </span><span class="kw">renderLogin</span>(session, <span class="kw">access_token</span>(),
+  output<span class="op">$</span>loginButton &lt;-<span class="st"> </span><span class="kw">renderLogin</span>(session, <span class="kw">access_token</span>(),
                                     <span class="dt">logout_class =</span> <span class="st">&quot;btn btn-danger&quot;</span>)
 
   gadata &lt;-<span class="st"> </span><span class="kw">reactive</span>({
@@ -517,7 +517,7 @@ mcf_gadata &lt;-<span class="st"> </span><span class="kw">google_analytics</span
 <p>Stable version is on CRAN:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;bigQueryR&quot;</span>)</code></pre></div>
 <p>Development version on devtools:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">devtools::<span class="kw">install_github</span>(<span class="st">&quot;MarkEdmondson1234/bigQueryR&quot;</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">devtools<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&quot;MarkEdmondson1234/bigQueryR&quot;</span>)</code></pre></div>
 <p>Once installed, authenticate to BigQuery:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(bigQueryR)
 
@@ -532,9 +532,9 @@ mcf_gadata &lt;-<span class="st"> </span><span class="kw">google_analytics</span
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">options</span>(<span class="dt">googleAuthR.scopes.selected =</span> <span class="kw">c</span>(<span class="st">&quot;https://www.googleapis.com/auth/analytics&quot;</span>,
                                         <span class="st">&quot;https://www.googleapis.com/auth/cloud-platform&quot;</span>,
                                         <span class="st">&quot;https://www.googleapis.com/auth/bigquery&quot;</span>))
-googleAuthR::<span class="kw">gar_auth</span>()</code></pre></div>
+googleAuthR<span class="op">::</span><span class="kw">gar_auth</span>()</code></pre></div>
 <p>You may also want to use a JSON file to authenticate with BigQuery. Make sure to add the service email to the users of the Google project, and then download the JSON file and authenitcate via:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">googleAuthR::<span class="kw">gar_auth_service</span>(<span class="st">&quot;gwt-download-XXXX.json&quot;</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">googleAuthR<span class="op">::</span><span class="kw">gar_auth_service</span>(<span class="st">&quot;gwt-download-XXXX.json&quot;</span>)</code></pre></div>
 <p>See <a href="https://github.com/MarkEdmondson1234/googleAuthR"><code>googleAuthR</code> help</a> for more details.</p>
 </div>
 <div id="exporting-data" class="section level3">
@@ -547,7 +547,7 @@ googleAuthR::<span class="kw">gar_auth</span>()</code></pre></div>
                            <span class="dt">dimensions =</span> <span class="kw">c</span>(<span class="st">&quot;source&quot;</span>,<span class="st">&quot;medium&quot;</span>))
 <span class="kw">head</span>(bq)
              source   medium  users
-<span class="dv">1</span>   mavas|blahbs.ru  display  <span class="dv">47837</span>
+<span class="dv">1</span>   mavas<span class="op">|</span>blahbs.ru  display  <span class="dv">47837</span>
 <span class="dv">2</span>          examp.ae referral   <span class="dv">6090</span>
 <span class="dv">3</span>   lm.facebook.com referral    <span class="dv">335</span>
 <span class="dv">4</span>       ghtie_yahoo  display <span class="dv">133900</span>
@@ -560,7 +560,7 @@ Segments/filters are not supported. The data is unsampled though.</p>
                            <span class="dt">metrics =</span> <span class="st">&quot;users&quot;</span>, 
                            <span class="dt">dimensions =</span> <span class="kw">c</span>(<span class="st">&quot;source&quot;</span>,<span class="st">&quot;medium&quot;</span>,<span class="st">&quot;landingPagePath&quot;</span>))
                            
-&gt;<span class="st"> </span>Error in <span class="kw">google_analytics_bq</span>(<span class="st">&quot;project-id&quot;</span>, <span class="st">&quot;dataset-id-ga-viewid&quot;</span>, <span class="dt">start =</span> <span class="st">&quot;2016-01-01&quot;</span>,  :<span class="st"> </span>
+<span class="op">&gt;</span><span class="st"> </span>Error <span class="cf">in</span> <span class="kw">google_analytics_bq</span>(<span class="st">&quot;project-id&quot;</span>, <span class="st">&quot;dataset-id-ga-viewid&quot;</span>, <span class="dt">start =</span> <span class="st">&quot;2016-01-01&quot;</span>,  <span class="op">:</span><span class="st"> </span>
 <span class="st">  </span>dimension not yet supported. Must be one of referralPath, campaign, source, medium, keyword, adContent, adwordsCampaignID, adwordsAdGroupID, transactionId, date, visitorId, visitId, visitStartTime, visitNumber                           </code></pre></div>
 <p>You can also query the BigQuery table directly using the query parameter.</p>
 <p>This is just as you would in the BigQuery interface, and allows queries you can also do there.</p>
@@ -608,7 +608,7 @@ just_query
                        <span class="dt">exits =</span> <span class="st">&quot;COUNT(hits.isExit) as exits&quot;</span>,
                        <span class="dt">entrances =</span> <span class="st">&quot;COUNT(hits.isEntrance) as entrances&quot;</span>,
                        <span class="dt">eventValue =</span> <span class="st">&quot;SUM(hits.eventinfo.eventValue) as eventValue&quot;</span>,
-                       <span class="dt">metricXX =</span> {a function to output hit level custom metrics})
+                       <span class="dt">metricXX =</span> {a <span class="cf">function</span> to output hit level custom metrics})
 
 lookup_bq_query_d &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dt">referralPath =</span> <span class="st">&quot;trafficSource.referralPath as referralPath&quot;</span>,
                        <span class="dt">hitTimestamp =</span> <span class="st">&quot;(visitStartTime + (hits.time/1000)) as hitTimestamp&quot;</span>,
@@ -647,8 +647,7 @@ lookup_bq_query_d &lt;-<span class="st"> </span><span class="kw">c</span>(<span 
                        <span class="dt">eventCategory =</span> <span class="st">&quot;hits.eventInfo.eventCategory as eventCategory&quot;</span>,
                        <span class="dt">eventAction =</span> <span class="st">&quot;hits.eventInfo.eventAction as eventAction&quot;</span>,
                        <span class="dt">eventLabel =</span> <span class="st">&quot;hits.eventInfo.eventLabel as eventLabel&quot;</span>,
-                       <span class="dt">dimensionXX =</span> {a function to output hit level custom dimensions})</code></pre></div>
-<p>This will increase as I get time to work on it, but feel free to submit a pull request with more.</p>
+                       <span class="dt">dimensionXX =</span> {a <span class="cf">function</span> to output hit level custom dimensions})</code></pre></div>
 </div>
 </div>
 

@@ -70,8 +70,7 @@ google_analytics_4_parse <- function(x){
   
   out_names <- c(dim_names, met_names)
   out_names <- gsub("ga:","",out_names)
-  
-  names(out) <- make.names(out_names, unique=TRUE)
+  names(out) <- out_names
   
   ## type conversion
   met_names <- gsub("ga:","",met_names)
@@ -135,26 +134,28 @@ get_samplePercent <- function(sampleReadCounts, samplingSpaceSizes){
 #' 
 #' @param x The account summary items
 #' @keywords internal
+#' @importFrom dplyr transmute mutate select
+#' @importFrom tidyr unnest
+#' @importFrom purrr map_if
 parse_ga_account_summary <- function(x){
-  
+
   ## hack to get rid of global variables warning
   id <- name <- webProperties <- kind <- profiles <- NULL
   x$items %>%
-    dplyr::mutate_if(is.list, purrr::simplify_all) %>%    # flatten each list element internally 
-    dplyr::transmute(accountId = id,
-                     accountName = name,
-                     ## fix bug if webProperties is NULL
-                     webProperties = purrr::map_if(webProperties, is.null, ~ data.frame())) %>% 
-    tidyr::unnest() %>% ##unnest webprops
-    dplyr::mutate(webPropertyId = id,
-                  webPropertyName = name,
-                  ## fix bug if profiles is NULL
-                  profiles = purrr::map_if(profiles, is.null, ~ data.frame())) %>% 
-    dplyr::select(-kind, -id, -name) %>% 
-    tidyr::unnest() %>% ## unnest profiles
-    dplyr::mutate(viewId = id,
-                  viewName = name) %>% 
-    dplyr::select(-kind, -id, -name)
+    transmute(accountId = id,
+              accountName = name,
+              ## fix bug if webProperties is NULL
+              webProperties = purrr::map_if(webProperties, is.null, ~ data.frame())) %>% 
+    unnest() %>% ##unnest webprops
+    mutate(webPropertyId = id,
+           webPropertyName = name,
+           ## fix bug if profiles is NULL
+           profiles = purrr::map_if(profiles, is.null, ~ data.frame())) %>% 
+    select(-kind, -id, -name) %>% 
+    unnest() %>% ## unnest profiles
+    mutate(viewId = id,
+           viewName = name) %>% 
+    select(-kind, -id, -name)
   
 }
 
@@ -234,7 +235,7 @@ parse_google_analytics_mcf <- function(x){
   names <- gsub("^mcf:", "", x$columnHeaders$name)
   types <- x$columnHeaders$dataType
 
-  if ("MCF_SEQUENCE" %in% types) {
+  if ("MCF_SEQUENCE" %in% types && !is.null(x$rows)) {
     ## take out null object lists that the JSON sometimes strangely returns
     type_check <- vapply(x$rows, function(x) inherits(x[1]$conversionPathValue[[1]], "list"), FUN.VALUE=TRUE)
     x$rows <- x$rows[!type_check]
@@ -253,7 +254,13 @@ parse_google_analytics_mcf <- function(x){
     colnames(conversion) <- names[cv_idx]
     data_df <- data.frame(primitive, conversion, stringsAsFactors = FALSE)[, names]
   } else {
-    data_df <- as.data.frame(do.call(rbind, lapply(x$rows, unlist)), stringsAsFactors = FALSE)
+    # empty data.frame if no rows available
+    if (is.null(x$rows)) {
+      data_df <- data.frame(matrix(ncol = length(names), nrow = 0))
+    } else {
+      data_df <- as.data.frame(do.call(rbind, lapply(x$rows, unlist)), stringsAsFactors = FALSE)
+    }
+    
     colnames(data_df) <- names
   }
   return(data_df)
