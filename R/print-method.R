@@ -10,6 +10,19 @@
 #   
 # }
 
+#' @export
+print.customDimension_ga <- function(x, ...){
+  cat("==Google Analytics Custom Dimension==\n")
+  cat0("Name:         ", x$name)
+  cat0("Id:           ", x$id)
+  cat0("Index:        ", x$index)
+  cat0("Scope:        ", x$scope)
+  cat0("Active:       ", x$active)
+  cat0("Created:      ", x$created)
+  cat0("Updated:      ", x$updated)
+  cat0("AccountId:    ", x$accountId)
+  cat0("WebPropertyId:", x$webPropertyId)
+}
 
 
 #' @export
@@ -31,13 +44,14 @@ print.ga_custom_datasource <- function(x, ...){
                     id = x$id,
                     accountId = x$accountId,
                     webPropertyId = x$webPropertyId,
-                    importBehavior = x$importBehavior,
+                    importBehavior = if(!is.null(x$importBehavior)) x$importBehavior else NULL,
                     created = x$created,
                     updated = x$updated,
                     stringsAsFactors = FALSE)
   
-  out$created <- timestamp_to_r(out$created)
-  out$updated <- timestamp_to_r(out$updated)
+  if(!is.null(out$created)) out$created <- timestamp_to_r(out$created)
+  if(!is.null(out$updated)) out$updated <- timestamp_to_r(out$updated)
+  
   cat("==Google Analytics Custom Data Sources==\n")
   cat0("Username:            ", y$username)
   cat0("Total Results:       ", y$totalResults)

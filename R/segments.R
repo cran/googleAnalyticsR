@@ -1,7 +1,7 @@
 #' Get segments user has access to
 #'
 #' @return Segment list
-#' @importFrom googleAuthR gar_api_generator
+#' @importFrom googleAuthR gar_api_generator gar_api_page
 #' @family managementAPI functions
 #' @export
 ga_segment_list <- function(){
@@ -9,9 +9,32 @@ ga_segment_list <- function(){
   url <- "https://www.googleapis.com/analytics/v3/management/segments"
   segs <- gar_api_generator(url,
                             "GET",
-                            data_parse_function = function(x) x)
+                            data_parse_function = parse_ga_segment_list)
   
-  segs()
+  pages <- gar_api_page(segs, page_f = get_attr_nextLink)
+  
+  Reduce(bind_rows, pages)
+  
+}
+
+#' @noRd
+#' @import assertthat
+parse_ga_segment_list <- function(x){
+  
+  o <- x %>% 
+    management_api_parsing("analytics#segments") 
+  
+  if(is.null(o)){
+    return(data.frame())
+  }
+  
+  o <- o %>% 
+    mutate(created = iso8601_to_r(created),
+           updated = iso8601_to_r(updated))
+  
+  attr(o, "nextLink") <- x$nextLink
+  
+  o
   
 }
 
@@ -60,14 +83,14 @@ ga_segment_list <- function(){
 #' ## make a segment element
 #' se <- segment_element("sessions", 
 #'                       operator = "GREATER_THAN", 
-#'                       type = ""metric"", 
+#'                       type = "METRIC", 
 #'                       comparisonValue = 1, 
 #'                       scope = "USER")
 #'                       
 #'                       
 #' se2 <- segment_element("medium", 
 #'                        operator = "EXACT", 
-#'                        type = "dimension", 
+#'                        type = "DIMENSION", 
 #'                        expressions = "organic")
 #'                        
 #'                        
@@ -104,12 +127,12 @@ ga_segment_list <- function(){
 #' 
 #' se2 <- segment_element("medium", 
 #'                        operator = "EXACT", 
-#'                        type = "dimension", 
+#'                        type = "DIMENSION", 
 #'                        expressions = "organic")
 #'                        
 #' se3 <- segment_element("medium",
 #'                        operator = "EXACT",
-#'                        type = "dimension",
+#'                        type = "DIMENSION",
 #'                        not = TRUE,
 #'                       expressions = "organic")
 #'                       
@@ -134,18 +157,15 @@ ga_segment_list <- function(){
 #' }
 #' 
 #' @export
+#' @import assertthat
 segment_ga4 <- function(name,
                         segment_id=NULL,
                         user_segment=NULL,
                         session_segment=NULL){
 
-  assertthat::assert_that(is.character(name))
+  assert_that(is.string(name))
+  assert_that_ifnn(segment_id, is.string)
   
-  if(!is.null(segment_id)){
-    assertthat::assert_that(is.character(segment_id),
-                            length(segment_id) == 1)
-  }
-
   
   if(!is.null(segment_id)){
     
@@ -276,13 +296,14 @@ makeOrFilters <- function(segment_element_list){
 segment_vector_sequence <- function(segment_elements,
                                     firstStepMatch=FALSE){
   
-  stepMatchList <- lapply(segment_elements, function(x) attr(x, "matchType"))
+  # fix #180
+  stepMatchList <- lapply(segment_elements, function(x) attr(x[[1]], "matchType"))
   if(!is.null(stepMatchList)){
     assertthat::assert_that(length(segment_elements) == length(stepMatchList))
   } else {
     stepMatchList <- as.list(rep("PRECEDES", length(segment_elements)))
   }
-  
+
   steps <- mapply(function(sfc, sml){
     
     orFilters <- makeOrFilters(sfc)
@@ -319,6 +340,7 @@ segment_vector_sequence <- function(segment_elements,
 #' 
 #' @family v4 segment functions
 #' @export
+#' @import assertthat
 segment_element <- function(name,
                             operator = c("REGEXP",
                                          "BEGINS_WITH",
@@ -343,10 +365,10 @@ segment_element <- function(name,
                             comparisonValue=NULL,
                             matchType = c("PRECEDES", "IMMEDIATELY_PRECEDES")){
 
-  assertthat::assert_that(is.character(name))
+  assert_that(is.character(name))
   operator <- match.arg(operator)
   type <- match.arg(type)
-  assertthat::assert_that(is.logical(not))
+  assert_that(is.logical(not))
   expect_null_or_type(expressions, "character")
   expect_null_or_type(caseSensitive, "logical")  
   expect_null_or_type(minComparisonValue, "numeric")  

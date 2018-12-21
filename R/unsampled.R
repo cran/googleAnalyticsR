@@ -70,15 +70,10 @@ ga_unsampled <- function(accountId,
 #' @importFrom magrittr %>% 
 #' @family managementAPI functions
 #' @export
+#' @import assertthat
 ga_unsampled_list <- function(accountId,
                               webPropertyId,
                               profileId){
-  
-  parse_unsampled <- function(x){
-    o <- x$items
-    o <- o[, setdiff(names(o),c("selfLink","kind"))]
-    as.data.frame(lapply(o, unlist))
-  }
   
   url <- "https://www.googleapis.com/analytics/v3/management/"
   unsampled <- gar_api_generator(url,
@@ -89,10 +84,27 @@ ga_unsampled_list <- function(accountId,
                                    profiles = profileId,
                                    unsampledReports = ""
                                  ),
-                                 data_parse_function = parse_unsampled)
+                                 data_parse_function = parse_unsampled_list)
   
-  unsampled()
+  pages <- gar_api_page(unsampled, page_f = get_attr_nextLink)
   
+  Reduce(bind_rows, pages)
+  
+}
+
+#' @noRd
+#' @import assertthat
+parse_unsampled_list <- function(x){
+  
+  o <- x %>% 
+    management_api_parsing("analytics#unsampledReports") 
+  
+  if(is.null(o)){
+    return(data.frame())
+  }
+  
+  o
+
 }
 
 #' Download Unsampled Report from Google Drive
@@ -182,7 +194,7 @@ ga_unsampled_download <- function(reportTitle,
   }
 
   # https://developers.google.com/analytics/devguides/config/mgmt/v3/unsampled-reports
-  if (report$downloadType != "GOOGLE_DRIVE") {
+  if(any(is.null(report$downloadType), report$downloadType != "GOOGLE_DRIVE")) {
     stop(
       "Only Google Drive download links are currently supported. 
       Contact your Analytics 360 account manager if you would like to change 

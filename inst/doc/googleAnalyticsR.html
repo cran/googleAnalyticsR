@@ -12,7 +12,7 @@
 
 <meta name="author" content="Mark Edmondson" />
 
-<meta name="date" content="2018-02-16" />
+<meta name="date" content="2018-12-20" />
 
 <title>googleAnalyticsR</title>
 
@@ -70,11 +70,11 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">googleAnalyticsR</h1>
 <h4 class="author"><em>Mark Edmondson</em></h4>
-<h4 class="date"><em>2018-02-16</em></h4>
+<h4 class="date"><em>2018-12-20</em></h4>
 
 
 
-<p><a href="http://code.markedmondson.me/googleAnalyticsR">googleAnalyticsR guide online</a></p>
+<p><a href="https://code.markedmondson.me/googleAnalyticsR">googleAnalyticsR guide online</a></p>
 <p>A new Google Analytics R library using the new v4 of the Google Analytics Reporting API. Built using <a href="https://github.com/MarkEdmondson1234/googleAuthR"><code>googleAuthR</code></a>. The successor to <a href="https://github.com/MarkEdmondson1234/shinyga"><code>shinyga</code></a> it allows online OAuth2 authentication within Shiny apps, along with new features such as batching and compatibility with other Google APIs.</p>
 <div id="other-ga-r-libraries" class="section level2">
 <h2>Other GA R libraries</h2>
@@ -94,7 +94,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li>v4 features include: dynamic calculated metrics, pivots, histograms, date comparisons, batching.</li>
 <li>Shiny App compatible</li>
 <li>The same authentication flow can be used with other <code>googleAuthR</code> apps like <a href="https://github.com/MarkEdmondson1234/searchConsoleR"><code>searchConsoleR</code></a></li>
-<li>Automatic batching, sampling avoidance with daily walk, multi-account fetching, multi-channel funnnel</li>
+<li>Automatic batching, sampling avoidance with daily walk, multi-account fetching, multi-channel funnel</li>
 <li>Support for <code>googleAuthR</code> batch, meaning 10 calls at once to GA - great for big fetches. For big data calls this is implemented automatically so could be 10x quicker than normal GA fetching</li>
 <li>Meta data included in attributes of returned dataframe including date ranges, totals, min and max</li>
 </ul>
@@ -505,7 +505,7 @@ mcf_gadata &lt;-<span class="st"> </span><span class="kw">google_analytics</span
 <div id="bigquery" class="section level2">
 <h2>BigQuery</h2>
 <p>Limited support for more user friendly calls to BigQuery Google Analytics 360 exports is implemented from version <code>0.2.0</code>.</p>
-<p>This is intended for users who may be familar with Google Analytics but not with SQL necessary to extract equivalent data from a BigQuery export of Google Analytics 360 data.</p>
+<p>This is intended for users who may be familiar with Google Analytics but not with SQL necessary to extract equivalent data from a BigQuery export of Google Analytics 360 data.</p>
 <p><code>google_analytics_bq</code> parses your metrics and dimensions into BigQuery queries.</p>
 <div id="to-do" class="section level3">
 <h3>To do</h3>
@@ -513,7 +513,7 @@ mcf_gadata &lt;-<span class="st"> </span><span class="kw">google_analytics</span
 </div>
 <div id="setup" class="section level3">
 <h3>Setup</h3>
-<p>To use, you need to also install the <a href="http://code.markedmondson.me/bigQueryR/"><code>bigQueryR</code></a> library.</p>
+<p>To use, you need to also install the <a href="https://code.markedmondson.me/bigQueryR/"><code>bigQueryR</code></a> library.</p>
 <p>Stable version is on CRAN:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;bigQueryR&quot;</span>)</code></pre></div>
 <p>Development version on devtools:</p>
@@ -533,7 +533,7 @@ mcf_gadata &lt;-<span class="st"> </span><span class="kw">google_analytics</span
                                         <span class="st">&quot;https://www.googleapis.com/auth/cloud-platform&quot;</span>,
                                         <span class="st">&quot;https://www.googleapis.com/auth/bigquery&quot;</span>))
 googleAuthR<span class="op">::</span><span class="kw">gar_auth</span>()</code></pre></div>
-<p>You may also want to use a JSON file to authenticate with BigQuery. Make sure to add the service email to the users of the Google project, and then download the JSON file and authenitcate via:</p>
+<p>You may also want to use a JSON file to authenticate with BigQuery. Make sure to add the service email to the users of the Google project, and then download the JSON file and authenticate via:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">googleAuthR<span class="op">::</span><span class="kw">gar_auth_service</span>(<span class="st">&quot;gwt-download-XXXX.json&quot;</span>)</code></pre></div>
 <p>See <a href="https://github.com/MarkEdmondson1234/googleAuthR"><code>googleAuthR</code> help</a> for more details.</p>
 </div>

@@ -120,6 +120,18 @@ make_ga_4_req <- function(viewId,
 
   samplingLevel <- match.arg(samplingLevel)
   
+  if(all(!is.null(dim_filters), !is.dim_filter(dim_filters))){
+    stop("Invalid dim_filter object", call. = FALSE)
+  }
+  
+  if(all(!is.null(met_filters), !is.met_filter(met_filters))){
+    stop("Invalid met_filter object", call. = FALSE)
+  }
+  
+  if(all(!is.null(filtersExpression), !is.string(filtersExpression))){
+    stop("filtersExpression is not a string", call. = FALSE)
+  }
+  
   if(all(is.null(date_range), is.null(cohorts))){
     stop("Must supply one of date_range or cohorts", call. = FALSE)
   }
@@ -128,9 +140,8 @@ make_ga_4_req <- function(viewId,
     assert_that(cohort_metric_check(metrics),
                             cohort_dimension_check(dimensions))
     if(!is.null(date_range)){
-      warning("Don't supply date_range when using cohorts, setting date_range to NULL", 
+      stop("Don't supply date_range when using cohorts", 
               call. = FALSE)
-      date_range <- NULL
     }
   }
   
@@ -198,14 +209,14 @@ make_ga_4_req <- function(viewId,
 
 
 #' Get Google Analytics v4 data
-#'
-#' Fetch Google Analytics data using the v4 API.  For the v3 API use \link{google_analytics_3}.
-#'  
-#' Will perform automatic batching if over the 100000 row per API call limit.
+#' 
+#' @description
+#' Fetch Google Analytics data using the v4 API.  For the v3 API use \link{google_analytics_3}.  See website help for lots of examples: \href{http://code.markedmondson.me/googleAnalyticsR/articles/v4.html}{Google Analytics Reporting API v4 in R}
+#' 
 #' 
 #' @section Row requests:
 #' 
-#' By default the API call will use v4 batching that splits requests into 5 seperate calls of 10k rows each.  This can go up to 100k, so this means up to 500k rows can be fetched per API call, however the API servers will fail with a 500 error if the query is too complicated as the processing time at Google's end gets too long.  In this case, you may want to tweak the \code{rows_per_call} argument downwards, or fall back to using \code{slow_fetch = FALSE} which will send an API request one at a time.  If fetching data via scheduled scripts this is recommended as the default.
+#' By default the API call will use v4 batching that splits requests into 5 separate calls of 10k rows each.  This can go up to 100k, so this means up to 500k rows can be fetched per API call, however the API servers will fail with a 500 error if the query is too complicated as the processing time at Google's end gets too long.  In this case, you may want to tweak the \code{rows_per_call} argument downwards, or fall back to using \code{slow_fetch = FALSE} which will send an API request one at a time.  If fetching data via scheduled scripts this is recommended as the default.
 #' 
 #' 
 #' @section Anti-sampling:
@@ -273,6 +284,7 @@ make_ga_4_req <- function(viewId,
 #' 
 #' @family GAv4 fetch functions
 #' @import assertthat
+#' @importFrom methods as
 #' @export
 google_analytics <- function(viewId,
                              date_range=NULL,
@@ -296,9 +308,23 @@ google_analytics <- function(viewId,
                              rows_per_call = 10000L){
   
   timer_start <- Sys.time()
+
+  assert_that_ifnn(useResourceQuotas, is.flag)
+
+  if(!is.null(segments)){
+    segments <- as(segments, "segment_ga4")
+  }
   
-  if(!is.null(useResourceQuotas)){
-    assert_that(is.flag(useResourceQuotas))
+  if(!is.null(dim_filters)){
+    dim_filters <- as(dim_filters, ".filter_clauses_ga4")
+  }
+  
+  if(!is.null(met_filters)){
+    met_filters <- as(met_filters, ".filter_clauses_ga4")
+  }
+  
+  if(!is.null(filtersExpression)){
+    filtersExpression <- as(filtersExpression, "character")
   }
   
   assert_that(is.count(rows_per_call),
@@ -321,6 +347,10 @@ google_analytics <- function(viewId,
   }
   
   if(anti_sample){
+    if(isTRUE(useResourceQuotas)){
+      stop("Can't use anti_sample=TRUE and useResourceQuoteas=TRUE in same API call (and you shouldn't need to)", 
+           call. = FALSE)
+    }
     myMessage("anti_sample set to TRUE. Mitigating sampling via multiple API calls.", level = 3)
     return(anti_sample(viewId            = viewId,
                        date_range        = date_range,
