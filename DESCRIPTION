@@ -1,11 +1,11 @@
 Package: googleAnalyticsR
 Type: Package
-Version: 0.6.0
+Version: 0.7.0
 Title: Google Analytics API into R
 Description: Interact with the Google Analytics 
   APIs <https://developers.google.com/analytics/>, including 
-  the Core Reporting API (v3 and v4), Management API, and Multi-Channel
-  Funnel API.
+  the Core Reporting API (v3 and v4), Management API, User Activity API
+  and Multi-Channel Funnel API.
 Authors@R: c(person("Mark", "Edmondson", email = "m@sunholo.com",
                   role = c("aut", "cre"),
                   comment = c(ORCID = "0000-0002-8434-3881")),
@@ -18,20 +18,19 @@ Authors@R: c(person("Mark", "Edmondson", email = "m@sunholo.com",
            person("Zoran", "Selinger", email = "zselinger@gmail.com", role = "ctb"))
 URL: http://code.markedmondson.me/googleAnalyticsR/
 BugReports: https://github.com/MarkEdmondson1234/googleAnalyticsR/issues
-Depends: R (>= 3.2.0)
-Imports: assertthat (>= 0.2.0), dplyr (>= 0.7.0), googleAuthR (>=
-        0.6.2), httr (>= 1.3.1), jsonlite (>= 1.5), magrittr (>= 1.5),
-        memoise, methods, purrr (>= 0.2.2), rlang (>= 0.1.0), tidyr (>=
-        0.6.3), utils
-Suggests: bigQueryR (>= 0.3.1), covr, googleCloudStorageR (>= 0.2.0),
-        httptest, knitr, miniUI (>= 0.1.1), rmarkdown, shiny (>=
-        0.13.2)
+Depends: R (>= 3.3.0)
+Imports: assertthat (>= 0.2.0), dplyr (>= 0.8.0), googleAuthR (>=
+        1.1.1), httr (>= 1.3.1), jsonlite (>= 1.5), magrittr (>= 1.5),
+        memoise, methods, purrr (>= 0.2.2), rlang (>= 0.1.0), stats,
+        tibble (>= 2.0.1), tidyr (>= 1.0.0), utils
+Suggests: bigQueryR (>= 0.3.1), covr, formatR, ganalytics,
+        googleCloudStorageR (>= 0.2.0), htmlwidgets, httptest (>=
+        3.2.2), knitr, miniUI (>= 0.1.1), rmarkdown, shiny (>= 0.13.2)
 License: MIT + file LICENSE
 LazyData: TRUE
-VignetteBuilder: knitr
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
 NeedsCompilation: no
-Packaged: 2018-12-20 22:50:33 UTC; mark
+Packaged: 2019-09-17 08:42:53 UTC; mark
 Author: Mark Edmondson [aut, cre] (<https://orcid.org/0000-0002-8434-3881>),
   Artem Klevtsov [ctb],
   Johann deBoer [ctb],
@@ -41,4 +40,4 @@ Author: Mark Edmondson [aut, cre] (<https://orcid.org/0000-0002-8434-3881>),
   Zoran Selinger [ctb]
 Maintainer: Mark Edmondson <m@sunholo.com>
 Repository: CRAN
-Date/Publication: 2018-12-21 14:50:10 UTC
+Date/Publication: 2019-09-17 09:10:05 UTC

@@ -22,9 +22,13 @@ google_analytics_4(...)
 \item{date_range}{character or date vector of format \code{c(start, end)} or 
 for two date ranges: \code{c(start1,end1,start2,end2)}}
 
-\item{metrics}{Metric to fetch. Supports calculated metrics.}
+\item{metrics}{Metric(s) to fetch as a character vector.  You do not need to 
+supply the \code{"ga:"} prefix.  See \link{meta} for a list of dimensons 
+and metrics the API supports. Also supports your own calculated metrics.}
 
-\item{dimensions}{Dimensions to fetch.}
+\item{dimensions}{Dimension(s) to fetch as a character vector. You do not need to 
+supply the \code{"ga:"} prefix. See \link{meta} for a list of dimensons 
+and metrics the API supports.}
 
 \item{dim_filters}{A \link{filter_clause_ga4} wrapping \link{dim_filter}}
 
@@ -116,7 +120,7 @@ ga_auth()
 
 ## get your accounts
 
-account_list <- google_analytics_account_list()
+account_list <- ga_account_list()
 
 ## account_list will have a column called "viewId"
 account_list$viewId
@@ -124,11 +128,20 @@ account_list$viewId
 ## View account_list and pick the viewId you want to extract data from
 ga_id <- 123456
 
+# examine the meta table to see metrics and dimensions you can query
+meta
+
 ## simple query to test connection
 google_analytics(ga_id, 
                  date_range = c("2017-01-01", "2017-03-01"), 
                  metrics = "sessions", 
                  dimensions = "date")
+
+## change the quotaUser to fetch under
+google_analytics(1234567, date_range = c("30daysAgo", "yesterday"), metrics = "sessions")
+
+options("googleAnalyticsR.quotaUser" = "test_user")
+google_analytics(1234567, date_range = c("30daysAgo", "yesterday"), metrics = "sessions")
 
 }
 
@@ -138,3 +151,4 @@ Other GAv4 fetch functions: \code{\link{fetch_google_analytics_4_slow}},
   \code{\link{fetch_google_analytics_4}},
   \code{\link{make_ga_4_req}}
 }
+\concept{GAv4 fetch functions}

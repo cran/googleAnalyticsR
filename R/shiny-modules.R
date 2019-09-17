@@ -72,17 +72,32 @@ authDropdownUI <- function(id,
 #' @param session shiny session
 #' @param ga.table A table of GA tables
 #' @param viewIdOnly Default only returns the viewId, set to FALSE to return the row of ga.table satisfying the selections
+#' @param rmNA Will remove any rows that have NA listed for the columns.  Set to FALSE to return all rows. 
 #'
 #' @return GA View Id selected
 #' 
 #' @family Shiny modules
+#' @importFrom dplyr select
 #' @export
-authDropdown <- function(input, output, session, ga.table, viewIdOnly = TRUE){
+authDropdown <- function(input, output, session, 
+                         ga.table, viewIdOnly = TRUE, 
+                         rmNA = TRUE){
   
   pList <- shiny::reactive({
+    shiny::req(ga.table)
     ga.table <- ga.table()
     
-    ga.table[,c('accountName','webPropertyId','websiteUrl','viewName', 'viewId')]
+    tt <- ga.table %>% 
+      select(accountName, accountId, 
+             webPropertyId, websiteUrl,
+             viewName, viewId)
+    
+    # remove NA (#104)
+    if(rmNA){
+      tt <- tt[stats::complete.cases(tt),]
+    }
+    
+    tt
     
   })
   

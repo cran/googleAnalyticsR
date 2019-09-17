@@ -7,8 +7,12 @@
 #' @param viewId viewId of data to get.
 #' @param date_range character or date vector of format \code{c(start, end)} or 
 #'   for two date ranges: \code{c(start1,end1,start2,end2)}
-#' @param metrics Metric to fetch. Supports calculated metrics.
-#' @param dimensions Dimensions to fetch.
+#' @param metrics Metric(s) to fetch as a character vector.  You do not need to 
+#'   supply the \code{"ga:"} prefix.  See \link{meta} for a list of dimensons 
+#'   and metrics the API supports. Also supports your own calculated metrics.
+#' @param dimensions Dimension(s) to fetch as a character vector. You do not need to 
+#'   supply the \code{"ga:"} prefix. See \link{meta} for a list of dimensons 
+#'   and metrics the API supports.
 #' @param dim_filters A \link{filter_clause_ga4} wrapping \link{dim_filter}
 #' @param met_filters A \link{filter_clause_ga4} wrapping \link{met_filter}
 #' @param filtersExpression A v3 API style simple filter string. Not used with other filters. 
@@ -119,18 +123,16 @@ make_ga_4_req <- function(viewId,
                           histogramBuckets=NULL) {
 
   samplingLevel <- match.arg(samplingLevel)
-  
-  if(all(!is.null(dim_filters), !is.dim_filter(dim_filters))){
-    stop("Invalid dim_filter object", call. = FALSE)
+
+  if(!is.dim_filter_clause(dim_filters)){
+    assert_that_ifnn(dim_filters, is.dim_filter)
   }
   
-  if(all(!is.null(met_filters), !is.met_filter(met_filters))){
-    stop("Invalid met_filter object", call. = FALSE)
+  if(!is.met_filter_clause(met_filters)){
+    assert_that_ifnn(met_filters, is.met_filter)
   }
   
-  if(all(!is.null(filtersExpression), !is.string(filtersExpression))){
-    stop("filtersExpression is not a string", call. = FALSE)
-  }
+  assert_that_ifnn(filtersExpression, is.string)
   
   if(all(is.null(date_range), is.null(cohorts))){
     stop("Must supply one of date_range or cohorts", call. = FALSE)
@@ -138,7 +140,7 @@ make_ga_4_req <- function(viewId,
   
   if(!is.null(cohorts)){
     assert_that(cohort_metric_check(metrics),
-                            cohort_dimension_check(dimensions))
+                cohort_dimension_check(dimensions))
     if(!is.null(date_range)){
       stop("Don't supply date_range when using cohorts", 
               call. = FALSE)
@@ -266,7 +268,7 @@ make_ga_4_req <- function(viewId,
 #' 
 #' ## get your accounts
 #' 
-#' account_list <- google_analytics_account_list()
+#' account_list <- ga_account_list()
 #' 
 #' ## account_list will have a column called "viewId"
 #' account_list$viewId
@@ -274,11 +276,20 @@ make_ga_4_req <- function(viewId,
 #' ## View account_list and pick the viewId you want to extract data from
 #' ga_id <- 123456
 #' 
+#' # examine the meta table to see metrics and dimensions you can query
+#' meta
+#' 
 #' ## simple query to test connection
 #' google_analytics(ga_id, 
 #'                  date_range = c("2017-01-01", "2017-03-01"), 
 #'                  metrics = "sessions", 
 #'                  dimensions = "date")
+#' 
+#' ## change the quotaUser to fetch under
+#' google_analytics(1234567, date_range = c("30daysAgo", "yesterday"), metrics = "sessions")
+#' 
+#' options("googleAnalyticsR.quotaUser" = "test_user")
+#' google_analytics(1234567, date_range = c("30daysAgo", "yesterday"), metrics = "sessions")
 #' 
 #' }
 #' 
@@ -307,21 +318,27 @@ google_analytics <- function(viewId,
                              useResourceQuotas= NULL,
                              rows_per_call = 10000L){
   
+  if(is_default_project()){
+    if(!interactive()){
+      default_project_message()
+      stop("The default Google Cloud Project for googleAnalyticsR is intended 
+           \nfor evalutation only, not production scripts.  
+           \nPlease set your own client.id and client.secret via googleAuthR::gar_set_client()
+           \nor otherwise as suggested on the website.", call. = FALSE)
+    }
+  }
+  
   timer_start <- Sys.time()
 
   assert_that_ifnn(useResourceQuotas, is.flag)
-
-  if(!is.null(segments)){
-    segments <- as(segments, "segment_ga4")
-  }
   
-  if(!is.null(dim_filters)){
-    dim_filters <- as(dim_filters, ".filter_clauses_ga4")
-  }
+  # fix 253
+  # make sure its a list of segment_ga4 objects
+  segments <- assign_list_class(segments, "segment_ga4")
   
-  if(!is.null(met_filters)){
-    met_filters <- as(met_filters, ".filter_clauses_ga4")
-  }
+  # 279
+  dim_filters <- add_class_if_list(dim_filters, ".filter_clauses_ga4")
+  met_filters <- add_class_if_list(met_filters, ".filter_clauses_ga4")
   
   if(!is.null(filtersExpression)){
     filtersExpression <- as(filtersExpression, "character")
@@ -371,7 +388,7 @@ google_analytics <- function(viewId,
   }
   
   if(max > reqRowLimit){
-    myMessage("Multi-call to API", level = 2)
+    myMessage("Multi-call to API", level = 1)
   }
   
   meta_batch_start_index <- seq(from=0, to=max, by=reqRowLimit)
@@ -428,7 +445,7 @@ google_analytics <- function(viewId,
                                             stop("Sequence batch error: ", 
                                                  "\n api_max_rows: ",api_max_rows,
                                                  "\n all_rows:", all_rows,
-                                                 "\n reqRowLimit:", reqRowLimit)
+                                                 "\n reqRowLimit:", reqRowLimit, call. = FALSE)
                                           })
       ## make a list of the requests
       requests2 <- lapply(meta_batch_start_index2, function(start_index){
@@ -523,12 +540,7 @@ fetch_google_analytics_4_slow <- function(request_list,
   ## make the fetch function
   myMessage("Calling APIv4 slowly....", level = 2)
   ## make the function
-  f <- gar_api_generator("https://analyticsreporting.googleapis.com/v4/reports:batchGet",
-                         "POST",
-                         data_parse_function = google_analytics_4_parse_batch,
-                         # data_parse_function = function(x) x,
-                         simplifyVector = FALSE)
-  
+  f <- get_ga4_function()
   
   do_it <- TRUE
   
@@ -552,9 +564,10 @@ fetch_google_analytics_4_slow <- function(request_list,
               the_req$pageToken, "] from estimated actual Rows [", actualRows, "]", 
               level = 3)
 
-    out <- try(f(the_body = body))
-    
-    error_check(out)
+    out <- tryCatch(f(the_body = body),
+                    error = function(err){
+                      custom_error(err)
+                    })
     
     actualRows <- attr(out[[1]], "rowCount")
     npt <- attr(out[[1]], "nextPageToken")
@@ -597,7 +610,7 @@ fetch_google_analytics_4_slow <- function(request_list,
 #' ga_auth()
 #' 
 #' ## get your accounts
-#' account_list <- google_analytics_account_list()
+#' account_list <- ga_account_list()
 #' 
 #' ## pick a profile with data to query
 #' 
@@ -627,31 +640,28 @@ fetch_google_analytics_4 <- function(request_list, merge = FALSE, useResourceQuo
   ga_batch_limit <- 5
   
   if(length(unique((lapply(request_list, function(x) x$viewId)))) != 1){
-    stop("request_list must all have the same viewId")
+    stop("request_list must all have the same viewId", call. = FALSE)
   }
   
   if(length(unique((lapply(request_list, function(x) x$dateRanges)))) != 1){
-    stop("request_list must all have the same dateRanges")
+    stop("request_list must all have the same dateRanges", call. = FALSE)
   }
   
   if(length(unique((lapply(request_list, function(x) x$segments)))) != 1){
-    stop("request_list must all have the same segments")
+    stop("request_list must all have the same segments", call. = FALSE)
   }
   
   if(length(unique((lapply(request_list, function(x) x$samplingLevel)))) != 1){
-    stop("request_list must all have the same samplingLevel")
+    stop("request_list must all have the same samplingLevel", call. = FALSE)
   }
   
   if(length(unique((lapply(request_list, function(x) x$cohortGroup)))) != 1){
-    stop("request_list must all have the same cohortGroup")
+    stop("request_list must all have the same cohortGroup", call. = FALSE)
   }
   
   myMessage("Calling APIv4....", level = 2)
   ## make the function
-  f <- gar_api_generator("https://analyticsreporting.googleapis.com/v4/reports:batchGet",
-                         "POST",
-                         data_parse_function = google_analytics_4_parse_batch,
-                         simplifyVector = FALSE)
+  f <- get_ga4_function()
   
   ## if under 5, one call
   if(!is.null(request_list$viewId) || length(request_list) <= ga_batch_limit){
@@ -665,9 +675,10 @@ fetch_google_analytics_4 <- function(request_list, merge = FALSE, useResourceQuo
     
     body <- rmNullObs(body)
 
-    out <- try(f(the_body = body))
-    
-    out <- error_check(out)
+    out <- tryCatch(f(the_body = body),
+                    error = function(err){
+                      custom_error(err)
+                    })
     
   } else {
 
@@ -692,10 +703,10 @@ fetch_google_analytics_4 <- function(request_list, merge = FALSE, useResourceQuo
     response_list <- lapply(body_list, function(b){
 
       myMessage("Fetching v4 data batch...", level = 3)
-      
-      out <- try(f(the_body = b))
-      
-      error_check(out)
+      out <- tryCatch(f(the_body = b),
+                      error = function(err){
+                        custom_error(err)
+                      })
       
     })
     
@@ -735,3 +746,20 @@ fetch_google_analytics_4 <- function(request_list, merge = FALSE, useResourceQuo
 
   out
 }
+
+#' @noRd
+#' @importFrom googleAuthR gar_api_generator
+get_ga4_function <- function(){
+  the_user <- getOption("googleAnalyticsR.quotaUser", Sys.info()[["user"]])
+  
+  if(the_user != Sys.info()[["user"]]){
+    myMessage("Fetching API under quotaUser: ", the_user, level =3)
+  }
+
+  gar_api_generator("https://analyticsreporting.googleapis.com/v4/reports:batchGet",
+                    "POST",
+                    pars_args = list(quotaUser = the_user),
+                    data_parse_function = google_analytics_4_parse_batch,
+                    simplifyVector = FALSE)
+}
+

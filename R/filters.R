@@ -40,13 +40,13 @@
 #' fc <- filter_clause_ga4(list(mf, mf2), operator = "AND")
 #'
 #' ## make v4 request
-#' ga_data1 <- google_analytics_4(ga_id,
-#'                                date_range = c("2015-07-30","2015-10-01"),
-#'                                dimensions=c('source','medium'),
-#'                                metrics = c('sessions','bounces'),
-#'                                met_filters = fc,
-#'                                dim_filters = fc2,
-#'                                filtersExpression = "ga:source!=(direct)")
+#' ga_data1 <- google_analytics(ga_id,
+#'                              date_range = c("2015-07-30","2015-10-01"),
+#'                              dimensions=c('source','medium'),
+#'                              metrics = c('sessions','bounces'),
+#'                              met_filters = fc,
+#'                              dim_filters = fc2,
+#'                              filtersExpression = "ga:source!=(direct)")
 #'
 #' }
 #'
@@ -74,12 +74,25 @@ filter_clause_ga4 <- function(filters, operator = c("OR", "AND")){
 
 }
 
+is.ganalytics <- function(x){
+  attr(class(x),"package") =="ganalytics"
+}
+
+is.dim_filter_clause <- function(x){
+  inherits(x, ".filter_clauses_ga4") && 
+    all(unlist(lapply(x, is.dim_filter)))
+}
+
 is.dim_filter <- function(x){
-  inherits(x, "dim_fil_ga4")
+  inherits(x, "dim_fil_ga4") || is.ganalytics(x)
+}
+
+is.met_filter_clause <- function(x){
+  inherits(x, ".filter_clauses_ga4") && all(unlist(lapply(x, is.met_filter)))
 }
 
 is.met_filter <- function(x){
-  inherits(x, "met_fil_ga4")
+  inherits(x, "met_fil_ga4") || is.ganalytics(x)
 }
 
 #' Make a dimension filter object
@@ -161,7 +174,7 @@ dim_filter <- function(dimension,
   
   if(all(operator != "IN_LIST", length(expressions) > 1)) {
     warning("Only first expression used if operator not 'IN_LIST'")
-    expressions <- expressions[1]
+    expressions <- expressions[[1]]
   }
 
   structure(

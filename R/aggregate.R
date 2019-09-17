@@ -12,6 +12,8 @@ getColNameOfClass <- function(df, class_name){
 }
 
 
+
+
 #' Aggregate a Google Analytics dataframe over inputted columns
 #' 
 #' A helper function to aggregate over dimensions
@@ -39,13 +41,21 @@ getColNameOfClass <- function(df, class_name){
 #'                             metrics = "sessions", dimensions = c("hour","date"))
 #'                             
 #' # if we want totals per hour over the dates:
-#' aggregateGAData(ga_data[,c("hour","sessions")], agg_names = "hour")
+#' ga_aggregate(ga_data[,c("hour","sessions")], agg_names = "hour")
 #' 
 #' # it knows not to sum metrics that are rates:
-#' aggregateGAData(ga_data[,c("hour","bounceRate")], agg_names = "hour")
+#' ga_aggregate(ga_data[,c("hour","bounceRate")], agg_names = "hour")
 #' 
 #' 
 #' }
+ga_aggregate <- function(ga_data, 
+                         agg_names=NULL,
+                         mean_regex="^avg|^percent|Rate$|^CPC$|^CTR$|^CPM$|^RPC$|^ROI$|^ROAS$|Per"){
+
+  aggregateGAData(ga_data, agg_names= agg_names, mean_regex=mean_regex)
+}
+
+
 aggregateGAData <- function(ga_data, 
                             agg_names=NULL,
                             mean_regex="^avg|^percent|Rate$|^CPC$|^CTR$|^CPM$|^RPC$|^ROI$|^ROAS$|Per"){
@@ -70,19 +80,19 @@ aggregateGAData <- function(ga_data,
   meanAgg <- ga_data %>%
     dplyr::select(!!!mean_selects) %>%
     dplyr::group_by(!!!dots) %>%
-    dplyr::summarise_all(dplyr::funs(mean(., na.rm = TRUE))) %>% dplyr::ungroup()
+    dplyr::summarise_all(list(~mean(., na.rm = TRUE))) %>% dplyr::ungroup()  
   
   ## metrics to sum over
   sumAgg <- ga_data %>%
     dplyr::select(!!!sum_selects) %>%
     dplyr::group_by(!!!dots) %>%
-    dplyr::summarise_all(dplyr::funs(sum(., na.rm = TRUE))) %>% dplyr::ungroup()
+    dplyr::summarise_all(list(~sum(., na.rm = TRUE))) %>% dplyr::ungroup()    
   
   ## date dimensions take the first entry
   dateAgg <- ga_data %>%
     dplyr::select(!!!date_selects) %>%
     dplyr::group_by(!!!dots) %>%
-    dplyr::summarise_all(dplyr::funs(min(., na.rm = TRUE))) %>% dplyr::ungroup()
+    dplyr::summarise_all(list(~min(., na.rm = TRUE))) %>% dplyr::ungroup()    
   
   ## join up all the aggregations
   if(!is.null(agg_names)){

@@ -87,7 +87,7 @@ google_analytics_4_parse <- function(x){
   timelr <- NULL
   if(!is.null(x$data$dataLastRefreshed)){
     # convert timezone to locale
-    timelr <- format(as.POSIXct(x$data$dataLastRefreshed, tz="UTC", format = "%Y-%m-%dT%H:%M:%S"), tz = Sys.timezone())
+    timelr <- format(timestamp_to_r(x$data$dataLastRefreshed))
     myMessage("API data last refreshed: ",timelr, level = 3)
   }
   
@@ -123,8 +123,8 @@ google_analytics_4_parse <- function(x){
   out <- data.frame(cbind(dims, mets),
                     stringsAsFactors = FALSE, row.names = 1:nrow(mets))
   
-  if(nrow(out) >= 1000000L){
-    warning(">1 million rows are in API response which is the API limit. Split up your API calls into smaller chunks to ensure all data is returned.")
+  if(nrow(out) >= 999999){
+    warning("## More than 1 million rows are in API response which is the API hard limit. Split up your API calls into smaller chunks to ensure all data is returned.")
   }
   
   out_names <- c(dim_names, met_names)
@@ -216,13 +216,13 @@ parse_ga_account_summary <- function(x){
               accountName = name,
               ## fix bug if webProperties is NULL
               webProperties = purrr::map_if(webProperties, is.null, ~ data.frame())) %>%
-    unnest() %>% ##unnest webprops
+    unnest(cols = webProperties) %>% ##unnest webprops
     mutate(webPropertyId = id,
            webPropertyName = name,
            ## fix bug if profiles is NULL
            profiles = purrr::map_if(profiles, is.null, ~ data.frame())) %>%
     select(-kind, -id, -name) %>%
-    unnest() %>% ## unnest profiles
+    unnest(cols = profiles) %>% ## unnest profiles
     mutate(viewId = id,
            viewName = name) %>%
     select(-kind, -id, -name)

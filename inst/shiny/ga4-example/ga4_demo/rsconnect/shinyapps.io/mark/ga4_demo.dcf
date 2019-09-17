@@ -1,0 +1,12 @@
+name: ga4_demo
+title: ga4_demo
+username:
+account: mark
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 625277
+bundleId: 1791896
+url: https://mark.shinyapps.io/ga4_demo/
+when: 1546364711.76997
+asMultiple: FALSE
+asStatic: FALSE

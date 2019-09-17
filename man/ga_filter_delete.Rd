@@ -4,8 +4,8 @@
 \alias{ga_filter_delete}
 \title{Delete a filter from account or remove from view.}
 \usage{
-ga_filter_delete(accountId, webPropertyId = NULL, viewId = NULL, filterId,
-  removeFromView = FALSE)
+ga_filter_delete(accountId, webPropertyId = NULL, viewId = NULL,
+  filterId, removeFromView = FALSE)
 }
 \arguments{
 \item{accountId}{Account Id of the account that contains the filter}
@@ -25,22 +25,8 @@ TRUE if successful
 Delete a filter from account or remove from view.
 }
 \seealso{
-Other managementAPI functions: \code{\link{ga_adwords_list}},
-  \code{\link{ga_adwords}}, \code{\link{ga_clientid_hash}},
-  \code{\link{ga_experiment_list}},
-  \code{\link{ga_experiment}}, \code{\link{ga_filter_add}},
-  \code{\link{ga_filter_apply_to_view}},
-  \code{\link{ga_filter_list}},
-  \code{\link{ga_filter_update_filter_link}},
-  \code{\link{ga_filter_update}},
+Other filter management functions: \code{\link{ga_filter_list}},
   \code{\link{ga_filter_view_list}},
-  \code{\link{ga_filter_view}}, \code{\link{ga_filter}},
-  \code{\link{ga_goal_add}}, \code{\link{ga_goal_list}},
-  \code{\link{ga_goal_update}}, \code{\link{ga_goal}},
-  \code{\link{ga_remarketing_estimate}},
-  \code{\link{ga_remarketing_get}},
-  \code{\link{ga_remarketing_list}},
-  \code{\link{ga_segment_list}},
-  \code{\link{ga_unsampled_list}},
-  \code{\link{ga_unsampled}}
+  \code{\link{ga_filter_view}}, \code{\link{ga_filter}}
 }
+\concept{filter management functions}

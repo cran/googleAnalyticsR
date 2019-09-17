@@ -1,3 +1,81 @@
+
+#' when we need a list of objs of class x to also be class x
+#' @noRd
+assign_list_class <- function(x, the_class){
+  if(!is.null(x)){
+    # fix 253
+    # make sure its a list of segment_ga4 objects
+    if(class(x) == "list" &&
+       all(unlist(lapply(x, function(y) inherits(y, the_class))))){
+      class(x) <- the_class
+    } else {
+      x <- as(x, the_class)
+    }
+    
+  }
+  
+  ## will be NULL if x was NULL
+  x
+
+}
+
+add_class_if_list <- function(x, the_class){
+
+  if(!is.null(x) && class(x) == "list"){
+    class(x) <- the_class
+  }
+
+  x
+}
+
+
+#' assign new value if not null and check passes
+#' @noRd
+assign_new <- function(new, old, check_f = is.function){
+  if(!is.null(new)){
+    assert_that(check_f(new))
+    return(new)
+  }
+  old
+}
+
+#' Function argument names
+#' @noRd
+function_args <- function(f, include_dots = FALSE){
+  if(include_dots){
+   return(names(formals(f))) 
+  }
+  setdiff(names(formals(f)),"...")
+}
+
+#' check package installed
+#' @noRd
+#' @importFrom purrr walk
+check_packages_installed <- function(x, stop_if_not = TRUE, load_them = FALSE){
+  if(is.null(x)){
+    return()
+  }
+  stopifnot(is.character(x))
+  
+  check_one <- function(y){
+    its_here <- TRUE
+    if (!requireNamespace(y, quietly = TRUE)) {
+      nope <- sprintf("%s needed for this function to work. Please install it via install.packages('%s')",
+                      y,y)
+      if(stop_if_not) stop(nope, call. = FALSE) else myMessage(nope)
+      if(!stop_if_not) its_here <- FALSE
+    }
+    return(its_here)
+  }
+  
+  walk(x, check_one)
+  
+  if(load_them){
+    walk(x, library, character.only = TRUE)
+  }
+
+}
+
 #' convert 'yesterday', 'today', 'Ndaysago etc. into R dates
 #' @noRd
 #' @import assertthat
@@ -9,16 +87,18 @@ process_date <- function(x){
   
   assert_that(is.character(x))
   
-  convert_date <- as.Date(x)
-  if(!is.na(convert_date)){
-    return(convert_date)
-  }
+  tryCatch(
+    return(as.Date(x)),
+    error = function(err){
+      NULL
+    }
+  )
   
   x <- tolower(x)
   
   # turn NDaysAgo into R Dates
   r_nd <- "^(.+)daysago$"
-  
+
   if(grepl(r_nd, x)){
     new_date <- Sys.Date() - as.numeric(gsub(r_nd,"\\1", x))
   } else if(x == "today"){
@@ -40,7 +120,7 @@ process_date <- function(x){
 
 check_empty <- function(x){
   if(any(is.null(x), length(x) == 0)){
-    myMessage("No items found")
+    myMessage("No items found", level = 3)
     return(NULL)
   } else {
     TRUE
@@ -51,6 +131,13 @@ check_empty <- function(x){
 #' @noRd
 iso8601_to_r <- function(x){
   as.POSIXct(gsub("\\....Z$","",x), format = "%Y-%m-%dT%H:%M:%S", tz = "UTC")
+}
+
+safe_extract <- function(x){
+  if(is.null(x)){
+    return(NA_character_)
+  }
+  x
 }
 
 
@@ -65,6 +152,15 @@ super_flatten <- function(x){
     mutate_if(is.list, ~purrr::map_chr(., paste, collapse = ","))
 }
 
+#' Nested lists with data.frames within
+#' list entity names become a column
+#' @noRd
+# nested_flatten <- function(x){
+#   x %>% 
+#     map_if(is.list, function(x) ) %>% 
+#     mutate_if(is.list, nested_flatten)
+# }
+
 
 # common paging function
 get_attr_nextLink <- function(x){
@@ -76,7 +172,8 @@ get_attr_nextLink <- function(x){
 # do an assert_that test only if x is not null
 assert_that_ifnn <- function(x, assert_f){
   if(!is.null(x)){
-    assert_that(assert_f(x))
+    assert_that(assert_f(x), 
+                msg = paste(deparse(substitute(assert_f)), "failed"))
   }
 }
 
