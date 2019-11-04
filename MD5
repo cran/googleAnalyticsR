@@ -1,7 +1,7 @@
-72c64779b0b60c320bb3b0c9e207e2d9 *DESCRIPTION
+37a255229fe125d4a079bcbde5b8f3aa *DESCRIPTION
 0ab974080319260f13cfefa59d427236 *LICENSE
 bb74f3fd9621575522cbb852568ff821 *NAMESPACE
-951656c72803c8c8e7176b2b59e87a9b *NEWS.md
+197f7567597fd79d711366f2b3dec374 *NEWS.md
 4107b7c5e97a85a4715ea5f23b1e1327 *R/accounts.R
 b829549cbc62d59f05915abcdda61fdf *R/adwords.R
 d492bfffb6d9219a46bcef81dd280138 *R/aggregate.R
@@ -16,10 +16,10 @@ be85c14c8d6df525792bbc4a8438e756 *R/cache.R
 d51a7d4dddb209cced40cd87d332f09c *R/data.R
 cfc84b74a2a6870b791c2dd597917a85 *R/experiments.R
 1758322b6fd62af055ac8ffdc25eb078 *R/fetch_functions.R
-ee554eef5bc39f7817c15ffa67630b9b *R/filter_management.R
+3b58f4a733d6dea85d3deb7d7c8fbbca *R/filter_management.R
 dec5198b7343578924ea4ceb03ddc83f *R/filters.R
-db4b70dded5b1b3f7c876efe38454058 *R/ga_v3_get.R
-387d411e6c5b890313016c093d01f3b5 *R/ga_v4_get.R
+ae172e6561de0eaf7ca0e1113bb0b0ad *R/ga_v3_get.R
+b32a5f93326616acadb2353d594cbcd2 *R/ga_v4_get.R
 590f57fe099be05a33a444aeae300167 *R/ga_v4_objects.R
 ca1720669196a544e4d3852ef574bc72 *R/gadget.R
 1c08f739a4cb1ae0abd547ced577575d *R/goal_management.R
@@ -27,7 +27,7 @@ ca1720669196a544e4d3852ef574bc72 *R/gadget.R
 cfc0db85b1cffc2b6d0a290daf0b0590 *R/meta.R
 2d99a41e306f115578db973c07d8facd *R/models.R
 74f32a194bbd4e94ac3ef6157ebd63c6 *R/options.R
-ca7340cd0da6190eca05aac178e400d5 *R/parse_functions.R
+4ba3e550bf3661cfff5aa8ca7fa06df8 *R/parse_functions.R
 73d7e7b8b165caa775e27a0cb418f2cd *R/pivots.R
 e0b492fdd25254da474b07794518f336 *R/print-method.R
 75b5a08a57222c5556d94f36bfef8549 *R/quotas_errors.R
@@ -54,11 +54,9 @@ fefc0f7e09e12e7a3f497b7dd947ce77 *inst/jupyter/googeAnalyticsR_auth.html
 844041150d2f6d5388c2c7e3b1e21872 *inst/models/decomp_ga.gamr
 f304c15904a0eccbf01a799a41a66bcc *inst/models/decomp_ga_advanced.gamr
 a8f62514d900e3205b8cb259c00095c4 *inst/models/ga-effect.gamr
-93d1abfec7f3146c3aca0f2fe187a3a0 *inst/models/shiny/test.R
 05fac6ef73729cf1ad1073f2985f0960 *inst/rmarkdown/example.Rmd
 6710d97627f4bc41fe3262e0fdf8ca85 *inst/rmarkdown/example.html
 21818c5829487214c2387ea1bab13b22 *inst/rstudio/addins.dcf
-e53a48c2e7ff1d754b34d761ee3ce384 *inst/shiny/ga4-example/ga4_demo/rsconnect/shinyapps.io/mark/ga4_demo.dcf
 45b0556b9e0b2fb470450e5561cba4d4 *inst/shiny/ga4-example/ga4_demo/server.R
 71069f9618cdcaa10dfce1c4b5f0b762 *inst/shiny/ga4-example/ga4_demo/ui.R
 6e08ebaa0552753aef150d7d5032678e *inst/shiny/ga4-example/segment_ga4_helper/app.R
@@ -159,7 +157,7 @@ c35dadaccb0d6e49abd13f2d6941c22a *man/ga_view_list.Rd
 8647822855654b7658606c596aa6effa *man/ga_webproperty_list.Rd
 623911a3988ad4bdae07395b08dabf41 *man/googleAnalyticsR.Rd
 c307cb291ee4acece9413bcca0f0fb8e *man/google_analytics.Rd
-08d21ffd37a78bd1b930f108d4c2f249 *man/google_analytics_3.Rd
+8efa263dc8a7fdcbcb799a80ad22bc83 *man/google_analytics_3.Rd
 ce0a57a4c1e05248a9a2b57a37352696 *man/google_analytics_4_parse.Rd
 39082927fb04e925062450263e3bf63a *man/google_analytics_bq.Rd
 454a529c09cd565c4e729ee56e6db6e5 *man/google_analytics_bq_asynch.Rd

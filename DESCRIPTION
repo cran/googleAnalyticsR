@@ -1,6 +1,6 @@
 Package: googleAnalyticsR
 Type: Package
-Version: 0.7.0
+Version: 0.7.1
 Title: Google Analytics API into R
 Description: Interact with the Google Analytics 
   APIs <https://developers.google.com/analytics/>, including 
@@ -15,7 +15,8 @@ Authors@R: c(person("Mark", "Edmondson", email = "m@sunholo.com",
            person("David", "Watkins", email = "wm.david.watkins@gmail.com", role = "ctb"),
            person("Olivia", "Brode-Roger", email = "nibr@mit.edu", role = "ctb"),
            person("Jas", "Sohi", email = "contact@jassohi.com", role = "ctb"),
-           person("Zoran", "Selinger", email = "zselinger@gmail.com", role = "ctb"))
+           person("Zoran", "Selinger", email = "zselinger@gmail.com", role = "ctb"),
+           person("Octavian", "Corlade", email = "octavian.corlade@gmail.com", role = "ctb"))
 URL: http://code.markedmondson.me/googleAnalyticsR/
 BugReports: https://github.com/MarkEdmondson1234/googleAnalyticsR/issues
 Depends: R (>= 3.3.0)
@@ -30,14 +31,15 @@ License: MIT + file LICENSE
 LazyData: TRUE
 RoxygenNote: 6.1.1
 NeedsCompilation: no
-Packaged: 2019-09-17 08:42:53 UTC; mark
+Packaged: 2019-11-04 09:43:58 UTC; IIH-Nordic
 Author: Mark Edmondson [aut, cre] (<https://orcid.org/0000-0002-8434-3881>),
   Artem Klevtsov [ctb],
   Johann deBoer [ctb],
   David Watkins [ctb],
   Olivia Brode-Roger [ctb],
   Jas Sohi [ctb],
-  Zoran Selinger [ctb]
+  Zoran Selinger [ctb],
+  Octavian Corlade [ctb]
 Maintainer: Mark Edmondson <m@sunholo.com>
 Repository: CRAN
-Date/Publication: 2019-09-17 09:10:05 UTC
+Date/Publication: 2019-11-04 10:10:02 UTC
