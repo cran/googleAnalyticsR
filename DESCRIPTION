@@ -1,6 +1,6 @@
 Package: googleAnalyticsR
 Type: Package
-Version: 0.7.1
+Version: 0.8.0
 Title: Google Analytics API into R
 Description: Interact with the Google Analytics 
   APIs <https://developers.google.com/analytics/>, including 
@@ -20,18 +20,18 @@ Authors@R: c(person("Mark", "Edmondson", email = "m@sunholo.com",
 URL: http://code.markedmondson.me/googleAnalyticsR/
 BugReports: https://github.com/MarkEdmondson1234/googleAnalyticsR/issues
 Depends: R (>= 3.3.0)
-Imports: assertthat (>= 0.2.0), dplyr (>= 0.8.0), googleAuthR (>=
-        1.1.1), httr (>= 1.3.1), jsonlite (>= 1.5), magrittr (>= 1.5),
-        memoise, methods, purrr (>= 0.2.2), rlang (>= 0.1.0), stats,
-        tibble (>= 2.0.1), tidyr (>= 1.0.0), utils
+Imports: assertthat (>= 0.2.0), cli (>= 2.0.2), dplyr (>= 0.8.0),
+        googleAuthR (>= 1.3.0), httr (>= 1.3.1), jsonlite (>= 1.5),
+        magrittr (>= 1.5), memoise, methods, purrr (>= 0.2.2), rlang
+        (>= 0.1.0), stats, tibble (>= 2.0.1), tidyr (>= 1.0.0), utils
 Suggests: bigQueryR (>= 0.3.1), covr, formatR, ganalytics,
-        googleCloudStorageR (>= 0.2.0), htmlwidgets, httptest (>=
-        3.2.2), knitr, miniUI (>= 0.1.1), rmarkdown, shiny (>= 0.13.2)
+        googleCloudStorageR (>= 0.2.0), htmlwidgets, knitr, miniUI (>=
+        0.1.1), rmarkdown, shiny (>= 0.13.2), testthat
 License: MIT + file LICENSE
 LazyData: TRUE
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.0
 NeedsCompilation: no
-Packaged: 2019-11-04 09:43:58 UTC; IIH-Nordic
+Packaged: 2020-06-24 11:54:35 UTC; mark
 Author: Mark Edmondson [aut, cre] (<https://orcid.org/0000-0002-8434-3881>),
   Artem Klevtsov [ctb],
   Johann deBoer [ctb],
@@ -42,4 +42,4 @@ Author: Mark Edmondson [aut, cre] (<https://orcid.org/0000-0002-8434-3881>),
   Octavian Corlade [ctb]
 Maintainer: Mark Edmondson <m@sunholo.com>
 Repository: CRAN
-Date/Publication: 2019-11-04 10:10:02 UTC
+Date/Publication: 2020-06-24 13:10:02 UTC

@@ -18,7 +18,7 @@ ga_model_tweet(model_output, twitter, title, bucket, image = "")
 \item{image}{An optional image to display before the visualition runs}
 }
 \description{
-Inspired by \url{https://datatitian.com/how-to-turn-your-ggplot2-visualization-into-an-interactive-tweet/} this uploads your model output into Google Cloud storage, in the right format to embed in a tweet
+Inspired by \code{https://datatitian.com/how-to-turn-your-ggplot2-visualization-into-an-interactive-tweet/} this uploads your model output into Google Cloud storage, in the right format to embed in a tweet
 }
 \details{
 This should work with all model outputs that are using \code{library(htmlwidgets)}
@@ -55,10 +55,13 @@ You need to authenticate with `googleCloudStorageR` before running this function
 
 }
 \seealso{
-Other GA modelling functions: \code{\link{ga_model_edit}},
-  \code{\link{ga_model_example}},
-  \code{\link{ga_model_load}}, \code{\link{ga_model_make}},
-  \code{\link{ga_model_save}},
-  \code{\link{ga_model_write}}, \code{\link{ga_model}}
+Other GA modelling functions: 
+\code{\link{ga_model_edit}()},
+\code{\link{ga_model_example}()},
+\code{\link{ga_model_load}()},
+\code{\link{ga_model_make}()},
+\code{\link{ga_model_save}()},
+\code{\link{ga_model_write}()},
+\code{\link{ga_model}()}
 }
 \concept{GA modelling functions}

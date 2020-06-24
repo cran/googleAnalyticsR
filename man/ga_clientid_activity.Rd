@@ -4,8 +4,13 @@
 \alias{ga_clientid_activity}
 \title{User Activity Request}
 \usage{
-ga_clientid_activity(ids, viewId, id_type = c("CLIENT_ID", "USER_ID"),
-  activity_type = NULL, date_range = NULL)
+ga_clientid_activity(
+  ids,
+  viewId,
+  id_type = c("CLIENT_ID", "USER_ID"),
+  activity_type = NULL,
+  date_range = NULL
+)
 }
 \arguments{
 \item{ids}{The userId or clientId.  You can send in a vector of them}
@@ -30,6 +35,8 @@ The User Activity API lets you query an individual user's movement through your 
 Bear in mind each call will count against your API quota, so fetching a large amount of client ids will be limited by that.
 
 Use \link{ga_clientid_activity_unnest} to unnest deeply nested data in the hits data.
+
+The timestamps are available to millisecond level but you will need to set your R options to see them e.g. \code{options(digits.secs=3)}
 }
 \examples{
 
@@ -79,8 +86,9 @@ only_goals <- ga_clientid_activity(c("1106980347.1461227730",
 \seealso{
 \url{https://developers.google.com/analytics/devguides/reporting/core/v4/rest/v4/userActivity/search}
 
-Other clientid functions: \code{\link{ga_clientid_activity_unnest}},
-  \code{\link{ga_clientid_deletion}},
-  \code{\link{ga_clientid_hash}}
+Other clientid functions: 
+\code{\link{ga_clientid_activity_unnest}()},
+\code{\link{ga_clientid_deletion}()},
+\code{\link{ga_clientid_hash}()}
 }
 \concept{clientid functions}
