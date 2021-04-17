@@ -2,7 +2,7 @@ title: "googleAnalyticsR"
 output_dir: "."
 url: https://code.markedmondson.me/googleAnalyticsR/
 development:
-  mode: release
+  mode: auto
 authors:
   name: Mark Edmondson
   href: https://code.markedmondson.me
@@ -24,6 +24,12 @@ navbar:
     - text: "Reporting APIs"
       icon: fa-table
       menu:
+        - text: "GA4 Data API"
+          href: articles/reporting-ga4.html
+          icon: fa-digital-tachograph
+        - text: "Measurement Protocol"
+          href: articles/measurement-protocol-v2.html
+          icon: fa-upload
         - text: "v4 API"
           href: articles/v4.html
           icon: fa-cogs
@@ -51,9 +57,15 @@ navbar:
       - text: "RMarkdown"
         icon: fa-pencil-square
         href: articles/rmarkdown.html
-    - text: "Models"
+    - text: Models
       icon: fa-calculator
-      href: articles/models.html
+      menu:
+      - text: "Creating Models"
+        icon: fa-calculator
+        href: articles/models.html
+      - text: "Shiny Model Templates"
+        icon: fa-photo-video
+        href: articles/model-templates.html
     - text: "Help"
       icon: fa-question-circle
       menu:
@@ -69,7 +81,6 @@ navbar:
       - text: "Practical tips"
         icon: fa-bicycle
         href: articles/practical-tips.html
-        
 reference:
   - title: "Authentication and Setup"
     desc: >
@@ -83,8 +94,23 @@ reference:
       Getting data from your Google Analytics account
     contents:
       - google_analytics
+      - ga_data
       - google_analytics_3
       - google_analytics_bq
+  - title: "Data API - Google Analytics 4"
+    desc: >
+      Working with the Data API (App+Web) for Google Analytics 4
+    contents:
+      - ga_data
+      - ga_data_filter
+      - ga_data_aggregations
+      - ga_data_order
+  - title: "Measurement Protocol v2"
+    desc: > 
+      Send data into GA4 with the Measurement Protocol
+    contents:
+      - matches("ga_mp")
+      - matches("ga_trackme")
   - title: "Reporting API v4 objects"
     desc: >
       Creating objects for more advanced v4 Reporting API fetches
@@ -111,35 +137,25 @@ reference:
       - ga_aggregate
       - ga_allowed_metric_dim
       - ga_meta
+      - meta
+      - meta4
   - title: "Shiny modules"
     desc: >
       Using Google Analytics with Shiny
     contents:
+      - accountPicker
       - authDropdown
       - authDropdownUI
       - multi_select
       - multi_selectUI
+      - metricDimensionSelect
       - segmentBuilder
       - segmentBuilderUI
-  - title: "Advanced fetching options"
-    desc: >
-      Building your own Google Analytics API requests
-    contents:
-      - make_ga_4_req
-      - fetch_google_analytics_4
-      - fetch_google_analytics_4_slow
   - title: "Model functions"
     desc: >
       Functions to create and use models with your Google Analytics data
     contents:
-      - ga_model
-      - ga_model_example
-      - ga_model_load
-      - ga_model_make
-      - ga_model_edit
-      - ga_model_save
-      - ga_model_write
-      - ga_model_tweet
+      - matches("ga_model")
   - title: "Account structure"
     desc: >
       Viewing the account > webproperty > view structure
@@ -157,6 +173,8 @@ reference:
       - ga_segment_list
       - ga_adwords_list
       - ga_adwords
+      - ga_adwords_add_linkid
+      - ga_adwords_delete_linkid
       - ga_remarketing_list
       - ga_remarketing_build
       - ga_remarketing_create

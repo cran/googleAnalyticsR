@@ -1,13 +1,36 @@
-#' Use a model function created by ga_model_make
+#' Use a model 
+#' 
+#' Use a model created by [ga_model_make]
 #'
 #' @param viewId The GA viewId to operate on
 #' @param model A file location of a model object or a model object
-#'   created by \link{ga_model_make}
+#'   created by [ga_model_make]
 #' @param load_libs Whether to load the library requirements into your namespace
 #' @param ... Other arguments to pass into the model as needed
 #'
 #' @export
 #' @family GA modelling functions
+#' @examples 
+#' 
+#' # models that come with the package
+#' ga_model_example()
+#' \dontrun{
+#' 
+#' # your own Google Analytics viewID
+#' my_viewid <- 81416156
+#' 
+#' # load the model (equivalent to ga_model_load())
+#' decomp_ga <- ga_model_example("decomp_ga.gamr")
+#' 
+#' # apply model to your data
+#' d1 <- ga_model(my_viewid, model = decomp_ga)
+#' 
+#' # change default date range to 20 days ago to yesterday
+#' d2 <- ga_model(my_viewid, model = decomp_ga, 
+#'                date_range = c("20daysAgo","yesterday"))
+#' 
+#' 
+#' }
 ga_model <- function(viewId, model, load_libs = TRUE, ...){
   
   # a filepath
@@ -65,6 +88,16 @@ is.ga_model_result <- function(x){
 #'
 #' @export
 #' @family GA modelling functions
+#' @examples 
+#' 
+#' \dontrun{
+#' # load the model (equivalent to ga_model_load())
+#' decomp_ga <- ga_model_example("decomp_ga.gamr")
+#' 
+#' # save it somewhere else
+#' ga_model_save(decomp_ga, "somewhereelse.gamr")
+#' 
+#' }
 ga_model_save <- function(model, filename = "my-model.gamr"){
   assert_that(
     is.ga_model(model)
@@ -80,6 +113,13 @@ ga_model_save <- function(model, filename = "my-model.gamr"){
 #' @export
 #' @import assertthat
 #' @family GA modelling functions
+#' @examples 
+#' 
+#' # models used in ga_model_example() are here:
+#' location <- system.file("models","examples","decomp_ga.gamr", 
+#'                         package = "googleAnalyticsR")
+#' 
+#' ga_model_load(location)
 ga_model_load <- function(filename = "my-model.gamr"){
   
   assert_that(is.readable(filename))
@@ -87,6 +127,7 @@ ga_model_load <- function(filename = "my-model.gamr"){
   model <- readRDS(filename)
   
   assert_that(is.ga_model(model))
+  myMessage("Loaded model from ", filename, level = 2)
   
   model
   
@@ -94,14 +135,26 @@ ga_model_load <- function(filename = "my-model.gamr"){
 
 #' Load an example model
 #' 
-#' @param name name of the model
-#' @param location location of model
+#' @param name name of the model - set to "list" to show available files
 #' @export
 #' @import assertthat
 #' @family GA modelling functions
-ga_model_example <- function(name, location = "googleAnalyticsR"){
+#' @examples 
+#' 
+#' # example .gamr files included with the package
+#' ga_model_example()
+#' 
+#' # load one example
+#' ga_model_example("ga4-trend.gamr")
+ga_model_example <- function(name = "list"){
+  
+  if(name == "list"){
+    return(list.files(system.file("models","examples", package = "googleAnalyticsR"), 
+               include.dirs = FALSE))
+  }
+  
   # this will fetch from more places such as other packages and GCS eventually
-  filename <- system.file("models", name, package = location)
+  filename <- system.file("models","examples", name, package = "googleAnalyticsR")
   
   ga_model_load(filename)
 }
@@ -114,24 +167,25 @@ ga_model_example <- function(name, location = "googleAnalyticsR"){
 #' @param data_f A function that gets the data 
 #' @param required_columns What dimensions and metrics are required
 #' @param model_f A function that inputs data, and outputs a list of assets -
-#'   must take data from result of \code{data_f} in first argument
-#' @param output_f A function that inputs the output from \code{model_f}, outputs a visualisation
-#' @param required_packages The packages needed for \code{data_f} and \code{model_f} to work
+#'   must take data from result of `data_f` in first argument
+#' @param output_f A function that inputs the output from `model_f`, outputs a visualisation
+#' @param required_packages The packages needed for `data_f` and `model_f` to work
 #' @param description An optional description of what the model does
-#' @param renderShiny A shiny render function that will create the output for \code{outputShiny} from \code{output_f}
-#' @param outputShiny A shiny UI output function that will display the results \code{renderShiny}
+#' @param renderShiny A shiny render function that will create the output for `outputShiny` from `output_f`
+#' @param outputShiny A shiny UI output function that will display the results `renderShiny`
+#' @param inputShiny Optional input shiny functions (like `dateInput()`) that will be used within the model's Shiny module.  The id should be exactly the same as one of the variables in the model functions.
 #'
 #' @details 
 #' 
-#' The passed functions should all have \code{...} to make them flexible
+#' The passed functions should all have `...` to make them flexible
 #'   in what arguments can be added.  Do not have the same argument names in both functions.
-#' The \code{data_f} function result will feed to \code{model_f}
+#' The `data_f` function result will feed to `model_f`
 #'
 #' @export
 #' @import assertthat
 #' @family GA modelling functions
 #' 
-#' @return A \code{ga_model} object to pass to \link{ga_model}
+#' @return A `ga_model` object to pass to [ga_model]
 #'
 #' @examples
 #'
@@ -160,7 +214,7 @@ ga_model_example <- function(name, location = "googleAnalyticsR"){
 #'  ga_model(81416156, decomp_ga)
 #'
 #'  # save the model for later
-#'  model_location <- "inst/models/decomp_ga.gamr"
+#'  model_location <- "decomp_ga.gamr"
 #'  ga_model_save(decomp_ga, filename = model_location)
 #'
 #'  # can load model from file
@@ -175,20 +229,148 @@ ga_model_example <- function(name, location = "googleAnalyticsR"){
 #'  decomp_ga <- ga_model_make(get_model_data,
 #'                             required_columns = c("date", "sessions"),
 #'                             model_f = decompose_sessions,
-#'                             output_f = graphics::plot,
+#'                             output_f = function(df, ...){graphics::plot(df)},
 #'                             description = "Performs decomposition and creates a plot",
 #'                             outputShiny = shiny::plotOutput,
 #'                             renderShiny = shiny::renderPlot)
 #'
 #' }
-ga_model_make <- function(data_f,
-                          required_columns,
-                          model_f,
-                          output_f = graphics::plot,
-                          required_packages = NULL,
-                          description = NULL,
-                          outputShiny = shiny::plotOutput,
-                          renderShiny = shiny::renderPlot){
+ga_model_make <- function(
+  data_f,
+  required_columns,
+  model_f,
+  output_f = function(df, ...){plot(df)},
+  required_packages = NULL,
+  description = NULL,
+  outputShiny = shiny::plotOutput,
+  renderShiny = shiny::renderPlot,
+  inputShiny = shiny::tagList()){
+  
+  if(is.null(inputShiny)) inputShiny <- shiny::tagList()
+  
+  Model(
+    data_f            = data_f,
+    required_columns  = required_columns,
+    model_f           = model_f,
+    output_f          = output_f,
+    required_packages = required_packages,
+    description       = description,
+    shiny_module = create_shiny_module_funcs(
+      data_f = data_f,
+      model_f = model_f,
+      output_f = output_f,
+      outputShiny = outputShiny,
+      renderShiny = renderShiny,
+      inputShiny = inputShiny)
+  )
+  
+}
+
+#' Edit a created ga_model
+#' 
+#' Change features of a model by changing the functions within it.
+#' 
+#' @param model The model to edit - if a filepath will load model and 
+#'   save back edited model to the same file
+#' @inheritParams ga_model_make
+#' 
+#' 
+#' @export
+#' @family GA modelling functions
+#' @examples 
+#' 
+#' \dontrun{
+#' 
+#' decomp_ga <- ga_model_example("decomp_ga.gamr")
+#' decomp_ga
+#' 
+#' # edit its description
+#' ga_model_edit(decomp_ga, description = "Changed")
+#' 
+#' }
+ga_model_edit <- function(
+  model,
+  data_f = NULL,
+  required_columns = NULL,
+  model_f = NULL,
+  required_packages = NULL,
+  description = NULL,
+  outputShiny = shiny::plotOutput,
+  renderShiny = shiny::renderPlot,
+  inputShiny = NULL,
+  output_f = NULL){
+  
+  save_me <- ""
+  if(is.character(model)){
+    save_me <- model
+    model <- ga_model_load(model)
+  }
+  
+  assert_that(is.ga_model(model))
+  myMessage("Editing model: ", model$description, level = 3)
+  
+  data_f2              <- model$data_f
+  required_columns2    <- model$required_columns
+  model_f2             <- model$model_f
+  output_f2            <- model$output_f
+  required_packages2   <- model$required_packages
+  description2         <- model$description
+  shiny_module_ui2     <- model$shiny_module$ui
+  shiny_module_server2 <- model$shiny_module$server
+  shiny_module_uiInput2 <- model$shiny_module$uiInput
+  
+  data_f2            <- assign_new(data_f, data_f2, is.function)
+  required_columns2  <- assign_new(required_columns, required_columns2, is.character)
+  model_f2           <- assign_new(model_f, model_f2, is.function)
+  output_f2          <- assign_new(output_f, output_f2, is.function)
+  required_packages2 <- assign_new(required_packages, required_packages2, is.character)
+  description2       <- assign_new(description, description2, assertthat::is.string)
+
+  # only do this bit if a shiny module is present
+  if(any(!is.null(outputShiny), !is.null(renderShiny), !is.null(inputShiny))){
+
+    shiny_module_ui2     <- assign_new(outputShiny, shiny_module_ui2)
+    shiny_module_server2 <- assign_new(renderShiny, shiny_module_server2)
+    shiny_module_uiInput2 <- assign_new(inputShiny, shiny_module_uiInput2, is.inputShiny)
+  }
+
+  shiny_module <- create_shiny_module_funcs(
+    data_f = data_f2,
+    model_f = model_f2,
+    output_f = output_f2,
+    outputShiny = shiny_module_ui2,
+    renderShiny = shiny_module_server2,
+    inputShiny = shiny_module_uiInput2)
+  
+  
+  model <- Model(
+      data_f            = data_f2,
+      required_columns  = required_columns2,
+      model_f           = model_f2,
+      required_packages = required_packages2,
+      description       = description2,
+      output_f          = output_f2,
+      shiny_module      = shiny_module
+    )
+  
+  if(nzchar(save_me)) ga_model_save(model, filename = save_me)
+  
+  model
+}
+
+is.inputShiny <- function(x){
+  inherits(x, "shiny.tag") || inherits(x, "shiny.tag.list")
+}
+
+#' @noRd
+Model <- function(
+  data_f,
+  required_columns  = NULL,
+  model_f           = NULL,
+  required_packages = NULL,
+  description       = NULL,
+  output_f          = NULL,
+  shiny_module      = NULL){
   
   assert_that(
     is.function(data_f),
@@ -208,120 +390,97 @@ ga_model_make <- function(data_f,
     stop("output_f() arguments need to include ...", call.=FALSE)
   }
   
+  # using id breaks shiny modules
+  if("id" %in% c(function_args(data_f), function_args(model_f), function_args(output_f))){
+    stop("Don't use 'id' in function arguments - it clashes with Shiny module's arg: id", call.=FALSE)
+  }
+  
+  # data_f must include view_id as first argument
+  if(function_args(data_f)[[1]] != "view_id"){
+    stop("Must have 'view_id' as first argument of data_f", call.=FALSE)
+  }
+  
   structure(
     list(
       data_f            = data_f,
       required_columns  = required_columns,
       model_f           = model_f,
-      output_f          = output_f,
       required_packages = required_packages,
       description       = description,
-      shiny_module = create_shiny_module_funcs(data_f = data_f,
-                                               model_f = model_f,
-                                               output_f = output_f,
-                                               outputShiny = outputShiny,
-                                               renderShiny = renderShiny)
-    ), 
-    class = "ga_model"
-  )
-  
-}
-
-#' Edit a created ga_model
-#' 
-#' Change features of a model by changing the functions within it.
-#' 
-#' @param model The model to edit - if a filepath will load model and 
-#'   save back edited model to the same file
-#' @inheritParams ga_model_make
-#' 
-#' 
-#' @export
-#' @family GA modelling functions
-ga_model_edit <- function(model,
-                          data_f = NULL,
-                          required_columns = NULL,
-                          model_f = NULL,
-                          required_packages = NULL,
-                          description = NULL,
-                          outputShiny = NULL,
-                          renderShiny = NULL,
-                          output_f = NULL){
-  
-  save_me <- ""
-  if(is.character(model)){
-    save_me <- model
-    model <- ga_model_load(model)
-  }
-  
-  assert_that(is.ga_model(model))
-  
-  data_f2              <- model$data_f
-  required_columns2    <- model$required_columns
-  model_f2             <- model$model_f
-  output_f2            <- model$output_f
-  required_packages2   <- model$required_packages
-  description2         <- model$description
-  shiny_module_ui2     <- model$shiny_module$ui
-  shiny_module_server2 <- model$shiny_module$server
-  
-  data_f2            <- assign_new(data_f, data_f2)
-  required_columns2  <- assign_new(required_columns, required_columns2, is.character)
-  model_f2           <- assign_new(model_f, model_f2)
-  output_f2          <- assign_new(output_f, output_f2)
-  required_packages2 <- assign_new(required_packages, required_packages2, is.character)
-  description2       <- assign_new(description, description2, assertthat::is.string)
-  
-  if(any(!is.null(outputShiny), !is.null(renderShiny))){
-    assert_that(
-      !is.null(outputShiny),
-      !is.null(renderShiny)
-    )
-    shiny_module_ui2     <- assign_new(outputShiny, shiny_module_ui2)
-    shiny_module_server2 <- assign_new(renderShiny, shiny_module_server2)
-  }
-  
-  shiny_module <- create_shiny_module_funcs(data_f = data_f2,
-                                            model_f = model_f2,
-                                            output_f = output_f2,
-                                            outputShiny = shiny_module_ui2,
-                                            renderShiny = shiny_module_server2)
-
-
-  model <- structure(
-    list(
-      data_f            = data_f2,
-      required_columns  = required_columns2,
-      model_f           = model_f2,
-      required_packages = required_packages2,
-      description       = description2,
+      output_f          = output_f,
       shiny_module      = shiny_module
     ), 
     class = "ga_model"
   )
-  
-  if(save_me != "") ga_model_save(model, filename = save_me)
-  
-  model
 }
-
 
 
 is.ga_model <- function(x){
   inherits(x, "ga_model")
 }
 
+is.ga_model_list <- function(x){
+  all(lapply(x, is.ga_model))
+}
+
+is.shinyTagList <- function(x){
+  inherits(x, "shiny.tag.list")
+}
+
+extract_ids <- function(inputShiny){
+  if(is.shinyTagList(inputShiny)){
+    input_ids <- lapply(inputShiny, extract_from_list, id_regex="id$")
+    if(any(lapply(input_ids, length) > 1)){
+      stop("inputShiny must be only one level deep of nesting e.g. tagList(xxxInput(), yyyInput()), not tagList(tagList(xxxInput(), yyyInput()), zzzInput())", call. = FALSE)
+    }
+  } else {
+    input_ids <- list(extract_from_list(inputShiny, id_regex = "id$"))
+  }
+  input_ids
+}
+
+replace_ids <- function(inputShiny, ids, ns){
+  f <- function(x, ids, ns){
+    replace_in_list(x, ids, ns(ids))
+  }
+  if(is.shinyTagList(inputShiny)){
+    inputs <- mapply(f, inputShiny, ids, 
+                     MoreArgs = list(ns = ns),
+                     SIMPLIFY = FALSE, USE.NAMES = FALSE)
+  } else {
+    inputs <- f(inputShiny, ids[[1]], ns)
+  }
+  inputs
+}
+
+create_shiny_module_ui <- function(outputShiny,inputShiny, input_ids){
+  assert_that_ifnn(inputShiny, is.inputShiny)
+  assert_that(is.function(outputShiny))
+  
+  function(id, ...){
+    ns <- shiny::NS(id)
+    if(!is.null(input_ids)){
+      inputShiny <- replace_ids(inputShiny, input_ids, ns)
+    } 
+    shiny::tagList(
+      inputShiny,
+      outputShiny(outputId = ns("ui_out"), ...)
+    )
+  }
+}
 
 
 #' @noRd
 #' @import assertthat
+#' @importFrom utils modifyList
 create_shiny_module_funcs <- function(data_f,
                                       model_f,
                                       output_f,
                                       outputShiny,
-                                      renderShiny
+                                      renderShiny,
+                                      inputShiny = NULL
                                       ){
-  
+  myMessage("Creating Shiny modules", level = 2)
   if(any(is.null(output_f), is.null(outputShiny), is.null(renderShiny))){
     myMessage("Can't create Shiny module as necessary functions are NULL", 
               level = 3)
@@ -336,55 +495,103 @@ create_shiny_module_funcs <- function(data_f,
     is.function(output_f)
   )
   
-  ui <- function(id, ...){
-    ns <- shiny::NS(id)
-    
-    outputShiny(outputId = ns("ui_out"), ...)
-    
-  }
+  input_ids <- extract_ids(inputShiny)
   
-  server <- function(input, output, session, view_id, ...){
-    
-    dots <- list(...)
-    
-    gadata <- shiny::reactive({
+  ui <- create_shiny_module_ui(outputShiny, inputShiny, input_ids)
+  
+  server <- function(id, view_id, ...){
+  
+    shiny::moduleServer(
+      id,
+      function(input, output, session){
+        dots <- list(...)
 
-      myMessage("Fetching data", level = 3)
-      do.call(data_f, 
-              args = c(list(viewId = view_id()), 
-                       eval_input_list(dots)))
-      
-    })
-    
-    model_output <- shiny::reactive({
-      shiny::validate(shiny::need(gadata(), 
-                                  message = "Waiting for data"))
-      myMessage("Modelling data", level = 3)
+        myMessage("shiny args passed: ", 
+                  paste(names(dots),"=", dots, collapse = ","),
+                  level = 2)
+        
+        copy_input_ids <- function(input_ids, input, dots){
 
-      do.call(model_f, 
-              args = c(list(gadata()), 
-                       eval_input_list(dots)))
-      
-    })
-    
-    output$ui_out <- renderShiny({
-      shiny::validate(shiny::need(model_output(), 
-                                  message = "Waiting for model output"))
-      
-      myMessage("Rendering model output", level = 3)
-      do.call(output_f,
-              args = c(list(model_output()), eval_input_list(dots)))
-      
-    })
-    
-    return(model_output)
+          new <- lapply(input_ids, function(x){
+            if(is.null(x)) return(NULL)
+            dots[[x]] <- input[[x]]
+            })
+          modifyList(dots, setNames(new, input_ids))
+        }
+        
+        inputs_in_f_args <- function(f, dots){
+          intersect(function_args(f), names(dots))
+        }
+        
+        cache_my_inputs <- function(f, dots){
+          dots <- copy_input_ids(input_ids, input, dots)
+          cache_these <- inputs_in_f_args(f, dots)
+          myMessage(
+            as.character(substitute(f)),
+            "cache_these:", paste(cache_these, collapse = ", "), 
+            level = 3)
+          
+          eval_input_list(dots[cache_these])
+        }
+
+        gadata <- shiny::reactive({
+          shiny::req(view_id())
+
+          dots <- copy_input_ids(input_ids, input, dots)
+          
+          myMessage("Fetching data for view_id:",view_id(), level = 3)
+          execute_model_function(data_f,
+                                 dependency = list(view_id = view_id()),
+                                 dots = dots)
+          
+        }) %>% shiny::bindCache(cache_my_inputs(data_f, dots), view_id())
+        
+        model_output <- shiny::reactive({
+          shiny::validate(shiny::need(gadata(), 
+                                      message = "Waiting for data"))
+          dots <- copy_input_ids(input_ids, input, dots)
+
+          myMessage("Modelling data", level = 3)
+          execute_model_function(model_f,
+                                 dependency = list(gadata()),
+                                 dots = dots)
+          
+        }) %>% shiny::bindCache(cache_my_inputs(model_f, dots), gadata())
+        
+        output$ui_out <- renderShiny({
+          shiny::validate(shiny::need(model_output(), 
+                                      message = "Waiting for model output"))
+          dots <- copy_input_ids(input_ids, input, dots)
+
+          myMessage("Rendering model output", level = 3)
+          execute_model_function(output_f,
+                                 dependency = list(model_output()),
+                                 dots = dots)
+          
+        }) %>% shiny::bindCache(cache_my_inputs(output_f, dots), model_output())
+        
+        return(model_output)
+      })
   }
   
   list(
     ui = ui,
-    server = server
+    server = server,
+    uiInput = inputShiny
   )
   
+}
+
+execute_model_function <- function(f, dependency, dots){
+  assert_that(is.function(f), is.list(dependency))
+  
+  myMessage("function_vars: ", paste(function_args(f), collapse = ", "))
+  
+  tryCatch(do.call(f, args = c(dependency, eval_input_list(dots))),
+           error = function(err){
+             stop("Problem executing model function - ", err$message, 
+                  call. = FALSE)
+           })
 }
 
 # force evaluation to reactive inputs update
@@ -398,182 +605,98 @@ eval_input_list <- function(dots){
   })
 }
 
-#' Upload an interactive visualisation so it can be embedded in a tweet
-#' 
-#' Inspired by \code{https://datatitian.com/how-to-turn-your-ggplot2-visualization-into-an-interactive-tweet/} this uploads your model output into Google Cloud storage, in the right format to embed in a tweet
-#' 
-#' @param model_output A \code{ga_model_result} object created by \link{ga_model}
-#' @param twitter Your twitter handle e.g. \code{@holomarked}
-#' @param title Twitter preview card title text
-#' @param bucket The GCS bucket to upload to
-#' @param image An optional image to display before the visualition runs
-#' 
-#' @details 
-#' 
-#' This should work with all model outputs that are using \code{library(htmlwidgets)}
-#' 
-#' If using plotly, you need an account to use \code{plotly_IMAGE} to generate the preview image.
-#' 
-#' If you don't use a preview image, a generic one will be supplied instead.
-#' 
-#' You need to authenticate with `googleCloudStorageR` before running this function so it can upload the appropriate files and make them public.   
-#' 
-#' \url{https://cards-dev.twitter.com/validator} is useful to test what it will look like on Twitter.
-#' 
-#' @examples 
-#' 
-#' \dontrun{
-#'   library(googleAnalyticsModelR)
-#'   library(googleAnalyticsR)
-#'   library(plotly)
-#' 
-#'   # create your htmlwidget output - in this case plot.ly
-#'   output <- ga_time_normalised(81416156, interactive_plot = TRUE)
-#'   
-#'   # if you have a plot.ly account, you can generate a static image
-#'   plotly_IMAGE(output$plot, out_file = "tweet.png")
-#' 
-#'   # now upload - assumes auto-authentication with googleCloudStorage
-#'   library(googleCloudStorageR)
-#'   ga_model_tweet(output, 
-#'                  "@HoloMarked", 
-#'                  "Test2 ga_model twitter upload", 
-#'                  bucket = "mark-edmondson-public-read",
-#'                  image = "tweet.png")
-#' }
-#' 
-#' @export
-#' @family GA modelling functions
-ga_model_tweet <- function(model_output,
-                           twitter,
-                           title,
-                           bucket,
-                           image = ""){
-  assert_that(
-    is.ga_model_result(model_output),
-    is.string(twitter),
-    is.string(title)
-  )
-  
-  # deal with plotly spacing
-  if(!is.null(model_output$plot$sizingPolicy$padding)){
-    model_output$plot$sizingPolicy$padding <- "0"
-  }
-  
-  my_tmpdir <- tempdir()
-  tmp <- tempfile(tmpdir = my_tmpdir, fileext = ".html")
-  on.exit(unlink(tmp))
-  
-  the_name <- gsub("[^A-Za-z0-9]","-", title)
-  
-  libdir <- file.path(my_tmpdir,paste0(the_name, "/lib"))
-  on.exit(unlink(libdir))
-  
-  htmlwidgets::saveWidget(
-    model_output$plot, 
-    libdir = libdir,
-    tmp,
-    title = title,
-    selfcontained = FALSE
-  )
-  
-  download_url <- googleCloudStorageR::gcs_download_url(paste0(the_name,".html"),
-                                   bucket = bucket,
-                                   public = TRUE)
-  
-  if(image == ""){
-    # use a default image instead
-    image <- system.file("hexlogo", "twitter-default-play.png",
-                         package = "googleAnalyticsR")
-  }
-  
-  image_loc <- paste0(the_name,"/",basename(image))
-  googleCloudStorageR::gcs_upload(image, 
-               bucket = bucket, 
-               name = image_loc,
-               predefinedAcl = "publicRead")
-  image_url <- googleCloudStorageR::gcs_download_url(image_loc, bucket= bucket, public=TRUE)
-
-  add_twitter_meta(tmp,
-                   twitter = twitter,
-                   title = title,
-                   description = model_output$model$description,
-                   url = download_url,
-                   image = image_url)
-
-  
-  googleCloudStorageR::gcs_upload(tmp, 
-             bucket = bucket, 
-             name = paste0(the_name, ".html"),
-             predefinedAcl = "publicRead")
-  
-  # some other weird files in here?
-  all_tmp <- list.files(my_tmpdir, recursive = TRUE)
-  all_tmp <- all_tmp[grepl(the_name, all_tmp)]
-  
-  lapply(all_tmp, function(x){
-    googleCloudStorageR::gcs_upload(file.path(my_tmpdir, x), 
-               bucket = bucket, 
-               name = x,
-               predefinedAcl = "publicRead")
-  })
-
-  myMessage("Preview this link at https://cards-dev.twitter.com/validator then use in a tweet to see visualisation: ",
-            download_url, level = 3)
-  
-  download_url
-  
-}
-
-add_twitter_meta <- function(html, 
-                             twitter, title, description, url, image = ''){
-  
-  o <- readChar(html, file.info(html)$size)
-  
-  meta <- c('<meta name="twitter:card" content="player" />',
-    sprintf('<meta name="twitter:site" content="%s" />',twitter),
-    sprintf('<meta name="twitter:title" content="%s" />',title),
-    sprintf('<meta name="twitter:description" content="%s" />',description),
-    sprintf('<meta name="twitter:player" content="%s" />',url),
-    '<meta name="twitter:player:width" content="517" />',
-    '<meta name="twitter:player:height" content="408" />',
-    sprintf('<meta name="twitter:image" content="%s" />',image))
-  
-  o <- gsub("<head>", paste(c("<head>", meta), collapse = "\n"), o)
-  writeChar(o, html)
-}
-
-
 
 #' Write the ga_model functions to a file
 #' 
-#' @param model The \code{ga_model} object to extract functions from to write
+#' @param model The `ga_model` object to extract functions from to write, or a filepath to a model
 #' @param filepath The filepath to write the functions to
 #' 
 #' @export
 #' @family GA modelling functions
 #' @import assertthat
+#' 
+#' @examples 
+#' 
+#' \dontrun{
+#' 
+#' decomp_ga <- ga_model_example("decomp_ga.gamr")
+#' ga_model_write(decomp_ga, "a_file.R")
+#' }
 ga_model_write <- function(model, filepath = "ga_model.R"){
+  
+  if(is.character(model)){
+    model <- ga_model_load(model)
+  }
   
   assert_that(is.ga_model(model))
   
+  if(!is.null(model$required_packages)){
+    libs <- paste0("library(",model$required_packages,")")
+  } else {
+    libs <- "# no libraries needed"
+  }
+  
   the_text <- 
     c(sprintf("# ga_model: %s\n", model$description),
-      paste0("library(",model$required_packages,")"),
-      write_f("\n# fetch data\ndata_f", model$data_f),
-      write_f("\n# model data\nmodel_f", model$model_f),
-      write_f("\n# output data\noutput_f", model$output_f))
+      libs,
+      write_f("\n# fetch data\ndata_f <-", model$data_f),
+      write_f("\n# model data\nmodel_f <-", model$model_f),
+      write_f("\n# output data\noutput_f <-", model$output_f),
+      write_f("\n# shiny input function\nuiInput <-", model$shiny_module$uiInput),
+      "\n# use via ga_model_make()")
   
   writeLines(the_text, con = filepath)
   suppressMessages(formatR::tidy_file(filepath, width.cutoff = 80))
   myMessage("Written model to ", filepath, level = 3)
+  
+  model
 }
 
 write_f <- function(name, f){
-  c(sprintf("%s <- function(%s)", name, paste(names(formals(f)), collapse = ",\n")),
-    sprintf("%s\n", as.character(body(f))),
-    "}")
+  if(is.null(f)) return("function(){NULL}")
+  c(name, deparse(f))
 }
 
-
+#' Refresh a model
+#' 
+#' Sometimes necessary if functions were created under differing package versions
+#' 
+#' @param model Model or file location of model .gamr file
+#' 
+#' @export
+#' @examples 
+#' 
+#' \dontrun{
+#' 
+#' decomp_ga <- ga_model_example("decomp_ga.gamr")
+#' decomp_ga <- ga_model_refresh(decomp_ga)
+#' 
+#' }
+ga_model_refresh <- function(model){
+  save_me <- ""
+  if(is.character(model)){
+    save_me <- model
+    model <- ga_model_load(model)
+  }
+  
+  new_model <- ga_model_edit(model,
+    data_f = model$data_f,
+    required_columns = model$required_columns,
+    model_f = model$model_f,
+    required_packages = model$required_packages,
+    description = model$description,
+    outputShiny = model$outputShiny,
+    renderShiny = model$renderShiny,
+    inputShiny = model$inputShiny,
+    output_f = model$output_f
+  )
+  
+  if(nzchar(save_me)){
+    ga_model_save(new_model, filename = save_me)
+  }
+  
+  new_model
+  
+  
+}
 

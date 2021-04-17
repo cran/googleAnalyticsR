@@ -1,7 +1,5 @@
 source("setup.R")
 
-context("Meta data")
-
 test_that("Download meta data", {
   skip_on_cran()
   skip_on_travis()
@@ -11,8 +9,6 @@ test_that("Download meta data", {
   
 })
 
-
-context("Accounts")
 
 test_that("Get the account list", {
   skip_on_cran()
@@ -24,17 +20,20 @@ test_that("Get the account list", {
 })
 
 
-
 test_that("Get the account summary list", {
   skip_on_cran()
   skip_on_travis()
   al <- ga_account_list()
   expect_s3_class(al, "data.frame")
   
+  cat("\nScopes:", getOption("googleAuthR.scopes.selected"))
+  
+  ga4 <- ga_account_list("ga4")
+  expect_s3_class(ga4, "data.frame")
+  expect_equal(names(ga4), 
+               c("account_name","accountId","property_name","propertyId"))
+  
 })
-
-
-context("Webproperties")
 
 test_that("Get the webproperty list", {
   skip_on_cran()
@@ -54,8 +53,6 @@ test_that("Get the web property", {
   
 })
 
-context("Views")
-
 test_that("Get the view list", {
   skip_on_cran()
   skip_on_travis()
@@ -73,8 +70,6 @@ test_that("Get the individual View", {
   expect_equal(wb$kind, "analytics#profile")
   
 })
-
-context("AdWords")
 
 test_that("Get Adwords list", {
   skip_on_cran()
@@ -96,8 +91,6 @@ test_that("Get Adwords", {
   
 })
 
-context("Custom data source")
-
 test_that("Custom data source list",{
   skip_on_cran()
   skip_on_travis()
@@ -116,9 +109,6 @@ test_that("Custom data source upload list",{
   expect_s3_class(ds, "data.frame")
 })
 
-
-
-context("Custom metrics download")
 
 test_that("Can get list of custom metrics and dimensions", {
   skip_on_cran()
@@ -140,10 +130,6 @@ test_that("Can get specific custom dimension", {
 })
 
 
-
-
-context("Goals")
-
 test_that("Can get a goal list", {
   skip_on_cran()
   skip_on_travis()
@@ -164,8 +150,6 @@ test_that("Can get a goal entry", {
   
   
 })
-
-context("Experiments")
 
 test_that("Can fetch experiment list", {
   skip_on_cran()
@@ -195,8 +179,6 @@ test_that("Can fetch experiment list", {
 # test_that("Get a remarketing object", {
 #   
 # })
-
-context("Allow metrics and dimensions")
 
 test_that("Allowed metrics call", {
   

@@ -4,7 +4,21 @@
 \alias{ga_meta}
 \title{Get current dimensions and metrics available in GA API.}
 \usage{
-ga_meta()
+ga_meta(
+  version = c("universal", "data"),
+  propertyId = NULL,
+  cached = TRUE,
+  no_api = FALSE
+)
+}
+\arguments{
+\item{version}{The Google Analytics API metadata to fetch - "universal" for Universal and earlier versions, "data" for Google Analytics 4}
+
+\item{propertyId}{If requesting from Google Analytics 4, pass the propertyId to get metadata specific to that property.  Leaving it NULL or 0 will return universal metadata}
+
+\item{cached}{Whether to use a cached version or to use the API to fetch the results again}
+
+\item{no_api}{Don't call the API, just return \code{googleAnalyticsR::meta4}}
 }
 \value{
 dataframe of dimensions and metrics available to use
@@ -12,6 +26,21 @@ dataframe of dimensions and metrics available to use
 \description{
 Get current dimensions and metrics available in GA API.
 }
+\examples{
+
+\dontrun{
+
+# universal analytics
+ga_meta()
+
+# Google Analytics 4 metadata from the Data API
+ga_meta("data")
+
+# Google Analytics 4 metadata for a particular Web Property
+ga_meta("data", propertyId = 206670707)
+
+}
+}
 \seealso{
-\url{https://developers.google.com/analytics/devguides/reporting/metadata/v3/reference/metadata/columns/list}
+\url{https://developers.google.com/analytics/devguides/reporting/metadata/v3/reference/metadata/columns/list}, \url{https://developers.google.com/analytics/devguides/reporting/data/v1/rest/v1alpha/properties/getMetadata}
 }

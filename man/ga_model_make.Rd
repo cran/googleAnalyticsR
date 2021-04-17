@@ -8,11 +8,12 @@ ga_model_make(
   data_f,
   required_columns,
   model_f,
-  output_f = graphics::plot,
+  output_f = function(df, ...) {     plot(df) },
   required_packages = NULL,
   description = NULL,
   outputShiny = shiny::plotOutput,
-  renderShiny = shiny::renderPlot
+  renderShiny = shiny::renderPlot,
+  inputShiny = shiny::tagList()
 )
 }
 \arguments{
@@ -32,6 +33,8 @@ must take data from result of \code{data_f} in first argument}
 \item{outputShiny}{A shiny UI output function that will display the results \code{renderShiny}}
 
 \item{renderShiny}{A shiny render function that will create the output for \code{outputShiny} from \code{output_f}}
+
+\item{inputShiny}{Optional input shiny functions (like \code{dateInput()}) that will be used within the model's Shiny module.  The id should be exactly the same as one of the variables in the model functions.}
 }
 \value{
 A \code{ga_model} object to pass to \link{ga_model}
@@ -41,7 +44,7 @@ Create ga_model objects for easy application of models to data
 }
 \details{
 The passed functions should all have \code{...} to make them flexible
-  in what arguments can be added.  Do not have the same argument names in both functions.
+in what arguments can be added.  Do not have the same argument names in both functions.
 The \code{data_f} function result will feed to \code{model_f}
 }
 \examples{
@@ -71,7 +74,7 @@ The \code{data_f} function result will feed to \code{model_f}
  ga_model(81416156, decomp_ga)
 
  # save the model for later
- model_location <- "inst/models/decomp_ga.gamr"
+ model_location <- "decomp_ga.gamr"
  ga_model_save(decomp_ga, filename = model_location)
 
  # can load model from file
@@ -86,7 +89,7 @@ The \code{data_f} function result will feed to \code{model_f}
  decomp_ga <- ga_model_make(get_model_data,
                             required_columns = c("date", "sessions"),
                             model_f = decompose_sessions,
-                            output_f = graphics::plot,
+                            output_f = function(df, ...){graphics::plot(df)},
                             description = "Performs decomposition and creates a plot",
                             outputShiny = shiny::plotOutput,
                             renderShiny = shiny::renderPlot)
@@ -99,7 +102,9 @@ Other GA modelling functions:
 \code{\link{ga_model_example}()},
 \code{\link{ga_model_load}()},
 \code{\link{ga_model_save}()},
-\code{\link{ga_model_tweet}()},
+\code{\link{ga_model_shiny_load}()},
+\code{\link{ga_model_shiny_template}()},
+\code{\link{ga_model_shiny}()},
 \code{\link{ga_model_write}()},
 \code{\link{ga_model}()}
 }

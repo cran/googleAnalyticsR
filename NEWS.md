@@ -1,6 +1,26 @@
+# googleAnalyticsR 1.0.0
+
+* Allow authentication with service JSON keys without needing to change default client.id e.g. `ga_auth(json_file="auth-key.json")` (#324 - thanks @adamribaudo)
+* Fix GA Adwords list parsing (#322 - thanks @millett-a)
+* Add getUniversalMetadata API fetch to `ga_meta(version="data")` (#335)
+* Fix for passing `ganalytics`-style expressions for dimension and metric filters/segments (#339 and #305), which also resolves #279 (and improves on #253) for continued support of combining expressions (for filters and segments) using `list()`.
+* Support new Google Analytics 4 APIs via `ga_data()` (#335) 
+* Add `ga_data_aggregations()`, `ga_data_filter()`, `ga_data_order()` for working with `ga_data()` (#335)
+* Remove support for API v3 multi-account batching (#347)
+* Deprecate `google_analytics_3()` (#347)
+* Add GA4's Admin API to `ga_account_list("ga4")` (#350)
+* Remove `ga_model_tweet()`
+* Add new Shiny module for GA4 web properties - `accountPicker()` (#357)
+* Add new Shiny module for GA4 fields - `metricDimensionSelect()` (#357)
+* Enable generation of Shiny apps from `ga_model()` objects using template files `ga_model_shiny()` (#358)
+* Create Dockerfile for deployment of shiny apps so they can be deployed to shinyapps.io and Cloud Run via `googleCloudRunner` (#367)
+* From 0.9.0 there will be a dev version of the website at `https://code.markedmondson.me/googleAnalyticsR/dev/` with the development documentation.  `https://code.markedmondson.me/googleAnalyticsR/` will only carry the CRAN version.
+* Add Measurement Protocol v2 functions `ga_mp_send()`, `ga_mp_event()` and `ga_mp_event_item()` (#370)
+* Clean up a lot of functions and objects in the NAMESPACE
+
 # googleAnalyticsR 0.8.0
 
-* fix `ga_account_list()` not dowloading starred columns (#284 - thanks @hidekoji)
+* fix `ga_account_list()` not downloading starred columns (#284 - thanks @hidekoji)
 * Allow millisecond parsing of times (#314 - thanks @VadimChernik)
 * Update to use `cli` for nicer looking user messaging
 * Change the default client.id (#311)

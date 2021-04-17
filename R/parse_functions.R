@@ -1,3 +1,21 @@
+#' Parse getUniversalMetadata
+#' @seealso https://developers.google.com/analytics/trusted-testing/analytics-data/rest/v1alpha/TopLevel/getUniversalMetadata
+#' @param x The response
+#' @noRd
+#' @keywords internal
+#' @importFrom dplyr bind_rows
+parse_ga_meta_aw <- function(x){
+
+  dims <- x$dimensions
+  mets <- x$metrics
+  
+  dims$class <- "dimension"
+  mets$class <- "metric"
+  
+  bind_rows(dims, mets)
+}
+
+
 #' A common pattern for management API parsing
 #' @param x The response
 #' @param kind The kind of response
@@ -69,9 +87,10 @@ google_analytics_4_parse_batch <- function(response_list){
 
 #' ga v4 data parsing
 #'
-#' x is response_list$reports[[1]] from google_analytics_4_parse_batch
+#' x is `response_list$reports[[1]]` from google_analytics_4_parse_batch
 #' @importFrom stats setNames
 #' @keywords internal
+#' @noRd
 google_analytics_4_parse <- function(x){
   
   myMessage("Parsing GA API v4", level = 1)
@@ -240,7 +259,7 @@ parse_ga_account_summary <- function(x){
 }
 
 
-parse_google_analytics <- function(x){
+parse_google_analytics3 <- function(x){
 
   myMessage("Request to profileId: ", x$profileInfo$profileId,
           #     " accountId: ", x$profileInfo$accountId,
@@ -255,7 +274,7 @@ parse_google_analytics <- function(x){
   if(!is.null(x$containsSampledData)){
     if(x$containsSampledData) {
       samplePercent <- round(100 * (as.numeric(x$sampleSize) / as.numeric(x$sampleSpace)), 2)
-      myMessage("Data is sampled, based on ", samplePercent, "% of visits. Use samplingLevel='WALK' to mitigate it.", level = 3 )
+      myMessage("Data is sampled, based on ", samplePercent, "% of visits.", level = 3 )
     }
   }
 
@@ -275,6 +294,7 @@ parse_google_analytics <- function(x){
   attr(gadata, "profileInfo") <- x$profileInfo
   attr(gadata, "dateRange") <- list(startDate = x$query$`start-date`, endDate = x$query$`end-date`)
   attr(gadata, "totalResults") <- x$totalResults
+  attr(gadata, "nextLink") <- x$nextLink
 
   gadata
 }

@@ -2,30 +2,30 @@
 #' 
 #' @description
 #'   This function constructs the Google Analytics API v4 call to be called
-#'   via \link{fetch_google_analytics_4}
+#'   via [fetch_google_analytics_4]
 #'
 #' @param viewId viewId of data to get.
-#' @param date_range character or date vector of format \code{c(start, end)} or 
-#'   for two date ranges: \code{c(start1,end1,start2,end2)}
+#' @param date_range character or date vector of format `c(start, end)` or 
+#'   for two date ranges: `c(start1,end1,start2,end2)`
 #' @param metrics Metric(s) to fetch as a character vector.  You do not need to 
-#'   supply the \code{"ga:"} prefix.  See \link{meta} for a list of dimensons 
+#'   supply the `"ga:"` prefix.  See [meta] for a list of dimensons 
 #'   and metrics the API supports. Also supports your own calculated metrics.
 #' @param dimensions Dimension(s) to fetch as a character vector. You do not need to 
-#'   supply the \code{"ga:"} prefix. See \link{meta} for a list of dimensons 
+#'   supply the `"ga:"` prefix. See [meta] for a list of dimensons 
 #'   and metrics the API supports.
-#' @param dim_filters A \link{filter_clause_ga4} wrapping \link{dim_filter}
-#' @param met_filters A \link{filter_clause_ga4} wrapping \link{met_filter}
+#' @param dim_filters A [filter_clause_ga4] wrapping [dim_filter]
+#' @param met_filters A [filter_clause_ga4] wrapping [met_filter]
 #' @param filtersExpression A v3 API style simple filter string. Not used with other filters. 
-#' @param order An \link{order_type} object
-#' @param segments List of segments as created by \link{segment_ga4}
-#' @param pivots Pivots of the data as created by \link{pivot_ga4}
-#' @param cohorts Cohorts created by \link{make_cohort_group}
+#' @param order An [order_type] object
+#' @param segments List of segments as created by [segment_ga4]
+#' @param pivots Pivots of the data as created by [pivot_ga4]
+#' @param cohorts Cohorts created by [make_cohort_group]
 #' @param pageToken Where to start the data fetch
 #' @param pageSize How many rows to fetch. Max 100000 each batch.
 #' @param samplingLevel Sample level
 #' @param metricFormat If supplying calculated metrics, specify the metric type
 #' @param histogramBuckets For numeric dimensions such as hour, a list of buckets of data.
-#'   See details in \link{make_ga_4_req}
+#'   See details in [make_ga_4_req]
 #'
 #' @section Metrics:
 #'   Metrics support calculated metrics like ga:users / ga:sessions if you supply
@@ -35,22 +35,22 @@
 #'
 #'   You can mix calculated and normal metrics like so:
 #'
-#'   \code{customMetric <- c(sessionPerVisitor = "ga:sessions / ga:visitors",
+#'   `customMetric <- c(sessionPerVisitor = "ga:sessions / ga:visitors",
 #'                           "bounceRate",
-#'                           "entrances")}
+#'                           "entrances")`
 #'
-#'    You can also optionally supply a \code{metricFormat} parameter that must be
-#'    the same length as the metrics.  \code{metricFormat} can be:
-#'    \code{METRIC_TYPE_UNSPECIFIED, INTEGER, FLOAT, CURRENCY, PERCENT, TIME}
+#'    You can also optionally supply a `metricFormat` parameter that must be
+#'    the same length as the metrics.  `metricFormat` can be:
+#'    `METRIC_TYPE_UNSPECIFIED, INTEGER, FLOAT, CURRENCY, PERCENT, TIME`
 #'
 #'    All metrics are currently parsed to as.numeric when in R.
 #'
 #' @section Dimensions:
 #'
-#'   Supply a character vector of dimensions, with or without \code{ga:} prefix.
+#'   Supply a character vector of dimensions, with or without `ga:` prefix.
 #'
 #'   Optionally for numeric dimension types such as
-#'   \code{ga:hour, ga:browserVersion, ga:sessionsToTransaction}, etc. supply
+#'   `ga:hour, ga:browserVersion, ga:sessionsToTransaction`, etc. supply
 #'   histogram buckets suitable for histogram plots.
 #'
 #'   If non-empty, we place dimension values into buckets after string to int64.
@@ -81,7 +81,7 @@
 #' ga_auth()
 #' 
 #' ## get your accounts
-#' account_list <- google_analytics_account_list()
+#' account_list <- ga_account_list()
 #' 
 #' ## pick a profile with data to query
 #' 
@@ -104,7 +104,7 @@
 #' 
 #' @family GAv4 fetch functions
 #' @import assertthat
-#' @export
+#' @noRd
 make_ga_4_req <- function(viewId,
                           date_range=NULL,
                           metrics=NULL,
@@ -213,45 +213,107 @@ make_ga_4_req <- function(viewId,
 #' Get Google Analytics v4 data
 #' 
 #' @description
-#' Fetch Google Analytics data using the v4 API.  For the v3 API use \link{google_analytics_3}.  See website help for lots of examples: \href{http://code.markedmondson.me/googleAnalyticsR/articles/v4.html}{Google Analytics Reporting API v4 in R}
+#' Fetch Google Analytics data using the v4 API.  For the v3 API use [google_analytics_3], for GA4's Data API use [ga_data].  See website help for lots of examples: [Google Analytics Reporting API v4 in R](http://code.markedmondson.me/googleAnalyticsR/articles/v4.html)
 #' 
 #' 
 #' @section Row requests:
 #' 
-#' By default the API call will use v4 batching that splits requests into 5 separate calls of 10k rows each.  This can go up to 100k, so this means up to 500k rows can be fetched per API call, however the API servers will fail with a 500 error if the query is too complicated as the processing time at Google's end gets too long.  In this case, you may want to tweak the \code{rows_per_call} argument downwards, or fall back to using \code{slow_fetch = FALSE} which will send an API request one at a time.  If fetching data via scheduled scripts this is recommended as the default.
+#' By default the API call will use v4 batching that splits requests into 5 separate calls of 10k rows each.  This can go up to 100k, so this means up to 500k rows can be fetched per API call, however the API servers will fail with a 500 error if the query is too complicated as the processing time at Google's end gets too long.  In this case, you may want to tweak the `rows_per_call` argument downwards, or fall back to using `slow_fetch = FALSE` which will send an API request one at a time.  If fetching data via scheduled scripts this is recommended as the default.
 #' 
 #' 
 #' @section Anti-sampling:
 #' 
-#' \code{anti_sample} being TRUE ignores \code{max} as the API call is split over days 
+#' `anti_sample` being TRUE ignores `max` as the API call is split over days 
 #'   to mitigate the sampling session limit, in which case a row limit won't work.  Take the top rows
-#'   of the result yourself instead e.g. \code{head(ga_data_unsampled, 50300)}
+#'   of the result yourself instead e.g. `head(ga_data_unsampled, 50300)`
 #'   
-#' \code{anti_sample} being TRUE will also set \code{samplingLevel='LARGE'} to minimise 
+#' `anti_sample` being TRUE will also set `samplingLevel='LARGE'` to minimise 
 #'   the number of calls.
 #' 
 #' @section Resource Quotas:
 #' 
 #' If you are on GA360 and have access to resource quotas,
-#'   set the \code{useResourceQuotas=TRUE} and set the Google Cloud 
+#'   set the `useResourceQuotas=TRUE` and set the Google Cloud 
 #'   client ID to the project that has resource quotas activated, 
-#'   via \link[googleAuthR]{gar_set_client} or options.
+#'   via [gar_set_client][googleAuthR::gar_set_client] or options.
 #'   
 #' @section Caching:
 #' 
 #' By default local caching is turned on for v4 API requests.  This means that
 #'   making the same request as one this session will read from memory and not
 #'   make an API call. You can also set the cache to disk via 
-#'   the \link{ga_cache_call} function.  This can be useful
+#'   the [ga_cache_call] function.  This can be useful
 #'   when running RMarkdown reports using data.
 #' 
-#' @inheritParams make_ga_4_req
-#' @param max Maximum number of rows to fetch. Defaults at 1000. Use -1 to fetch all results. Ignored when \code{anti_sample=TRUE}.
+#' @section Metrics:
+#'   Metrics support calculated metrics like ga:users / ga:sessions if you supply
+#'   them in a named vector.
+#'
+#'   You must supply the correct 'ga:' prefix unlike normal metrics
+#'
+#'   You can mix calculated and normal metrics like so:
+#'
+#'   `customMetric <- c(sessionPerVisitor = "ga:sessions / ga:visitors",
+#'                           "bounceRate",
+#'                           "entrances")`
+#'
+#'    You can also optionally supply a `metricFormat` parameter that must be
+#'    the same length as the metrics.  `metricFormat` can be:
+#'    `METRIC_TYPE_UNSPECIFIED, INTEGER, FLOAT, CURRENCY, PERCENT, TIME`
+#'
+#'    All metrics are currently parsed to as.numeric when in R.
+#'
+#' @section Dimensions:
+#'
+#'   Supply a character vector of dimensions, with or without `ga:` prefix.
+#'
+#'   Optionally for numeric dimension types such as
+#'   `ga:hour, ga:browserVersion, ga:sessionsToTransaction`, etc. supply
+#'   histogram buckets suitable for histogram plots.
+#'
+#'   If non-empty, we place dimension values into buckets after string to int64.
+#'   Dimension values that are not the string representation of an integral value
+#'   will be converted to zero. The bucket values have to be in increasing order.
+#'   Each bucket is closed on the lower end, and open on the upper end.
+#'   The "first" bucket includes all values less than the first boundary,
+#'   the "last" bucket includes all values up to infinity.
+#'   Dimension values that fall in a bucket get transformed to a new dimension
+#'   value. For example, if one gives a list of "0, 1, 3, 4, 7", then we
+#'   return the following buckets: -
+#' \itemize{
+#'   \item bucket #1: values < 0, dimension value "<0"
+#'   \item bucket #2: values in [0,1), dimension value "0"
+#'   \item bucket #3: values in [1,3), dimension value "1-2"
+#'   \item bucket #4: values in [3,4), dimension value "3"
+#'   \item bucket #5: values in [4,7), dimension value "4-6"
+#'   \item bucket #6: values >= 7, dimension value "7+"
+#'  }
+#' 
+#' @param viewId viewId of data to get.
+#' @param date_range character or date vector of format `c(start, end)` or 
+#'   for two date ranges: `c(start1,end1,start2,end2)`
+#' @param metrics Metric(s) to fetch as a character vector.  You do not need to 
+#'   supply the `"ga:"` prefix.  See [meta] for a list of dimensons 
+#'   and metrics the API supports. Also supports your own calculated metrics.
+#' @param dimensions Dimension(s) to fetch as a character vector. You do not need to 
+#'   supply the `"ga:"` prefix. See [meta] for a list of dimensons 
+#'   and metrics the API supports.
+#' @param dim_filters A [filter_clause_ga4] wrapping [dim_filter]
+#' @param met_filters A [filter_clause_ga4] wrapping [met_filter]
+#' @param filtersExpression A v3 API style simple filter string. Not used with other filters. 
+#' @param order An [order_type] object
+#' @param segments List of segments as created by [segment_ga4]
+#' @param pivots Pivots of the data as created by [pivot_ga4]
+#' @param cohorts Cohorts created by [make_cohort_group]
+#' @param samplingLevel Sample level
+#' @param metricFormat If supplying calculated metrics, specify the metric type
+#' @param histogramBuckets For numeric dimensions such as hour, a list of buckets of data.
+#' @param max Maximum number of rows to fetch. Defaults at 1000. Use -1 to fetch all results. Ignored when `anti_sample=TRUE`.
 #' @param anti_sample If TRUE will split up the call to avoid sampling.
 #' @param anti_sample_batches "auto" default, or set to number of days per batch. 1 = daily.
-#' @param slow_fetch For large, complicated API requests this bypasses some API hacks that may result in 500 errors.  For smaller queries, leave this as \code{FALSE} for quicker data fetching. 
+#' @param slow_fetch For large, complicated API requests this bypasses some API hacks that may result in 500 errors.  For smaller queries, leave this as `FALSE` for quicker data fetching. 
 #' @param useResourceQuotas If using GA360, access increased sampling limits. 
-#'   Default \code{NULL}, set to \code{TRUE} or \code{FALSE} if you have access to this feature. 
+#'   Default `NULL`, set to `TRUE` or `FALSE` if you have access to this feature. 
 #' @param rows_per_call Set how many rows are requested by the API per call, up to a maximum of 100000.
 #'   
 #' @return A Google Analytics data.frame, with attributes showing row totals, sampling etc. 
@@ -336,8 +398,8 @@ google_analytics <- function(viewId,
   segments <- assign_list_class(segments, "segment_ga4")
   
   # 279
-  dim_filters <- add_class_if_list(dim_filters, ".filter_clauses_ga4")
-  met_filters <- add_class_if_list(met_filters, ".filter_clauses_ga4")
+  dim_filters <- assign_list_class(dim_filters, ".filter_clauses_ga4")
+  met_filters <- assign_list_class(met_filters, ".filter_clauses_ga4")
   
   if(!is.null(filtersExpression)){
     filtersExpression <- as(filtersExpression, "character")
@@ -510,7 +572,7 @@ google_analytics <- function(viewId,
 }
 
 #' @rdname google_analytics
-#' @param ... Arguments passed to \link{google_analytics}
+#' @param ... Arguments passed to [google_analytics]
 #' @export
 google_analytics_4 <- function(...){
   .Deprecated("google_analytics", package = "googleAnalyticsR")
@@ -522,15 +584,16 @@ google_analytics_4 <- function(...){
 #' Due to large complicated queries causing the v4 API to timeout, 
 #'   this option is added to fetch via the more traditional one report per request
 #' 
-#' @param request_list A list of requests created by \link{make_ga_4_req}
+#' @param request_list A list of requests created by [make_ga_4_req]
 #' @param max_rows Number of rows requested (if not fetched)
 #' @param allRows Whether to fetch all available rows
 #' @param useResourceQuotas If using GA360, access increased sampling limits. 
-#'   Default \code{NULL}, set to \code{TRUE} or \code{FALSE} if you have access to this feature. 
+#'   Default `NULL`, set to `TRUE` or `FALSE` if you have access to this feature. 
 #' 
 #' @return A dataframe of all the requests
 #' @importFrom googleAuthR gar_api_generator
 #' @family GAv4 fetch functions
+#' @noRd
 fetch_google_analytics_4_slow <- function(request_list, 
                                           max_rows, 
                                           allRows = FALSE, 
@@ -590,14 +653,14 @@ fetch_google_analytics_4_slow <- function(request_list,
 
 #' Fetch multiple GAv4 requests
 #' 
-#' Fetch the GAv4 requests as created by \link{make_ga_4_req}
+#' Fetch the GAv4 requests as created by [make_ga_4_req]
 #' 
 #' For same viewId, daterange, segments, samplingLevel and cohortGroup, v4 batches can be made
 #'
-#' @param request_list A list of requests created by \link{make_ga_4_req}
+#' @param request_list A list of requests created by [make_ga_4_req]
 #' @param merge If TRUE then will rbind that list of data.frames
 #' @param useResourceQuotas If using GA360, access increased sampling limits. 
-#'   Default \code{NULL}, set to \code{TRUE} or \code{FALSE} if you have access to this feature. 
+#'   Default `NULL`, set to `TRUE` or `FALSE` if you have access to this feature. 
 #'     
 #' @return A dataframe if one request, or a list of data.frames if multiple.
 #'
@@ -635,7 +698,7 @@ fetch_google_analytics_4_slow <- function(request_list,
 #' 
 #' @family GAv4 fetch functions
 #' @import assertthat
-#' @export
+#' @noRd
 fetch_google_analytics_4 <- function(request_list, merge = FALSE, useResourceQuotas = NULL){
 
   assert_that(is.list(request_list))

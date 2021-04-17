@@ -4,6 +4,7 @@ NULL
 #' Make a date object
 #'
 #' @keywords internal
+#' @noRd
 date_ga4 <- function(dvector){
   if(is.null(dvector)) return(NULL)
 
@@ -14,7 +15,7 @@ date_ga4 <- function(dvector){
   structure(
     list(startDate = dvector[1],
          endDate = dvector[2]),
-    class = "date_ga4"
+    class = c("date_ga4","list")
   )
 }
 
@@ -28,15 +29,16 @@ date_ga4 <- function(dvector){
 #'
 #'  If supplying histogramBuckets, the name will be used to create the buckets
 #'
-#'  e.g. \code{dimensions = c("source", "medium")
+#'  e.g. `dimensions = c("source", "medium")
 #'             histogramBuckets = list(source = c(1,5,10,20,200),
 #'                                    medium = c(0,7,14,21,999))
-#'                                    }
+#'                                    `
 #'
 #'  Warning: only makes sense to apply to dimensions that are numeric e.g. ga:hour
 #'
 #' @keywords internal
 #' @return a list suitable for parsing in req
+#' @noRd
 dimension_ga4 <- function(vector, histogramBuckets=NULL){
   
   if(is.null(vector)) return(NULL)
@@ -62,6 +64,7 @@ dimension_ga4 <- function(vector, histogramBuckets=NULL){
 #'   for the API to return
 #'
 #' @keywords internal
+#' @noRd
 #' @return a list suitable for parsing in req
 metric_ga4 <- function(vector, metricFormat=NULL){
 

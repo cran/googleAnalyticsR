@@ -5,14 +5,12 @@
     ## default Google project
     googleAuthR.client_id = "289759286325-i5kd45j7qnoc1t8h86611b38icnfk38d.apps.googleusercontent.com",
     googleAuthR.client_secret = "RnKpRn0ZOrKbwwSPeX4Giujf",
-    googleAuthR.webapp.client_id = "289759286325-42j8nmkeq5n9v9eb1kiuj2i97v9oea1f.apps.googleusercontent.com",
-    googleAuthR.webapp.client_secret = "0zBtmZ_klTEzXUaTUTP5AkNQ",
-    googleAuthR.scopes.selected = c("https://www.googleapis.com/auth/analytics", 
-                                    "https://www.googleapis.com/auth/analytics.readonly",
-                                    "https://www.googleapis.com/auth/analytics.edit",
-                                    "https://www.googleapis.com/auth/analytics.manage.users",
-                                    "https://www.googleapis.com/auth/analytics.user.deletion"),
-    googleAuthR.httr_oauth_cache = "ga.oauth",
+    googleAuthR.scopes.selected = 
+      c("https://www.googleapis.com/auth/analytics",
+        "https://www.googleapis.com/auth/analytics.readonly",
+        "https://www.googleapis.com/auth/analytics.edit",
+        "https://www.googleapis.com/auth/analytics.manage.users",
+        "https://www.googleapis.com/auth/analytics.user.deletion"),
     googleAuthR.quotaUser = Sys.info()[["user"]]
   )
   
@@ -22,38 +20,46 @@
   
   ## override existing options
   options(
-    googleAuthR.batch_endpoint = "https://www.googleapis.com/batch/analytics/v3",
+    googleAuthR.batch_endpoint = 
+      "https://www.googleapis.com/batch/analytics/v3",
     googleAuthR.tryAttempts = 1)
   
   f <- function(req){
-    
-    stuff <- tryCatch(req$content$reports, error = function(x) NULL)
-    
-    # data is not golden
-    if(!is.null(stuff[[1]]$data$isDataGolden) && !stuff[[1]]$data$isDataGolden){
+
+    # a realtime API call - no cache
+    if(!is.null(req$content$kind) && 
+       req$content$kind == "analyticsData#runRealtimeReport"){
+      return(FALSE)
+    }
+    ga4  <- tryCatch(req$content$reports, error = function(x) NULL)
+    data <- tryCatch(req$content$rows, error = function(x) NULL)
+
+    # v4 data is not golden
+    if(!is.null(ga4[[1]]$data$isDataGolden) && 
+       !ga4[[1]]$data$isDataGolden){
       return(FALSE)
     }
     
     # present only if including today's data? e.g. not golden?
-    if(!is.null(stuff[[1]]$data$dataLastRefreshed)){
+    if(!is.null(ga4[[1]]$data$dataLastRefreshed)){
       return(FALSE)
     }
 
-    if(!is.null(stuff)){
-      return(TRUE)
-    } else {
-      return(FALSE)
-    }}
+    if(!is.null(ga4) || !is.null(data)) return(TRUE)
+    
+    FALSE
+    
+  }
 
   googleAuthR::gar_cache_setup(invalid_func = f)
   
-  invisible()
+  invisible(NULL)
   
 }
 
 .onAttach <- function(libname, pkgname){
   
-  if(Sys.getenv("GAR_CLIENT_JSON") != ""){
+  if(nzchar(Sys.getenv("GAR_CLIENT_JSON"))){
     googleAuthR::gar_set_client(json = Sys.getenv("GAR_CLIENT_JSON"))
   }
   
@@ -66,8 +72,11 @@
   # for json files
   googleAuthR::gar_attach_auto_auth(needed, 
                                     environment_var = "GA_AUTH_FILE")
+
+  # opt-in package tracking
+  measurementProtocol::mp_trackme_event(pkgname)
   
-  invisible()
+  invisible(NULL)
   
 }
 

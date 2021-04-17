@@ -2,11 +2,11 @@
 #' 
 #' Lets you cache API calls to disk
 #' 
-#' @param cache_location If \code{RAM} will save to memory, or specify a file folder location
+#' @param cache_location If `RAM` will save to memory, or specify a file folder location
 #' 
 #' @details 
 #' 
-#' By default this is turned on upon package load to \code{RAM}.  
+#' By default this is turned on upon package load to `RAM`.  
 #'   Should you want to cache calls to a folder then run this function to specify where.
 #' 
 #' @export
@@ -25,13 +25,15 @@ ga_cache_call <- function(cache_location){
   
   f <- function(req){
     
-    stuff <- tryCatch(req$content$reports, error = function(x) NULL)
+    ga4 <- tryCatch(req$content$reports, error = function(x) NULL)
+    data <-tryCatch(req$content$rows, error = function(x) NULL)
     
-    if(!is.null(stuff)){
-      return(TRUE)
-    } else {
-      return(FALSE)
-    }}
+    if(!is.null(ga4) || !is.null(data)) return(TRUE)
+    
+    myMessage("No caching", level = 2)
+    FALSE
+    
+    }
   
   
   gar_cache_setup(mcache = memoise::cache_filesystem(cache_location),

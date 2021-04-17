@@ -7,12 +7,20 @@
 ga_model_write(model, filepath = "ga_model.R")
 }
 \arguments{
-\item{model}{The \code{ga_model} object to extract functions from to write}
+\item{model}{The \code{ga_model} object to extract functions from to write, or a filepath to a model}
 
 \item{filepath}{The filepath to write the functions to}
 }
 \description{
 Write the ga_model functions to a file
+}
+\examples{
+
+\dontrun{
+
+decomp_ga <- ga_model_example("decomp_ga.gamr")
+ga_model_write(decomp_ga, "a_file.R")
+}
 }
 \seealso{
 Other GA modelling functions: 
@@ -21,7 +29,9 @@ Other GA modelling functions:
 \code{\link{ga_model_load}()},
 \code{\link{ga_model_make}()},
 \code{\link{ga_model_save}()},
-\code{\link{ga_model_tweet}()},
+\code{\link{ga_model_shiny_load}()},
+\code{\link{ga_model_shiny_template}()},
+\code{\link{ga_model_shiny}()},
 \code{\link{ga_model}()}
 }
 \concept{GA modelling functions}

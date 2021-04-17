@@ -29,29 +29,29 @@ segment_element(
 
 \item{not}{Should the element be the negation of what is defined}
 
-\item{expressions}{[dim] What the name shall compare to}
+\item{expressions}{\code{dim} What the name shall compare to}
 
-\item{caseSensitive}{[dim] Whether to be case sensitive}
+\item{caseSensitive}{\code{dim} Whether to be case sensitive}
 
-\item{minComparisonValue}{[dim] Minimum comparison values for BETWEEN}
+\item{minComparisonValue}{\code{dim} Minimum comparison values for BETWEEN}
 
 \item{maxComparisonValue}{Max comparison value for BETWEEN operator}
 
-\item{scope}{[met] Scope of the metric value}
+\item{scope}{\code{met} Scope of the metric value}
 
-\item{comparisonValue}{[met] What the name shall compare to}
+\item{comparisonValue}{\code{met} What the name shall compare to}
 
 \item{matchType}{If used in sequence segment, what behaviour}
 }
 \value{
-An SegmentFilterClause object
+A SegmentFilterClause object
 }
 \description{
 \code{segment_element} is the lowest hierarchy of segment creation, for which you will also need:
 \itemize{
- \item \link{segment_define} : AND combination of segmentFilters
- \item \link{segment_vector_simple} or \link{segment_vector_sequence}
- \item \link{segment_element} that are combined in OR lists for \code{segment_vectors_*}
+\item \link{segment_define} : AND combination of segmentFilters
+\item \link{segment_vector_simple} or \link{segment_vector_sequence}
+\item \link{segment_element} that are combined in OR lists for \verb{segment_vectors_*}
 }
 }
 \seealso{

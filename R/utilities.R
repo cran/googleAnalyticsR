@@ -1,12 +1,39 @@
+replace_in_list <- function(a_list, id = "id", change_id = "my_id2"){
+  if(is.null(a_list)) return(NULL)
+  rapply(a_list, function(x){
+    if(x == id){
+      change_id
+    } else {x}}, how = "replace", classes = "character")
+}
+
+extract_from_list <- function(a_list, id_regex = "id$"){
+  if(is.null(a_list)) return(NULL)
+  chrs <- rapply(a_list, function(x) if(is.character(x)){x})
+  o <- unique(unname(chrs[grepl(id_regex,names(chrs))]))
+  if(identical(o, character(0))) return(NULL)
+  
+  # remove any with -label
+  o[!grepl("-label$", o)]
+}
+
+
+find_num_occurances <- function(x, what){
+  lengths(regmatches(x, gregexpr(what, x)))
+}
+
+assert_that_list <- function(the_list, assert_f){
+  lapply(the_list, function(x) assert_that(assert_f(x)))
+}
 
 #' when we need a list of objs of class x to also be class x
 #' @noRd
+#' @importFrom methods is
 assign_list_class <- function(x, the_class){
   if(!is.null(x)){
     # fix 253
     # make sure its a list of segment_ga4 objects
     if(class(x) == "list" &&
-       all(unlist(lapply(x, function(y) inherits(y, the_class))))){
+       all(unlist(lapply(x, function(y) is(y, the_class))))){
       class(x) <- the_class
     } else {
       x <- as(x, the_class)
@@ -18,16 +45,6 @@ assign_list_class <- function(x, the_class){
   x
 
 }
-
-add_class_if_list <- function(x, the_class){
-
-  if(!is.null(x) && class(x) == "list"){
-    class(x) <- the_class
-  }
-
-  x
-}
-
 
 #' assign new value if not null and check passes
 #' @noRd
@@ -189,9 +206,23 @@ is.named <- function(x) {
 #' @keywords internal
 #' @noRd
 cat0 <- function(prefix = "", x){
-  if(!is.null(x)){
+
+  if(is.null(x)){
+    invisible(return())
+  } 
+  
+  if(inherits(x, "list") && length(x) < 1){
+    invisible(return())
+  }
+  
+  
+  if(inherits(x, "list") && length(x) > 0){
+    cat(prefix, "\n")
+    return(print(x))
+  } else {
     cat(prefix, x, "\n")
   }
+
 }
 
 
@@ -347,11 +378,11 @@ myMessage <- function(..., level = 2){
     time <- paste(Sys.time(),">")
     mm <- paste(...)
     if(grepl("^#", mm)){
-      cli_h1(mm)
+      cli::cli_h1(mm)
     } else {
-      cli_div(theme = list(span.time = list(color = "grey")))
-      cli_alert_info("{.time {time}} {mm}")
-      cli_end()
+      cli::cli_div(theme = list(span.time = list(color = "grey")))
+      cli::cli_alert_info("{.time {time}} {mm}")
+      cli::cli_end()
     }
     
   }

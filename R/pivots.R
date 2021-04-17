@@ -2,6 +2,7 @@
 #'
 #' @keywords internal
 #' @family pivot functions
+#' @noRd
 pivot_ga4_parse <- function(x, hasDateComparison){
   
   if(is.null(x$columnHeader$metricHeader$pivotHeaders)) {
@@ -37,6 +38,7 @@ pivot_ga4_parse <- function(x, hasDateComparison){
 #'
 #' @keywords internal
 #' @family pivot functions
+#' @noRd
 makePivotData <- function(pivotRows, pivotNames, index=1){
   
   if(index==2) pivotNames <- paste0(pivotNames, ".d2")
@@ -59,6 +61,7 @@ makePivotData <- function(pivotRows, pivotNames, index=1){
 #'
 #' @keywords internal
 #' @family pivot functions
+#' @noRd
 makePivotNames <- function(pivotHeaders){
   n <- lapply(pivotHeaders,
               ## loop over number of pivot columns expected
@@ -92,7 +95,7 @@ makePivotNames <- function(pivotHeaders){
 #'
 #' @details If maxGroupCount is set to -1 returns all groups.
 #'
-#' @return pivot object of class \code{pivot_ga4} for use in \code{\link{filter_clause_ga4}}
+#' @return pivot object of class `pivot_ga4` for use in [filter_clause_ga4()]
 #' 
 #' 
 #' @examples 

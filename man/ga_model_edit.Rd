@@ -11,13 +11,14 @@ ga_model_edit(
   model_f = NULL,
   required_packages = NULL,
   description = NULL,
-  outputShiny = NULL,
-  renderShiny = NULL,
+  outputShiny = shiny::plotOutput,
+  renderShiny = shiny::renderPlot,
+  inputShiny = NULL,
   output_f = NULL
 )
 }
 \arguments{
-\item{model}{The model to edit - if a filepath will load model and 
+\item{model}{The model to edit - if a filepath will load model and
 save back edited model to the same file}
 
 \item{data_f}{A function that gets the data}
@@ -35,10 +36,24 @@ must take data from result of \code{data_f} in first argument}
 
 \item{renderShiny}{A shiny render function that will create the output for \code{outputShiny} from \code{output_f}}
 
+\item{inputShiny}{Optional input shiny functions (like \code{dateInput()}) that will be used within the model's Shiny module.  The id should be exactly the same as one of the variables in the model functions.}
+
 \item{output_f}{A function that inputs the output from \code{model_f}, outputs a visualisation}
 }
 \description{
 Change features of a model by changing the functions within it.
+}
+\examples{
+
+\dontrun{
+
+decomp_ga <- ga_model_example("decomp_ga.gamr")
+decomp_ga
+
+# edit its description
+ga_model_edit(decomp_ga, description = "Changed")
+
+}
 }
 \seealso{
 Other GA modelling functions: 
@@ -46,7 +61,9 @@ Other GA modelling functions:
 \code{\link{ga_model_load}()},
 \code{\link{ga_model_make}()},
 \code{\link{ga_model_save}()},
-\code{\link{ga_model_tweet}()},
+\code{\link{ga_model_shiny_load}()},
+\code{\link{ga_model_shiny_template}()},
+\code{\link{ga_model_shiny}()},
 \code{\link{ga_model_write}()},
 \code{\link{ga_model}()}
 }

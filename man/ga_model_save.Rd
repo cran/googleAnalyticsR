@@ -14,13 +14,26 @@ ga_model_save(model, filename = "my-model.gamr")
 \description{
 Save a created model
 }
+\examples{
+
+\dontrun{
+# load the model (equivalent to ga_model_load())
+decomp_ga <- ga_model_example("decomp_ga.gamr")
+
+# save it somewhere else
+ga_model_save(decomp_ga, "somewhereelse.gamr")
+
+}
+}
 \seealso{
 Other GA modelling functions: 
 \code{\link{ga_model_edit}()},
 \code{\link{ga_model_example}()},
 \code{\link{ga_model_load}()},
 \code{\link{ga_model_make}()},
-\code{\link{ga_model_tweet}()},
+\code{\link{ga_model_shiny_load}()},
+\code{\link{ga_model_shiny_template}()},
+\code{\link{ga_model_shiny}()},
 \code{\link{ga_model_write}()},
 \code{\link{ga_model}()}
 }

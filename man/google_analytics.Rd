@@ -33,15 +33,15 @@ google_analytics_4(...)
 \arguments{
 \item{viewId}{viewId of data to get.}
 
-\item{date_range}{character or date vector of format \code{c(start, end)} or 
+\item{date_range}{character or date vector of format \code{c(start, end)} or
 for two date ranges: \code{c(start1,end1,start2,end2)}}
 
-\item{metrics}{Metric(s) to fetch as a character vector.  You do not need to 
-supply the \code{"ga:"} prefix.  See \link{meta} for a list of dimensons 
+\item{metrics}{Metric(s) to fetch as a character vector.  You do not need to
+supply the \code{"ga:"} prefix.  See \link{meta} for a list of dimensons
 and metrics the API supports. Also supports your own calculated metrics.}
 
-\item{dimensions}{Dimension(s) to fetch as a character vector. You do not need to 
-supply the \code{"ga:"} prefix. See \link{meta} for a list of dimensons 
+\item{dimensions}{Dimension(s) to fetch as a character vector. You do not need to
+supply the \code{"ga:"} prefix. See \link{meta} for a list of dimensons
 and metrics the API supports.}
 
 \item{dim_filters}{A \link{filter_clause_ga4} wrapping \link{dim_filter}}
@@ -64,8 +64,7 @@ and metrics the API supports.}
 
 \item{metricFormat}{If supplying calculated metrics, specify the metric type}
 
-\item{histogramBuckets}{For numeric dimensions such as hour, a list of buckets of data.
-See details in \link{make_ga_4_req}}
+\item{histogramBuckets}{For numeric dimensions such as hour, a list of buckets of data.}
 
 \item{anti_sample}{If TRUE will split up the call to avoid sampling.}
 
@@ -73,7 +72,7 @@ See details in \link{make_ga_4_req}}
 
 \item{slow_fetch}{For large, complicated API requests this bypasses some API hacks that may result in 500 errors.  For smaller queries, leave this as \code{FALSE} for quicker data fetching.}
 
-\item{useResourceQuotas}{If using GA360, access increased sampling limits. 
+\item{useResourceQuotas}{If using GA360, access increased sampling limits.
 Default \code{NULL}, set to \code{TRUE} or \code{FALSE} if you have access to this feature.}
 
 \item{rows_per_call}{Set how many rows are requested by the API per call, up to a maximum of 100000.}
@@ -84,7 +83,7 @@ Default \code{NULL}, set to \code{TRUE} or \code{FALSE} if you have access to th
 A Google Analytics data.frame, with attributes showing row totals, sampling etc.
 }
 \description{
-Fetch Google Analytics data using the v4 API.  For the v3 API use \link{google_analytics_3}.  See website help for lots of examples: \href{http://code.markedmondson.me/googleAnalyticsR/articles/v4.html}{Google Analytics Reporting API v4 in R}
+Fetch Google Analytics data using the v4 API.  For the v3 API use \link{google_analytics_3}, for GA4's Data API use \link{ga_data}.  See website help for lots of examples: \href{http://code.markedmondson.me/googleAnalyticsR/articles/v4.html}{Google Analytics Reporting API v4 in R}
 }
 \section{Row requests}{
 
@@ -95,31 +94,77 @@ By default the API call will use v4 batching that splits requests into 5 separat
 \section{Anti-sampling}{
 
 
-\code{anti_sample} being TRUE ignores \code{max} as the API call is split over days 
-  to mitigate the sampling session limit, in which case a row limit won't work.  Take the top rows
-  of the result yourself instead e.g. \code{head(ga_data_unsampled, 50300)}
-  
-\code{anti_sample} being TRUE will also set \code{samplingLevel='LARGE'} to minimise 
-  the number of calls.
+\code{anti_sample} being TRUE ignores \code{max} as the API call is split over days
+to mitigate the sampling session limit, in which case a row limit won't work.  Take the top rows
+of the result yourself instead e.g. \code{head(ga_data_unsampled, 50300)}
+
+\code{anti_sample} being TRUE will also set \code{samplingLevel='LARGE'} to minimise
+the number of calls.
 }
 
 \section{Resource Quotas}{
 
 
 If you are on GA360 and have access to resource quotas,
-  set the \code{useResourceQuotas=TRUE} and set the Google Cloud 
-  client ID to the project that has resource quotas activated, 
-  via \link[googleAuthR]{gar_set_client} or options.
+set the \code{useResourceQuotas=TRUE} and set the Google Cloud
+client ID to the project that has resource quotas activated,
+via \link[googleAuthR:gar_set_client]{gar_set_client} or options.
 }
 
 \section{Caching}{
 
 
 By default local caching is turned on for v4 API requests.  This means that
-  making the same request as one this session will read from memory and not
-  make an API call. You can also set the cache to disk via 
-  the \link{ga_cache_call} function.  This can be useful
-  when running RMarkdown reports using data.
+making the same request as one this session will read from memory and not
+make an API call. You can also set the cache to disk via
+the \link{ga_cache_call} function.  This can be useful
+when running RMarkdown reports using data.
+}
+
+\section{Metrics}{
+
+Metrics support calculated metrics like ga:users / ga:sessions if you supply
+them in a named vector.
+
+You must supply the correct 'ga:' prefix unlike normal metrics
+
+You can mix calculated and normal metrics like so:
+
+\code{customMetric <- c(sessionPerVisitor = "ga:sessions / ga:visitors", "bounceRate", "entrances")}
+
+You can also optionally supply a \code{metricFormat} parameter that must be
+the same length as the metrics.  \code{metricFormat} can be:
+\verb{METRIC_TYPE_UNSPECIFIED, INTEGER, FLOAT, CURRENCY, PERCENT, TIME}
+
+All metrics are currently parsed to as.numeric when in R.
+}
+
+\section{Dimensions}{
+
+
+Supply a character vector of dimensions, with or without \verb{ga:} prefix.
+
+Optionally for numeric dimension types such as
+\verb{ga:hour, ga:browserVersion, ga:sessionsToTransaction}, etc. supply
+histogram buckets suitable for histogram plots.
+
+If non-empty, we place dimension values into buckets after string to int64.
+Dimension values that are not the string representation of an integral value
+will be converted to zero. The bucket values have to be in increasing order.
+Each bucket is closed on the lower end, and open on the upper end.
+The "first" bucket includes all values less than the first boundary,
+the "last" bucket includes all values up to infinity.
+Dimension values that fall in a bucket get transformed to a new dimension
+value. For example, if one gives a list of "0, 1, 3, 4, 7", then we
+return the following buckets: -
+\itemize{
+\item bucket #1: values < 0, dimension value "<0"
+\item bucket #2: values in [0,1), dimension value "0"
+\item bucket #3: values in [1,3), dimension value "1-2"
+\item bucket #4: values in [3,4), dimension value "3"
+\item bucket #5: values in [4,7), dimension value "4-6"
+\item bucket #6: values >= 7, dimension value "7+"
+}
 }
 
 \examples{
@@ -158,11 +203,5 @@ google_analytics(1234567, date_range = c("30daysAgo", "yesterday"), metrics = "s
 
 }
 
-}
-\seealso{
-Other GAv4 fetch functions: 
-\code{\link{fetch_google_analytics_4_slow}()},
-\code{\link{fetch_google_analytics_4}()},
-\code{\link{make_ga_4_req}()}
 }
 \concept{GAv4 fetch functions}

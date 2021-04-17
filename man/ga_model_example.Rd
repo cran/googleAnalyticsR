@@ -4,15 +4,21 @@
 \alias{ga_model_example}
 \title{Load an example model}
 \usage{
-ga_model_example(name, location = "googleAnalyticsR")
+ga_model_example(name = "list")
 }
 \arguments{
-\item{name}{name of the model}
-
-\item{location}{location of model}
+\item{name}{name of the model - set to "list" to show available files}
 }
 \description{
 Load an example model
+}
+\examples{
+
+# example .gamr files included with the package
+ga_model_example()
+
+# load one example
+ga_model_example("ga4-trend.gamr")
 }
 \seealso{
 Other GA modelling functions: 
@@ -20,7 +26,9 @@ Other GA modelling functions:
 \code{\link{ga_model_load}()},
 \code{\link{ga_model_make}()},
 \code{\link{ga_model_save}()},
-\code{\link{ga_model_tweet}()},
+\code{\link{ga_model_shiny_load}()},
+\code{\link{ga_model_shiny_template}()},
+\code{\link{ga_model_shiny}()},
 \code{\link{ga_model_write}()},
 \code{\link{ga_model}()}
 }

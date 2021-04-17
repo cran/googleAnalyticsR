@@ -53,17 +53,17 @@ parse_ga_segment_list <- function(x){
 #' 
 #' @param name The name of the segment for the reports.
 #' @param segment_id The segment ID of a built in or custom segment e.g. gaid::-3
-#' @param user_segment A list of \code{segment_define}'s that apply to users
-#' @param session_segment A list of \code{segment_define}'s that apply to sessions
+#' @param user_segment A list of `segment_define`'s that apply to users
+#' @param session_segment A list of `segment_define`'s that apply to sessions
 #'
 #' @return a segmentFilter object. You can pass a list of these to the request.
 #' 
 #' @details 
-#' \code{segment_ga4} is the top hierarchy of segment creation, for which you will also need:
+#' `segment_ga4` is the top hierarchy of segment creation, for which you will also need:
 #' \itemize{
-#'  \item \link{segment_define} : AND combination of segmentFilters
-#'  \item \link{segment_vector_simple} or \link{segment_vector_sequence}
-#'  \item \link{segment_element} that are combined in OR lists for \code{segment_vectors_*}
+#'  \item [segment_define] : AND combination of segmentFilters
+#'  \item [segment_vector_simple] or [segment_vector_sequence]
+#'  \item [segment_element] that are combined in OR lists for `segment_vectors_*`
 #' }
 #' 
 #' 
@@ -201,18 +201,18 @@ segment_ga4 <- function(name,
 #' Defines the segment to be a set of SegmentFilters 
 #'   which are combined together with a logical AND operation.
 #'   
-#' \code{segment_define} is in the hierarchy of segment creation, for which you will also need:
+#' `segment_define` is in the hierarchy of segment creation, for which you will also need:
 #' \itemize{
-#'  \item \link{segment_define} : AND combination of segmentFilters
-#'  \item \link{segment_vector_simple} or \link{segment_vector_sequence}
-#'  \item \link{segment_element} that are combined in OR lists for \code{segment_vectors_*}
+#'  \item [segment_define] : AND combination of segmentFilters
+#'  \item [segment_vector_simple] or [segment_vector_sequence]
+#'  \item [segment_element] that are combined in OR lists for `segment_vectors_*`
 #' }
 #' 
-#' @param segment_filters A list of \link{segment_vector_simple} and \link{segment_vector_sequence}
+#' @param segment_filters A list of [segment_vector_simple] and [segment_vector_sequence]
 #' @param not_vector Boolean applied to each segmentFilter step. 
 #'   If NULL, assumed FALSE
 #' 
-#' @return segmentDefinition object for \link{segment_ga4}
+#' @return segmentDefinition object for [segment_ga4]
 #' @family v4 segment functions
 #' @export
 segment_define <- function(segment_filters,
@@ -252,16 +252,16 @@ segment_define <- function(segment_filters,
 
 #' Make a simple segment vector
 #' 
-#' \code{segment_vector_simple} is in the hierarchy of segment creation, for which you will also need:
+#' `segment_vector_simple` is in the hierarchy of segment creation, for which you will also need:
 #' \itemize{
-#'  \item \link{segment_define} : AND combination of segmentFilters
-#'  \item \link{segment_vector_simple} or \link{segment_vector_sequence}
-#'  \item \link{segment_element} that are combined in OR lists for \code{segment_vectors_*}
+#'  \item [segment_define] : AND combination of segmentFilters
+#'  \item [segment_vector_simple] or [segment_vector_sequence]
+#'  \item [segment_element] that are combined in OR lists for `segment_vectors_*`
 #' }
 #' 
-#' @param segment_elements A list of OR lists of \link{segment_element}
+#' @param segment_elements A list of OR lists of [segment_element]
 #' 
-#' @return A segment vector you can put in a list for use in \link{segment_ga4}
+#' @return A segment vector you can put in a list for use in [segment_ga4]
 #' @family v4 segment functions
 #' @export
 segment_vector_simple <- function(segment_elements){
@@ -276,6 +276,7 @@ segment_vector_simple <- function(segment_elements){
 
 #' Make orFiltersForSegment
 #' @keywords internal
+#' @noRd
 makeOrFilters <- function(segment_element_list){
   
   lapply(segment_element_list, function(sfc){
@@ -287,11 +288,11 @@ makeOrFilters <- function(segment_element_list){
 #' Make sequenceSegment
 #' 
 #' 
-#' \code{segment_vector_sequence} is in the hierarchy of segment creation, for which you will also need:
+#' `segment_vector_sequence` is in the hierarchy of segment creation, for which you will also need:
 #' \itemize{
-#'  \item \link{segment_define} : AND combination of segmentFilters
-#'  \item \link{segment_vector_simple} or \link{segment_vector_sequence}
-#'  \item \link{segment_element} that are combined in OR lists for \code{segment_vectors_*}
+#'  \item [segment_define] : AND combination of segmentFilters
+#'  \item [segment_vector_simple] or [segment_vector_sequence]
+#'  \item [segment_element] that are combined in OR lists for `segment_vectors_*`
 #' }
 #' 
 #' @param segment_elements a list of OR lists of segment elements
@@ -323,26 +324,26 @@ segment_vector_sequence <- function(segment_elements,
 
 #' Make a segment element
 #' 
-#' \code{segment_element} is the lowest hierarchy of segment creation, for which you will also need:
+#' `segment_element` is the lowest hierarchy of segment creation, for which you will also need:
 #' \itemize{
-#'  \item \link{segment_define} : AND combination of segmentFilters
-#'  \item \link{segment_vector_simple} or \link{segment_vector_sequence}
-#'  \item \link{segment_element} that are combined in OR lists for \code{segment_vectors_*}
+#'  \item [segment_define] : AND combination of segmentFilters
+#'  \item [segment_vector_simple] or [segment_vector_sequence]
+#'  \item [segment_element] that are combined in OR lists for `segment_vectors_*`
 #' }
 #'
 #' @param name Name of the GA metric or dimension to segment on
 #' @param operator How name shall operate on expression or comparisonValue
 #' @param type A metric or dimension based segment element
 #' @param not Should the element be the negation of what is defined
-#' @param expressions [dim] What the name shall compare to
-#' @param caseSensitive [dim] Whether to be case sensitive
-#' @param minComparisonValue [dim] Minimum comparison values for BETWEEN
+#' @param expressions `dim` What the name shall compare to
+#' @param caseSensitive `dim` Whether to be case sensitive
+#' @param minComparisonValue `dim` Minimum comparison values for BETWEEN
 #' @param maxComparisonValue Max comparison value for BETWEEN operator
-#' @param scope [met] Scope of the metric value
-#' @param comparisonValue [met] What the name shall compare to
+#' @param scope `met` Scope of the metric value
+#' @param comparisonValue `met` What the name shall compare to
 #' @param matchType If used in sequence segment, what behaviour
 #'
-#' @return An SegmentFilterClause object
+#' @return A SegmentFilterClause object
 #' 
 #' @family v4 segment functions
 #' @export
@@ -454,9 +455,10 @@ segment_element <- function(name,
 #' @param dynamicSegment A v4 segment object
 #' @param segmentId A v3 segment string
 #'
-#' @return a list of class \code{segment_ga4}
+#' @return a list of class `segment_ga4`
 #'
 #' @keywords internal
+#' @noRd
 segmentObj_ga4 <- function(dynamicSegment=NULL, segmentId=NULL){
   
   if(!is.null(dynamicSegment) && !is.null(segmentId))
@@ -481,6 +483,7 @@ segmentObj_ga4 <- function(dynamicSegment=NULL, segmentId=NULL){
 #' @param sessionSegment sessionSegment to include in the segment
 #'
 #' @keywords internal
+#' @noRd
 dynamicSegment <- function(name, userSegment, sessionSegment){
 
   assertthat::assert_that(is.character(name))
@@ -504,6 +507,7 @@ dynamicSegment <- function(name, userSegment, sessionSegment){
 #'   SegmentFilters which are combined together with a logical AND operation.
 #' 
 #' @keywords internal
+#' @noRd
 segmentDefinition <- function(segmentFilterList){
   
   structure(
@@ -526,6 +530,7 @@ segmentDefinition <- function(segmentFilterList){
 #' For example, to match all visits not from "New York", set to TRUE.
 #'
 #' @keywords internal
+#' @noRd
 segmentFilter <- function(not=FALSE, simpleSegment=NULL, sequenceSegment=NULL){
   
   assertthat::assert_that(is.logical(not))
@@ -552,6 +557,7 @@ segmentFilter <- function(not=FALSE, simpleSegment=NULL, sequenceSegment=NULL){
 #' Simple Segment
 #'
 #' @keywords internal
+#' @noRd
 simpleSegment <- function(orFiltersForSegmentList){
   
   structure(
@@ -566,6 +572,7 @@ simpleSegment <- function(orFiltersForSegmentList){
 #' orFiltersForSegment
 #'
 #' @keywords internal
+#' @noRd
 orFiltersForSegment <- function(segmentFilterClauseList){
   
   structure(
@@ -582,6 +589,7 @@ orFiltersForSegment <- function(segmentFilterClauseList){
 #' Make this internal
 #'
 #' @keywords internal
+#' @noRd
 segmentFilterClause <- function(not=FALSE,
                                 dimensionFilter=NULL,
                                 metricFilter=NULL){
@@ -602,6 +610,7 @@ segmentFilterClause <- function(not=FALSE,
 #' segmentDimensionFilter
 #'
 #' @keywords internal
+#' @noRd
 segmentDimensionFilter <- function(name,
                                    expressions,
                                    operator = c(
@@ -639,6 +648,7 @@ segmentDimensionFilter <- function(name,
 #' segmentMetricFilter
 #'
 #' @keywords internal
+#' @noRd
 segmentMetricFilter <- function(name,
                                 scope = c("PRODUCT", "HIT","SESSION","USER"),
                                 operator = c("LESS_THAN","GREATER_THAN","EQUAL","BETWEEN"),
@@ -664,12 +674,13 @@ segmentMetricFilter <- function(name,
 
 #' sequenceSegment
 #' 
-#' @param segmentSequenceStepList A list of \link{segmentSequenceStep}
+#' @param segmentSequenceStepList A list of [segmentSequenceStep]
 #' @param firstStepMatch Should firstStep match the first hit?
 #' 
 #' @return A sequenceSegment object
 #'
 #' @keywords internal
+#' @noRd
 sequenceSegment <- function(segmentSequenceStepList, firstStepMatch=FALSE){
   
   assertthat::assert_that(is.logical(firstStepMatch))
@@ -685,12 +696,13 @@ sequenceSegment <- function(segmentSequenceStepList, firstStepMatch=FALSE){
 
 #' segmentSequenceStep
 #'
-#' @param orFiltersForSegmentList A list of \link{orFiltersForSegment}
+#' @param orFiltersForSegmentList A list of [orFiltersForSegment]
 #' @param matchType Should it precede or immediately precede the next step
 #' 
 #' @return segmentSequenceStep object
 #' 
 #' @keywords internal
+#' @noRd
 segmentSequenceStep <- function(orFiltersForSegmentList,
                                 matchType = c("PRECEDES", "IMMEDIATELY_PRECEDES")){
 

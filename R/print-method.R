@@ -1,4 +1,74 @@
 #' @export
+print.gar_OrderBy <- function(x, ...){
+  cat("==GA4 OrderBy==\n")
+  cat0("Dimension:    ", x$dimension$dimensionName)
+  cat0("OrderType:    ", x$dimension$orderType)
+  cat0("Metric:       ", x$metric$metricName)
+  cat0("Descending:   ", x$desc)
+}
+
+#' @export
+print.gar_FilterExpression <- function(x, ...){
+
+  depth <- find_num_occurances(names(unlist(x)), "\\.expressions\\.")
+  bits <- paste(rep("=",max(depth)*2),collapse = "=")
+  # prints in outer nests
+  cat0(paste0(bits, "andGroup: "), x$andGroup$expressions)
+  cat0(paste0(bits, "orGroup: "), x$orGroup$expressions)
+  cat0(paste0(bits, "notExpression: "), x$notExpression)
+  
+  # inner most nesting
+  cat0("--GA4 Filter: ", x$filter)
+
+}
+
+#' @export
+# print.gar_FilterExpressionList <- function(x, ...){
+#   cat0("--\n|")
+# }
+
+#' @export
+print.gar_Filter <- function(x, ...){
+  cat0("--|", x$fieldName)
+  cat0("----numericFilter: ", x$numericFilter)
+  cat0("----inListFilter: ", x$inListFilter)
+  cat0("----nullFilter: ", x$nullFilter)
+  cat0("----stringFilter: ", x$stringFilter)
+  cat0("----betweenFilter: ", x$betweenFilter)
+}
+
+#' @export
+print.gar_NumericFilter <- function(x, ...){
+  cat("operation: ", x$operation, 
+      "| value:     ", x$value[[1]])
+}
+
+#' @export
+print.gar_InListFilter <- function(x, ...){
+  cat0("values: ", paste(x$values, collapse = " "))
+  cat0("caseSensitive: ", x$caseSensitive)
+}
+
+#' @export
+print.gar_NullFilter <- function(x, ...){
+  cat("NULL")
+}
+
+#' @export
+print.gar_StringFilter <- function(x, ...){
+  cat("value: ", x$value[[1]], 
+      "| matchType: ", x$matchType, 
+      "| caseSensitive: ", x$caseSensitive)
+}
+
+#' @export
+print.gar_BetweenFilter <- function(x, ...){
+  cat("from: ", x$fromValue[[1]], " to: ", x$toValue[[1]])
+}
+
+
+
+#' @export
 print.ga_model_result <- function(x, ...){
   cat("==ga_model_result object==\n")
   cat0("Input names:       ", paste(names(x$input), collapse = " "))
