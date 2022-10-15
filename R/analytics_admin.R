@@ -3,7 +3,6 @@
 #' 
 #' @seealso [Google Documentation](http://code.google.com/apis/analytics/docs/mgmt/home.html)
 #' 
-#' @details 
 #' 
 #' @importFrom googleAuthR gar_api_generator
 #' @noRd
@@ -29,6 +28,10 @@ ga_admin_account_summary <- function(){
 
 parse_admin_account_summary <- function(x){
   o <- x$accountSummaries
+  if(is.null(o)){
+    cli::cli_alert_danger("No GA4 accounts found")
+    return(FALSE)
+  }
   names(o) <- c("resource_name","account","account_name","property")
   o <- o %>% 
     unnest("property") %>%

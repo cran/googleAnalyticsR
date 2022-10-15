@@ -16,6 +16,7 @@ ga_data(
   limit = 100,
   page_size = 100000L,
   realtime = FALSE,
+  metricAggregations = NULL,
   raw_json = NULL
 )
 }
@@ -41,6 +42,8 @@ ga_data(
 \item{page_size}{The size of API pages - default is 100000L rows}
 
 \item{realtime}{If TRUE then will call the real-time reports, that have a more limited set of dimensions/metrics - see \href{https://developers.google.com/analytics/devguides/reporting/data/v1/realtime-basics}{valid real-time dimensions}}
+
+\item{metricAggregations}{Default NULL, pass in character vector of one or multiple of \code{c("TOTAL","MAXIMUM","MINIMUM","COUNT")} to return extra metadata}
 
 \item{raw_json}{You can send in the raw JSON string for a Data API request which will skip all checks}
 }
@@ -90,13 +93,15 @@ dim_expression <- ga_data(
   limit = 100
   )
   
-# run a real-time report (no date dimension allowed)
+# run a real-time report (no date dimension allowed) 
+# includes metricAggregation metadata
 realtime <- ga_data(
   206670707,
   metrics = "activeUsers",
   dimensions = c("city","unifiedScreenName"),
   limit = 100,
-  realtime = TRUE)
+  realtime = TRUE,
+  metricAggregations = c("TOTAL","MAXIMUM","MINIMUM"))
 
 # extract meta data from the table
 ga_data_aggregations(realtime)
@@ -113,6 +118,8 @@ ga_data(
   orderBys = c(a, b)
   )
 }
+
+
 }
 \seealso{
 \href{https://developers.google.com/analytics/devguides/reporting/data/v1}{Documentation on Data API}

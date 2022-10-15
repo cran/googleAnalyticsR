@@ -97,15 +97,17 @@ quota_messages <- function(o){
               level = 3)
   }
   
-  if(pq$concurrentRequests < 10 || verbose){
-    myMessage("concurrentRequests: ", pq$concurrentRequests, 
-              " / 10",
+  if(pq$concurrentRequests$remaining < 10 || verbose){
+    myMessage("concurrentRequests: Query Cost [", 
+              pq$concurrentRequests$consumed, 
+              "] / Remaining [", pq$concurrentRequests$remaining,"]",
               level = 3)
   }
   
-  if(pq$serverErrorsPerProjectPerHour < 10 || verbose){
-    myMessage("serverErrorsPerProjectPerHour: ", pq$serverErrorsPerProjectPerHour, 
-              " / 10",
+  if(pq$serverErrorsPerProjectPerHour$remaining < 10 || verbose){
+    myMessage("serverErrorsPerProjectPerHour: Query Cost [", 
+              pq$serverErrorsPerProjectPerHour$consumed, 
+              "] / Remaining [", pq$serverErrorsPerProjectPerHour$remaining, "]", 
               level = 3)
   }
 }
