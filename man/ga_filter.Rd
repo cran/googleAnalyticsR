@@ -21,7 +21,7 @@ Get specific filter for account
 Other filter management functions: 
 \code{\link{ga_filter_delete}()},
 \code{\link{ga_filter_list}()},
-\code{\link{ga_filter_view_list}()},
-\code{\link{ga_filter_view}()}
+\code{\link{ga_filter_view}()},
+\code{\link{ga_filter_view_list}()}
 }
 \concept{filter management functions}

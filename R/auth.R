@@ -95,8 +95,9 @@
 #' }
 #'
 #' @return Invisibly, the token that has been saved to the session
-#' @importFrom googleAuthR gar_auth_service gar_auth
+#' @importFrom googleAuthR gar_auth_service gar_auth gar_auth_configure
 #' @importFrom tools file_ext
+#' @importFrom gargle gargle_oob_default gargle_oauth_client_from_json
 #' @export
 ga_auth <- function(token = NULL, email = NULL, json_file = NULL){
   
@@ -114,8 +115,20 @@ ga_auth <- function(token = NULL, email = NULL, json_file = NULL){
     myMessage("Using email from GARGLE_EMAIL env var:", email, level = 3)
   }
   
+  if(isTRUE(gargle_oob_default())){
+    myMessage("OOB authentication needed - gargle_oob_default() is TRUE", level = 3)
+    
+    oob <- system.file("client","default_gcp_client.json", 
+                       package = "googleAnalyticsR")
+    if(nzchar(Sys.getenv("GAR_CLIENT_WEB_JSON"))){
+      myMessage("Using your own web client json file for oob via env var: GAR_CLIENT_WEB_JSON")
+      oob <- Sys.getenv("GAR_CLIENT_WEB_JSON")
+    }
+    client <- gargle_oauth_client_from_json(oob)
+    gar_auth_configure(app = client)
+  }
+
   gar_auth(token = token,
            email = email,
            package = "googleAnalyticsR")
- 
 }

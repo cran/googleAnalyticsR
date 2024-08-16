@@ -22,9 +22,9 @@ You primarily need this to get the \code{customDataSourceId} for the uploads via
 }
 \seealso{
 Other custom datasource functions: 
+\code{\link{ga_custom_upload}()},
 \code{\link{ga_custom_upload_delete}()},
 \code{\link{ga_custom_upload_file}()},
-\code{\link{ga_custom_upload_list}()},
-\code{\link{ga_custom_upload}()}
+\code{\link{ga_custom_upload_list}()}
 }
 \concept{custom datasource functions}

@@ -52,10 +52,10 @@ server <- function(input, output, session){
 }
 \seealso{
 Other Shiny modules: 
-\code{\link{authDropdownUI}()},
 \code{\link{authDropdown}()},
+\code{\link{authDropdownUI}()},
 \code{\link{metricDimensionSelectUI}()},
-\code{\link{multi_selectUI}()},
-\code{\link{multi_select}()}
+\code{\link{multi_select}()},
+\code{\link{multi_selectUI}()}
 }
 \concept{Shiny modules}

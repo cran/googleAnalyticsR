@@ -9,7 +9,7 @@
 #' @format A data frame containing metric and dimensions that 
 #'   you can query the Reporting API with.
 #' 
-#' @source <https://ga-dev-tools.appspot.com/dimensions-metrics-explorer/>
+#' @source <https://ga-dev-tools.web.app/dimensions-metrics-explorer/>
 "meta"
 
 #' Google Analytics API metadata

@@ -94,9 +94,9 @@ server <- function(input, output, session){
 \seealso{
 Other Shiny modules: 
 \code{\link{accountPickerUI}()},
-\code{\link{authDropdownUI}()},
 \code{\link{authDropdown}()},
-\code{\link{multi_selectUI}()},
-\code{\link{multi_select}()}
+\code{\link{authDropdownUI}()},
+\code{\link{multi_select}()},
+\code{\link{multi_selectUI}()}
 }
 \concept{Shiny modules}

@@ -51,8 +51,8 @@ ga_users_update("UA-123456-1:1111222233334444",
 
 Other User management functions: 
 \code{\link{ga_users_add}()},
-\code{\link{ga_users_delete_linkid}()},
 \code{\link{ga_users_delete}()},
+\code{\link{ga_users_delete_linkid}()},
 \code{\link{ga_users_list}()}
 }
 \concept{User management functions}

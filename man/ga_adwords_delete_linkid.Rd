@@ -42,8 +42,8 @@ ga_adwords_list(65973592, "UA-65973592-1")
 \href{https://developers.google.com/analytics/devguides/config/mgmt/v3/mgmtReference/management/webPropertyAdWordsLinks/delete}{Google documentation}
 
 Other Google Ad management functions: 
+\code{\link{ga_adwords}()},
 \code{\link{ga_adwords_add_linkid}()},
-\code{\link{ga_adwords_list}()},
-\code{\link{ga_adwords}()}
+\code{\link{ga_adwords_list}()}
 }
 \concept{Google Ad management functions}

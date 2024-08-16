@@ -124,8 +124,8 @@ Goal <- list(
 \url{https://developers.google.com/analytics/devguides/config/mgmt/v3/mgmtReference/#Goals}
 
 Other goal management functions: 
+\code{\link{ga_goal}()},
 \code{\link{ga_goal_list}()},
-\code{\link{ga_goal_update}()},
-\code{\link{ga_goal}()}
+\code{\link{ga_goal_update}()}
 }
 \concept{goal management functions}

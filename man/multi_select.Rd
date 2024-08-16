@@ -38,8 +38,8 @@ Call via \code{shiny::callModule(multi_select, "your_id")}
 \seealso{
 Other Shiny modules: 
 \code{\link{accountPickerUI}()},
-\code{\link{authDropdownUI}()},
 \code{\link{authDropdown}()},
+\code{\link{authDropdownUI}()},
 \code{\link{metricDimensionSelectUI}()},
 \code{\link{multi_selectUI}()}
 }

@@ -6,11 +6,12 @@
 #'   \figure{logo.png}{googleAnalyticsR}
 #' }{\strong{googleAnalyticsR}}
 #' 
-#' Follow the online documentation here: <https://code.markedmondson.me/googleAnalyticsR/>
+#' Follow the online documentation here: <https://github.com/8-bit-sheep/googleAnalyticsR/>
 #' 
 #' 
 #' @docType package
 #' @name googleAnalyticsR
+#' @keywords internal
 NULL
 
 ## horrible hack https://github.com/tidyverse/magrittr/issues/29

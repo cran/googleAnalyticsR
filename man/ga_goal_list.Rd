@@ -21,8 +21,8 @@ List goals
 }
 \seealso{
 Other goal management functions: 
+\code{\link{ga_goal}()},
 \code{\link{ga_goal_add}()},
-\code{\link{ga_goal_update}()},
-\code{\link{ga_goal}()}
+\code{\link{ga_goal_update}()}
 }
 \concept{goal management functions}

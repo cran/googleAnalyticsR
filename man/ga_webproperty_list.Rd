@@ -29,8 +29,8 @@ wp <- ga_webproperty_list(aa$id[1])
 Other account structure functions: 
 \code{\link{ga_account_list}()},
 \code{\link{ga_accounts}()},
-\code{\link{ga_view_list}()},
 \code{\link{ga_view}()},
+\code{\link{ga_view_list}()},
 \code{\link{ga_webproperty}()}
 }
 \concept{account structure functions}

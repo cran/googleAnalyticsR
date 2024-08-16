@@ -28,8 +28,8 @@ https://developers.google.com/analytics/devguides/config/mgmt/v3/mgmtReference/m
 
 Other custom datasource functions: 
 \code{\link{ga_custom_datasource}()},
+\code{\link{ga_custom_upload}()},
 \code{\link{ga_custom_upload_file}()},
-\code{\link{ga_custom_upload_list}()},
-\code{\link{ga_custom_upload}()}
+\code{\link{ga_custom_upload_list}()}
 }
 \concept{custom datasource functions}

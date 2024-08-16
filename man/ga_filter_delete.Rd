@@ -31,9 +31,9 @@ Delete a filter from account or remove from view.
 }
 \seealso{
 Other filter management functions: 
+\code{\link{ga_filter}()},
 \code{\link{ga_filter_list}()},
-\code{\link{ga_filter_view_list}()},
 \code{\link{ga_filter_view}()},
-\code{\link{ga_filter}()}
+\code{\link{ga_filter_view_list}()}
 }
 \concept{filter management functions}

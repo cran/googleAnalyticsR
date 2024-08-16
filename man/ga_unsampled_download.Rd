@@ -62,7 +62,7 @@ authentication is not supported.
 }
 \seealso{
 Other unsampled download functions: 
-\code{\link{ga_unsampled_list}()},
-\code{\link{ga_unsampled}()}
+\code{\link{ga_unsampled}()},
+\code{\link{ga_unsampled_list}()}
 }
 \concept{unsampled download functions}

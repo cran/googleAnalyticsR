@@ -29,9 +29,9 @@ ga_accounts()
 \seealso{
 Other account structure functions: 
 \code{\link{ga_account_list}()},
-\code{\link{ga_view_list}()},
 \code{\link{ga_view}()},
-\code{\link{ga_webproperty_list}()},
-\code{\link{ga_webproperty}()}
+\code{\link{ga_view_list}()},
+\code{\link{ga_webproperty}()},
+\code{\link{ga_webproperty_list}()}
 }
 \concept{account structure functions}

@@ -26,8 +26,8 @@ Other managementAPI functions:
 \code{\link{ga_experiment_list}()},
 \code{\link{ga_filter_add}()},
 \code{\link{ga_filter_apply_to_view}()},
-\code{\link{ga_filter_update_filter_link}()},
 \code{\link{ga_filter_update}()},
+\code{\link{ga_filter_update_filter_link}()},
 \code{\link{ga_segment_list}()}
 }
 \concept{managementAPI functions}

@@ -27,8 +27,8 @@ Create a Google Analytics variable selector
 \seealso{
 Other Shiny modules: 
 \code{\link{accountPickerUI}()},
-\code{\link{authDropdownUI}()},
 \code{\link{authDropdown}()},
+\code{\link{authDropdownUI}()},
 \code{\link{metricDimensionSelectUI}()},
 \code{\link{multi_select}()}
 }

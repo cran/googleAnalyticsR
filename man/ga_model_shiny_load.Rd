@@ -16,14 +16,14 @@ Load one model into a Shiny template
 }
 \seealso{
 Other GA modelling functions: 
+\code{\link{ga_model}()},
 \code{\link{ga_model_edit}()},
 \code{\link{ga_model_example}()},
 \code{\link{ga_model_load}()},
 \code{\link{ga_model_make}()},
 \code{\link{ga_model_save}()},
-\code{\link{ga_model_shiny_template}()},
 \code{\link{ga_model_shiny}()},
-\code{\link{ga_model_write}()},
-\code{\link{ga_model}()}
+\code{\link{ga_model_shiny_template}()},
+\code{\link{ga_model_write}()}
 }
 \concept{GA modelling functions}

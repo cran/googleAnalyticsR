@@ -36,9 +36,9 @@ https://developers.google.com/analytics/devguides/config/mgmt/v3/mgmtReference/m
 
 Other account structure functions: 
 \code{\link{ga_accounts}()},
-\code{\link{ga_view_list}()},
 \code{\link{ga_view}()},
-\code{\link{ga_webproperty_list}()},
-\code{\link{ga_webproperty}()}
+\code{\link{ga_view_list}()},
+\code{\link{ga_webproperty}()},
+\code{\link{ga_webproperty_list}()}
 }
 \concept{account structure functions}

@@ -66,8 +66,8 @@ ga_goal_update(Goal, accountId, propertyId, viewId, 17, method = "PATCH")
 \url{https://developers.google.com/analytics/devguides/config/mgmt/v3/mgmtReference/#Goals}
 
 Other goal management functions: 
+\code{\link{ga_goal}()},
 \code{\link{ga_goal_add}()},
-\code{\link{ga_goal_list}()},
-\code{\link{ga_goal}()}
+\code{\link{ga_goal_list}()}
 }
 \concept{goal management functions}

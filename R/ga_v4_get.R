@@ -213,7 +213,7 @@ make_ga_4_req <- function(viewId,
 #' Get Google Analytics v4 data
 #' 
 #' @description
-#' Fetch Google Analytics data using the v4 API.  For the v3 API use [google_analytics_3], for GA4's Data API use [ga_data].  See website help for lots of examples: [Google Analytics Reporting API v4 in R](http://code.markedmondson.me/googleAnalyticsR/articles/v4.html)
+#' Fetch Google Analytics data using the v4 API.  For the v3 API use [google_analytics_3], for GA4's Data API use [ga_data].  See website help for lots of examples: [Google Analytics Reporting API v4 in R](https://8-bit-sheep.com/googleAnalyticsR/articles/v4.html)
 #' 
 #' 
 #' @section Row requests:

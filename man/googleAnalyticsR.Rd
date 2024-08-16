@@ -2,6 +2,7 @@
 % Please edit documentation in R/googleAnalyticsR.R
 \docType{package}
 \name{googleAnalyticsR}
+\alias{googleAnalyticsR-package}
 \alias{googleAnalyticsR}
 \title{Library for getting Google Analytics data into R}
 \description{
@@ -9,5 +10,36 @@
   \figure{logo.png}{googleAnalyticsR}
 }{\strong{googleAnalyticsR}}
 
-Follow the online documentation here: \url{https://code.markedmondson.me/googleAnalyticsR/}
+Follow the online documentation here: \url{https://github.com/8-bit-sheep/googleAnalyticsR/}
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/8-bit-sheep/googleAnalyticsR/}
+  \item Report bugs at \url{https://github.com/8-bit-sheep/googleAnalyticsR/issues}
+}
+
+}
+\author{
+\strong{Maintainer}: Erik Grönroos \email{erik.gronroos@8-bit-sheep.com}
+
+Authors:
+\itemize{
+  \item Mark Edmondson \email{m@sunholo.com} (\href{https://orcid.org/0000-0002-8434-3881}{ORCID})
+}
+
+Other contributors:
+\itemize{
+  \item Artem Klevtsov \email{a.a.klevtsov@gmail.com} [contributor]
+  \item Johann deBoer \email{johanndeboer@gmail.com} [contributor]
+  \item David Watkins \email{wm.david.watkins@gmail.com} [contributor]
+  \item Olivia Brode-Roger \email{nibr@mit.edu} [contributor]
+  \item Jas Sohi \email{contact@jassohi.com} [contributor]
+  \item Zoran Selinger \email{zselinger@gmail.com} [contributor]
+  \item Octavian Corlade \email{octavian.corlade@gmail.com} [contributor]
+  \item Maegan Whytock \email{maegan.whytock@gmail.com} [contributor]
+  \item Masaki Terashi \email{terashi.masaki@gmail.com} [contributor]
+}
+
+}
+\keyword{internal}

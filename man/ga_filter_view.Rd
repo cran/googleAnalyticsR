@@ -23,9 +23,9 @@ Get specific filter for view (profile)
 }
 \seealso{
 Other filter management functions: 
+\code{\link{ga_filter}()},
 \code{\link{ga_filter_delete}()},
 \code{\link{ga_filter_list}()},
-\code{\link{ga_filter_view_list}()},
-\code{\link{ga_filter}()}
+\code{\link{ga_filter_view_list}()}
 }
 \concept{filter management functions}

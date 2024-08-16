@@ -119,7 +119,7 @@ my_custom_connection <- ga_mp_connection(
 
 Other Measurement Protocol functions: 
 \code{\link{ga_mp_cid}()},
-\code{\link{ga_mp_event_item}()},
-\code{\link{ga_mp_event}()}
+\code{\link{ga_mp_event}()},
+\code{\link{ga_mp_event_item}()}
 }
 \concept{Measurement Protocol functions}

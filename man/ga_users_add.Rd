@@ -44,8 +44,8 @@ ga_users_add(c("the_email@company.com", "another_email@company.com"),
 \href{https://developers.google.com/analytics/devguides/config/mgmt/v3/user-management}{Google help article on user permissions}
 
 Other User management functions: 
-\code{\link{ga_users_delete_linkid}()},
 \code{\link{ga_users_delete}()},
+\code{\link{ga_users_delete_linkid}()},
 \code{\link{ga_users_list}()},
 \code{\link{ga_users_update}()}
 }

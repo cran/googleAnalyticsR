@@ -14,8 +14,8 @@ This has a random number plus a timestamp
 }
 \seealso{
 Other Measurement Protocol functions: 
-\code{\link{ga_mp_event_item}()},
 \code{\link{ga_mp_event}()},
+\code{\link{ga_mp_event_item}()},
 \code{\link{ga_mp_send}()}
 }
 \concept{Measurement Protocol functions}

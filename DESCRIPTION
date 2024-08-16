@@ -1,44 +1,47 @@
 Package: googleAnalyticsR
 Type: Package
-Version: 1.1.0
+Version: 1.2.0
 Title: Google Analytics API into R
 Description: Interact with the Google Analytics 
   APIs <https://developers.google.com/analytics/>, including 
   the Core Reporting API (v3 and v4), Management API, User Activity API
   GA4's Data API and Admin API and Multi-Channel Funnel API.
 Authors@R: c(person("Mark", "Edmondson", email = "m@sunholo.com",
-                  role = c("aut", "cre"),
+                  role = c("aut"),
                   comment = c(ORCID = "0000-0002-8434-3881")),
-             person(given = "Artem", family = "Klevtsov",
-                    email = "a.a.klevtsov@gmail.com", role = "ctb"),
+           person("Erik", "Grönroos", email = "erik.gronroos@8-bit-sheep.com",
+                  role = "cre"),
+           person(given = "Artem", family = "Klevtsov",
+                  email = "a.a.klevtsov@gmail.com", role = "ctb"),
            person("Johann", "deBoer", email = "johanndeboer@gmail.com", role = "ctb"),
            person("David", "Watkins", email = "wm.david.watkins@gmail.com", role = "ctb"),
            person("Olivia", "Brode-Roger", email = "nibr@mit.edu", role = "ctb"),
            person("Jas", "Sohi", email = "contact@jassohi.com", role = "ctb"),
            person("Zoran", "Selinger", email = "zselinger@gmail.com", role = "ctb"),
            person("Octavian", "Corlade", email = "octavian.corlade@gmail.com", role = "ctb"),
-           person("Maegan", "Whytock", email = "maegan.whytock@gmail.com", role = "ctb"))
-URL: https://code.markedmondson.me/googleAnalyticsR/
-BugReports: https://github.com/MarkEdmondson1234/googleAnalyticsR/issues
+           person("Maegan", "Whytock", email = "maegan.whytock@gmail.com", role = "ctb"),
+           person("Masaki", "Terashi", email = "terashi.masaki@gmail.com", role = "ctb"))
+URL: https://github.com/8-bit-sheep/googleAnalyticsR/
+BugReports: https://github.com/8-bit-sheep/googleAnalyticsR/issues
 Depends: R (>= 3.3.0)
 Imports: assertthat (>= 0.2.0), cli (>= 2.0.2), dplyr (>= 0.8.0),
-        googleAuthR (>= 1.4.0), httr (>= 1.3.1), jsonlite (>= 1.5),
-        magrittr (>= 1.5), measurementProtocol, memoise, methods, purrr
-        (>= 0.2.2), rlang (>= 0.4.7), stats, tibble (>= 2.0.1), tidyr
-        (>= 1.0.0), usethis, utils, whisker
-Suggests: bigQueryR (>= 0.3.1), covr, formatR, ganalytics,
-        googleCloudStorageR (>= 0.2.0), htmlwidgets, knitr, lifecycle
-        (>= 1.0.0), miniUI (>= 0.1.1), rmarkdown, shiny (>= 1.6.0),
-        testthat
+        googleAuthR (>= 1.4.0), gargle (>= 1.2.0), httr (>= 1.3.1),
+        jsonlite (>= 1.5), magrittr (>= 1.5), measurementProtocol,
+        memoise, methods, purrr (>= 0.2.2), rlang (>= 0.4.7), stats,
+        tibble (>= 2.0.1), tidyr (>= 1.0.0), usethis, utils, whisker
+Suggests: covr, formatR, googleCloudStorageR (>= 0.2.0), htmlwidgets,
+        knitr, lifecycle (>= 1.0.0), miniUI (>= 0.1.1), rmarkdown,
+        shiny (>= 1.6.0), testthat
 License: MIT + file LICENSE
 LazyData: TRUE
-RoxygenNote: 7.2.1
+RoxygenNote: 7.3.2
 Config/testthat/edition: 3
 Config/testthat/parallel: true
 Encoding: UTF-8
 NeedsCompilation: no
-Packaged: 2022-10-13 14:59:00 UTC; mark
-Author: Mark Edmondson [aut, cre] (<https://orcid.org/0000-0002-8434-3881>),
+Packaged: 2024-08-16 15:11:09 UTC; groner
+Author: Mark Edmondson [aut] (<https://orcid.org/0000-0002-8434-3881>),
+  Erik Grönroos [cre],
   Artem Klevtsov [ctb],
   Johann deBoer [ctb],
   David Watkins [ctb],
@@ -46,7 +49,8 @@ Author: Mark Edmondson [aut, cre] (<https://orcid.org/0000-0002-8434-3881>),
   Jas Sohi [ctb],
   Zoran Selinger [ctb],
   Octavian Corlade [ctb],
-  Maegan Whytock [ctb]
-Maintainer: Mark Edmondson <m@sunholo.com>
+  Maegan Whytock [ctb],
+  Masaki Terashi [ctb]
+Maintainer: Erik Grönroos <erik.gronroos@8-bit-sheep.com>
 Repository: CRAN
-Date/Publication: 2022-10-15 22:12:34 UTC
+Date/Publication: 2024-08-16 21:30:02 UTC
